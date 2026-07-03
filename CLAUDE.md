@@ -79,6 +79,14 @@ generation · Saarthi Assistant Q&A · at least one brief format (PDF Daily Brie
 - Signed URLs (1h expiry) for all media + generated files.
 - RAG citations must resolve to real records. No hallucinated statistics or citations.
 
+## Design context
+
+Design strategy and visual system live in `app/PRODUCT.md` (register: product;
+personality "Sober · Evidentiary · Assured"; four named anti-references) and
+`app/DESIGN.md` (North Star: **"The Morning File"** — Secretariat palette, named
+rules like The One Seal Rule and The Hairline Rule). Read both before any UI
+work; the impeccable skill reads them automatically.
+
 ## Current state
 
 Greenfield scaffold in progress. `Dashboard.pdf` holds the design intent (sibling docs

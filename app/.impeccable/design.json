@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-04T00:00:00+05:30",
+  "title": "Design System: Saarthi",
+  "extensions": {
+    "colorMeta": {
+      "secretariat-navy": { "role": "primary", "displayName": "Secretariat Navy", "canonical": "#12325B", "tonalRamp": ["#050E1A", "#0B2447", "#12325B", "#1E4778", "#2F5D93", "#537FB0", "#8AA9CB", "#C6D6E7"] },
+      "seal-saffron": { "role": "secondary", "displayName": "Seal Saffron", "canonical": "#C15A15", "tonalRamp": ["#3A1A05", "#6E330A", "#96460E", "#C15A15", "#D9772F", "#E69A5E", "#F0BE95", "#F9E3CF"] },
+      "despatch-blue": { "role": "primary", "displayName": "Despatch Blue", "canonical": "#054A91", "tonalRamp": ["#021B36", "#04315F", "#054A91", "#1D64AC", "#3F81C2", "#6FA3D5", "#A4C5E6", "#D6E5F4"] },
+      "sanction-green": { "role": "tertiary", "displayName": "Sanction Green", "canonical": "#1D6B3B", "tonalRamp": ["#0A2916", "#144C29", "#1D6B3B", "#2E8A50", "#4BA76C", "#79C193", "#ACDABE", "#DCF1E3"] },
+      "file-parchment": { "role": "neutral", "displayName": "File Parchment", "canonical": "#F1EBDD", "tonalRamp": ["#4A4335", "#6E6650", "#948A6E", "#B5AC8F", "#CDC5B4", "#E6DFD1", "#F1EBDD", "#FBF8F2"] },
+      "ledger-ink": { "role": "neutral", "displayName": "Ledger Ink", "canonical": "#14192A", "tonalRamp": ["#14192A", "#2B3145", "#545869", "#7E8590", "#A69C86", "#CDC5B4", "#EDE7D7", "#FFFFFF"] },
+      "urgency-critical": { "role": "tertiary", "displayName": "Critical Red", "canonical": "#A3311F", "tonalRamp": ["#3B0F08", "#6F1F12", "#A3311F", "#C24A31", "#D96E52", "#E89680", "#F2BFB1", "#FAE3DC"] },
+      "urgency-high": { "role": "tertiary", "displayName": "High Amber", "canonical": "#B77321", "tonalRamp": ["#3F2708", "#764A11", "#B77321", "#CE8B36", "#DFA75C", "#EBC38C", "#F4DCBB", "#FBF0DE"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (KPI numerals)", "purpose": "Tabular numbers as heroes — KPIs, hub counts. Units sit beside at 15px Margin Grey." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles and hero insight statements." },
+      "devanagari": { "displayName": "Devanagari", "purpose": "First-class Hindi — 1.7 line-height, never squeezed." },
+      "mono": { "displayName": "Mono (file refs)", "purpose": "Reference numbers and rank indices only — the clerk's rubber stamp." }
+    },
+    "shadows": [
+      { "name": "popover", "value": "0 8px 24px rgba(20,25,42,0.08)", "purpose": "Transient panels (map filter popover)." },
+      { "name": "modal", "value": "0 24px 64px rgba(11,36,71,0.35)", "purpose": "Action Composer over the navy scrim rgba(11,36,71,0.55)." },
+      { "name": "tooltip", "value": "0 6px 14px rgba(20,25,42,0.18)", "purpose": "Ledger Ink map tooltips." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Chart draw-in and state transitions." },
+      { "name": "chart-draw", "value": "1.2s staggered 0.15s/0.35s/0.55s", "purpose": "Outlook chart lines draw left→right; band and annotations fade after." },
+      { "name": "live-pulse", "value": "2s ease-in-out infinite", "purpose": "Live status dots only." }
+    ],
+    "breakpoints": [
+      { "name": "content-max", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled action per surface — approve, draft, apply.",
+      "html": "<button class=\"ds-btn-primary\">Draft letter <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"></line><polyline points=\"12 5 19 12 12 19\"></polyline></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; background: #12325B; color: #FFFFFF; border: 0; border-radius: 999px; padding: 10px 16px; font-size: 13px; font-weight: 500; font-family: 'Noto Sans', system-ui, sans-serif; cursor: pointer; transition: background 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { background: #0B2447; } .ds-btn-primary:focus-visible { outline: 2px solid #12325B; outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Bordered secondary action.",
+      "html": "<button class=\"ds-btn-ghost\">View action</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: #12325B; border: 1px solid #12325B; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 500; font-family: 'Noto Sans', system-ui, sans-serif; cursor: pointer; transition: background 0.15s; } .ds-btn-ghost:hover { background: #F1EBDD; } .ds-btn-ghost:focus-visible { outline: 2px solid #12325B; outline-offset: 2px; }"
+    },
+    {
+      "name": "Pathway Pill",
+      "kind": "chip",
+      "refersTo": "chip-evidence",
+      "description": "Border-only action-pathway tag: MPLADS / State / Central / Coordination.",
+      "html": "<span class=\"ds-pill-pathway\">MPLADS</span>",
+      "css": ".ds-pill-pathway { display: inline-flex; align-items: center; padding: 2px 8px; background: transparent; color: #12325B; border: 1px solid #12325B44; border-radius: 999px; font-size: 11.5px; font-weight: 500; font-family: 'Noto Sans', system-ui, sans-serif; }"
+    },
+    {
+      "name": "Urgency Mark",
+      "kind": "chip",
+      "description": "Dot + label — colour paired with words, never a banner.",
+      "html": "<span class=\"ds-urgency\"><span class=\"ds-urgency-dot\"></span>Critical</span>",
+      "css": ".ds-urgency { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 500; color: #A3311F; font-family: 'Noto Sans', system-ui, sans-serif; } .ds-urgency-dot { width: 6px; height: 6px; border-radius: 50%; background: #A3311F; }"
+    },
+    {
+      "name": "Evidence Chip",
+      "kind": "chip",
+      "refersTo": "chip-evidence",
+      "description": "Per-source signal count on priority cards.",
+      "html": "<span class=\"ds-chip-evidence\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#7E8590\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z\"/></svg><b>12</b> WhatsApp</span>",
+      "css": ".ds-chip-evidence { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px 4px 7px; background: #F6F2EA; border-radius: 4px; font-size: 12px; color: #14192A; font-family: 'Noto Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-chip-evidence b { font-weight: 500; } .ds-chip-evidence + .ds-chip-evidence { margin-left: 6px; }"
+    },
+    {
+      "name": "KPI Stat",
+      "kind": "custom",
+      "description": "The number is the hero: tabular display numeral, quiet label, hairline progress.",
+      "html": "<div class=\"ds-kpi\"><div class=\"ds-kpi-label\">MPLADS utilised</div><div class=\"ds-kpi-row\"><span class=\"ds-kpi-value\">₹3.42</span><span class=\"ds-kpi-unit\">Cr</span></div><div class=\"ds-kpi-track\"><div class=\"ds-kpi-bar\"></div></div><div class=\"ds-kpi-sub\">68% of ₹5.0 Cr</div></div>",
+      "css": ".ds-kpi { font-family: 'Noto Sans', system-ui, sans-serif; min-width: 180px; } .ds-kpi-label { font-size: 12.5px; color: #7E8590; margin-bottom: 10px; } .ds-kpi-row { display: flex; align-items: baseline; gap: 5px; } .ds-kpi-value { font-size: 30px; font-weight: 500; color: #14192A; letter-spacing: -0.025em; line-height: 1; font-variant-numeric: tabular-nums; } .ds-kpi-unit { font-size: 15px; color: #7E8590; } .ds-kpi-track { margin-top: 12px; height: 3px; background: #F1EBDD; border-radius: 999px; overflow: hidden; } .ds-kpi-bar { width: 68.4%; height: 100%; background: #12325B; border-radius: 999px; } .ds-kpi-sub { font-size: 11.5px; color: #A69C86; margin-top: 6px; }"
+    },
+    {
+      "name": "Form Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Stationery-style field from the letter composer.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Reference no.</span><input class=\"ds-field-input\" value=\"MP-NDL-MPLADS-2026-W44-001\" /></label>",
+      "css": ".ds-field { display: block; font-family: 'Noto Sans', system-ui, sans-serif; min-width: 260px; } .ds-field-label { display: block; font-size: 11px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 6px; } .ds-field-input { width: 100%; padding: 10px 12px; background: #FBF8F2; border: 1px solid #E6DFD1; border-radius: 4px; font-size: 13px; color: #14192A; font-family: 'IBM Plex Mono', ui-monospace, monospace; } .ds-field-input:focus-visible { outline: 2px solid #12325B; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Morning File",
+    "overview": "Saarthi is the dispatch file a trusted senior aide prepares before the MP's day begins: parchment stock, navy ink, a single saffron seal, everything cited and already in priority order. The interface is a civil-service instrument — sober, evidentiary, assured — not a startup dashboard. Warmth comes from the paper, authority from the ink, and life from precise, small colour marks. Its job is triage: the top five issues legible in five minutes by a non-technical reader, every claim traceable to its evidence.",
+    "keyCharacteristics": [
+      "Warm paper surfaces carrying cool, authoritative ink",
+      "Numbers typographically privileged: tabular numerals, Indian notation (₹1,00,000)",
+      "Colour as annotation, never decoration — every hue has a fixed meaning",
+      "Hairline borders and tinted fills instead of shadows; flat at rest",
+      "Bilingual by construction: Devanagari set with its own vertical rhythm"
+    ],
+    "rules": [
+      { "name": "The One Seal Rule", "body": "Seal Saffron touches at most a few percent of any screen: the brand bar, one insight accent, one chart line. Its rarity is its authority.", "section": "colors" },
+      { "name": "The Meaning-Locked Colour Rule", "body": "Every non-neutral colour has exactly one job. Never borrow a status colour for decoration.", "section": "colors" },
+      { "name": "The Tabular Rule", "body": "Every number that could ever sit above another number is tabular and formatted Indian-style: ₹1,00,000, ₹3.42 Cr, 1,842.", "section": "typography" },
+      { "name": "The Hairline Rule", "body": "If a resting surface needs separation, it gets a 1px Rule Line border or a one-step tint — never a shadow. Shadows are reserved for popover, modal, tooltip.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do cite evidence inline: every stat, rank, and AI recommendation carries its source links. If it can't be cited, don't show it.",
+      "Do use tabular numerals and Indian number formatting everywhere (₹1,00,000 · ₹3.42 Cr · 1,842).",
+      "Do signal urgency with a 5–6px dot + small text label — quiet, precise, paired with words.",
+      "Do give Devanagari its 1.7 line-height and test every layout bilingually.",
+      "Do respect prefers-reduced-motion with a finished-state fallback for every animation."
+    ],
+    "donts": [
+      "Don't build the generic SaaS admin template — identical stat cards, blue-purple gradients, rounded-everything.",
+      "Don't import flashy consumer-app energy — no gradients-as-decoration, mascots, or confetti.",
+      "Don't regress to the dated NIC-style gov portal — dense link walls, beveled buttons, no hierarchy.",
+      "Don't drift into Bloomberg-terminal density — Saarthi triages; it never shows everything at once.",
+      "Don't cast shadows on resting surfaces, use colored side-stripes thicker than 1px, or gradient text.",
+      "Don't put an uppercase tracked eyebrow above every section.",
+      "Don't use saffron, green, or the urgency hues outside their locked meanings."
+    ]
+  }
+}

@@ -1,17 +1,33 @@
 import Link from "next/link";
 import { BrandBars, ChevronDown, GlobeIcon } from "@/components/icons";
-import { DASHBOARD_META, MOCK_CONSTITUENCY } from "@/lib/mock-data";
+import { MOCK_CONSTITUENCY } from "@/lib/mock-data";
 
-const NAV = [
-  { label: "Dashboard", href: "/dashboard", active: true },
-  { label: "Intelligence", href: "#" },
-  { label: "Live feed", href: "#" },
-  { label: "MPLADS", href: "#" },
-  { label: "Actions", href: "#" },
+export type NavPage = "dashboard" | "intelligence" | "live" | "mplads" | "actions";
+
+const NAV: { key: NavPage; label: string; href: string }[] = [
+  { key: "dashboard", label: "Dashboard", href: "/dashboard" },
+  { key: "intelligence", label: "Intelligence", href: "/intelligence" },
+  { key: "live", label: "Live feed", href: "#" },
+  { key: "mplads", label: "MPLADS", href: "#" },
+  { key: "actions", label: "Actions", href: "#" },
 ];
 
-/** Top navigation + quiet sub-context strip (design header). */
-export function AppHeader() {
+/**
+ * Top navigation + quiet sub-context strip, shared across screens (design:
+ * identical header structure on Dashboard/Intelligence). Each page supplies its
+ * sub-strip: a title, a context line, and a right-hand status line.
+ */
+export function AppHeader({
+  active,
+  title,
+  context,
+  status,
+}: {
+  active: NavPage;
+  title: string;
+  context: string;
+  status: string;
+}) {
   return (
     <header className="border-b border-line bg-surface">
       <div className="mx-auto flex h-[68px] max-w-[1440px] items-center gap-9 px-10">
@@ -28,14 +44,17 @@ export function AppHeader() {
         <nav className="ml-2 flex h-[68px] items-center gap-1 self-start">
           {NAV.map((item) => (
             <Link
-              key={item.label}
+              key={item.key}
               href={item.href}
+              aria-current={item.key === active ? "page" : undefined}
               className={`relative flex h-full items-center px-3 text-[13.5px] no-underline ${
-                item.active ? "font-medium text-ink" : "font-normal text-body hover:text-ink"
+                item.key === active
+                  ? "font-medium text-ink"
+                  : "font-normal text-body hover:text-ink"
               }`}
             >
               {item.label}
-              {item.active && (
+              {item.key === active && (
                 <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-[1px] bg-primary" />
               )}
             </Link>
@@ -73,15 +92,13 @@ export function AppHeader() {
       {/* Sub-context strip */}
       <div className="mx-auto flex max-w-[1440px] items-center justify-between px-10 pb-3.5 text-xs text-muted">
         <div className="flex items-baseline gap-2">
-          <span className="text-[22px] font-semibold tracking-tight text-ink">
-            Hon&rsquo;ble {MOCK_CONSTITUENCY.mp.name}
-          </span>
+          <span className="text-[22px] font-semibold tracking-tight text-ink">{title}</span>
           <span className="text-faint">·</span>
-          <span>{DASHBOARD_META.constituencyCopy}</span>
+          <span>{context}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="h-[5px] w-[5px] animate-livePulse rounded-full bg-success" />
-          <span>{DASHBOARD_META.syncedCopy}</span>
+          <span>{status}</span>
         </div>
       </div>
     </header>

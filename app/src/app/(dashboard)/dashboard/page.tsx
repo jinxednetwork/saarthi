@@ -1,4 +1,5 @@
 import { ActionComposer } from "@/components/action-composer/ActionComposer";
+import { AppFooter } from "@/components/footer/AppFooter";
 import { AppHeader } from "@/components/header/AppHeader";
 import { LiveFeed } from "@/components/live-feed/LiveFeed";
 import { MapSection } from "@/components/map/MapSection";
@@ -8,7 +9,7 @@ import { ScrollShade } from "@/components/scroll-shade/ScrollShade";
 import { CompactKpis } from "@/components/signal-hub/CompactKpis";
 import { RadialHub } from "@/components/signal-hub/RadialHub";
 import { WelcomeSplash } from "@/components/splash/WelcomeSplash";
-import { DATA_SOURCES } from "@/lib/mock-data";
+import { DASHBOARD_META, DATA_SOURCES, MOCK_CONSTITUENCY } from "@/lib/mock-data";
 
 /**
  * Dashboard home — implements `Awaaz Design Session Handoff/Dashboard.dc.html`.
@@ -20,7 +21,12 @@ export default function DashboardPage() {
     <>
       <WelcomeSplash />
       <ScrollShade />
-      <AppHeader />
+      <AppHeader
+        active="dashboard"
+        title={`Hon’ble ${MOCK_CONSTITUENCY.mp.name}`}
+        context={DASHBOARD_META.constituencyCopy}
+        status={DASHBOARD_META.syncedCopy}
+      />
 
       {/* Signal hub + compact KPIs */}
       <section id="main" className="relative border-b border-line bg-surface">
@@ -40,28 +46,10 @@ export default function DashboardPage() {
       {/* This week's priorities */}
       <ThisWeekSection />
 
-      {/* Footer */}
-      <section className="mx-auto max-w-[1440px] px-10 pb-16 pt-10">
-        <div className="flex items-center justify-between text-[12.5px] text-faint">
-          <div className="flex items-center gap-5">
-            <span>Saarthi v0.4 · Pilot programme, Government of India</span>
-            <span className="text-[#DCD3BF]">·</span>
-            <a href="#" className="text-muted no-underline hover:text-primary">
-              Data sources ({DATA_SOURCES.length})
-            </a>
-            <a href="#" className="text-muted no-underline hover:text-primary">
-              Methodology
-            </a>
-            <a href="#" className="text-muted no-underline hover:text-primary">
-              Privacy
-            </a>
-            <a href="#" className="text-muted no-underline hover:text-primary">
-              Accessibility
-            </a>
-          </div>
-          <div>Built on UX4G Design System 2.0</div>
-        </div>
-      </section>
+      <AppFooter
+        links={[`Data sources (${DATA_SOURCES.length})`, "Methodology", "Privacy", "Accessibility"]}
+        right="Built on UX4G Design System 2.0"
+      />
 
       <ActionComposer />
     </>

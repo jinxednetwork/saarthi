@@ -91,6 +91,49 @@ input[type="range"] {
   }
 }
 
+/* ---- Outlook chart draw-in (Intelligence) ----
+   The design file declares a drawIn keyframe it never wires up; this is that
+   moment, done properly. Hidden initial states live INSIDE the no-preference
+   block so reduced-motion users see the finished chart immediately. */
+@media (prefers-reduced-motion: no-preference) {
+  .chart-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: chartDraw 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .chart-fade {
+    opacity: 0;
+    animation: chartFade 0.5s ease-out forwards;
+  }
+}
+@keyframes chartDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes chartFade {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---- Quality floor ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid theme("colors.primary.DEFAULT");
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 /* Splash animations (arbitrary delays are inline; keyframes live here) */
 @keyframes splashFadeOut {
   0%,

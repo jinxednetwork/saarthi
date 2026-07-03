@@ -1,0 +1,10 @@
+{
+  "_note": "RSS feeds polled every 15 min by worker/news-monitor (§7.5). Gemini Flash filters each item for New Delhi constituency relevance before it becomes a submission.",
+  "feeds": [
+    { "name": "Hindustan Times — Delhi", "url": "https://www.hindustantimes.com/feeds/rss/cities/delhi-news/rssfeed.xml", "language": "en" },
+    { "name": "Times of India — Delhi", "url": "https://timesofindia.indiatimes.com/rssfeeds/-2128839596.cms", "language": "en" },
+    { "name": "The Indian Express — Delhi", "url": "https://indianexpress.com/section/cities/delhi/feed/", "language": "en" },
+    { "name": "The Hindu — Delhi", "url": "https://www.thehindu.com/news/cities/Delhi/feeder/default.rss", "language": "en" },
+    { "name": "PIB India", "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3", "language": "en" }
+  ]
+}

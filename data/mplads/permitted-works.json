@@ -1,0 +1,28 @@
+{
+  "_source": "MPLADS Guidelines (Ministry of Statistics & Programme Implementation). Curated for Saarthi §8.4.",
+  "_note": "Mirrors @saarthi/shared MPLADS_PERMITTED_SECTORS / MPLADS_PROHIBITED. Loaded into BigQuery mplads_permitted_works.",
+  "sc_min_share": 0.15,
+  "st_min_share": 0.075,
+  "default_annual_allocation": 50000000,
+  "non_lapsable": true,
+  "permitted": [
+    { "sector": "drinking_water", "examples": ["borewells", "hand pumps", "overhead tanks", "pipelines"] },
+    { "sector": "education", "examples": ["school buildings", "classrooms", "libraries", "toilets in schools"] },
+    { "sector": "electricity", "examples": ["street lighting", "distribution lines"] },
+    { "sector": "non_conventional_energy", "examples": ["solar street lights", "solar water heaters"] },
+    { "sector": "healthcare_sanitation", "examples": ["PHC buildings", "public toilets", "drainage", "de-silting"] },
+    { "sector": "irrigation", "examples": ["check dams", "field channels", "water harvesting"] },
+    { "sector": "roads_pathways_bridges", "examples": ["village roads", "footpaths", "culverts", "small bridges"] },
+    { "sector": "sports", "examples": ["playgrounds", "gymnasiums", "sports equipment"] },
+    { "sector": "agriculture", "examples": ["storage godowns", "market yards"] },
+    { "sector": "self_help_groups", "examples": ["SHG work sheds", "common facility centres"] },
+    { "sector": "urban_development", "examples": ["community halls", "bus shelters", "parks"] }
+  ],
+  "prohibited": [
+    { "item": "office_buildings", "reason": "Government/commercial office buildings not permitted." },
+    { "item": "land_acquisition", "reason": "Purchase of land is not permitted." },
+    { "item": "individual_benefit_assets", "reason": "Assets for individual benefit are prohibited." },
+    { "item": "religious_structures", "reason": "Places of worship / religious structures prohibited." },
+    { "item": "personal_name_assets", "reason": "Assets named after individuals / living persons prohibited." }
+  ]
+}

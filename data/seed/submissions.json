@@ -1,0 +1,252 @@
+[
+  {
+    "id": "sub_seed_0000",
+    "source": "widget",
+    "text": "sarojini में प्रदूषण बहुत ज़्यादा",
+    "language": "hi",
+    "category": "air_quality",
+    "constituency": "new-delhi-ls",
+    "ward": "sarojini",
+    "created_at_iso": "2026-06-08T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0001",
+    "source": "twitter",
+    "text": "rk-puram में प्रदूषण बहुत ज़्यादा",
+    "language": "hi",
+    "category": "air_quality",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-17T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0002",
+    "source": "document",
+    "text": "Water supply cut for days in rk-puram",
+    "language": "en",
+    "category": "water",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-08T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0003",
+    "source": "portal",
+    "text": "AQI severe in rk-puram, heavy smog",
+    "language": "en",
+    "category": "air_quality",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-17T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0004",
+    "source": "whatsapp",
+    "text": "Broken road and drainage in rk-puram",
+    "language": "en",
+    "category": "infrastructure",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-11T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0005",
+    "source": "twitter",
+    "text": "sarojini में पानी नहीं आ रहा",
+    "language": "hi",
+    "category": "water",
+    "constituency": "new-delhi-ls",
+    "ward": "sarojini",
+    "created_at_iso": "2026-06-03T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0006",
+    "source": "news",
+    "text": "karol-bagh में पानी नहीं आ रहा",
+    "language": "hi",
+    "category": "water",
+    "constituency": "new-delhi-ls",
+    "ward": "karol-bagh",
+    "created_at_iso": "2026-06-12T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0007",
+    "source": "whatsapp",
+    "text": "chandrapur में क्लिनिक में डॉक्टर नहीं",
+    "language": "hi",
+    "category": "health",
+    "constituency": "new-delhi-ls",
+    "ward": "chandrapur",
+    "created_at_iso": "2026-06-20T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0008",
+    "source": "portal",
+    "text": "Water supply cut for days in chandrapur",
+    "language": "en",
+    "category": "water",
+    "constituency": "new-delhi-ls",
+    "ward": "chandrapur",
+    "created_at_iso": "2026-06-25T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0009",
+    "source": "widget",
+    "text": "Broken road and drainage in chandrapur",
+    "language": "en",
+    "category": "infrastructure",
+    "constituency": "new-delhi-ls",
+    "ward": "chandrapur",
+    "created_at_iso": "2026-06-11T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0010",
+    "source": "portal",
+    "text": "rk-puram में पानी नहीं आ रहा",
+    "language": "hi",
+    "category": "water",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-30T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0011",
+    "source": "document",
+    "text": "karol-bagh में पानी नहीं आ रहा",
+    "language": "hi",
+    "category": "water",
+    "constituency": "new-delhi-ls",
+    "ward": "karol-bagh",
+    "created_at_iso": "2026-06-07T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0012",
+    "source": "whatsapp",
+    "text": "Water supply cut for days in karol-bagh",
+    "language": "en",
+    "category": "water",
+    "constituency": "new-delhi-ls",
+    "ward": "karol-bagh",
+    "created_at_iso": "2026-06-21T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0013",
+    "source": "whatsapp",
+    "text": "rk-puram की सड़क खराब है",
+    "language": "hi",
+    "category": "infrastructure",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-11T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0014",
+    "source": "twitter",
+    "text": "rk-puram में प्रदूषण बहुत ज़्यादा",
+    "language": "hi",
+    "category": "air_quality",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-06T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0015",
+    "source": "widget",
+    "text": "Broken road and drainage in sarojini",
+    "language": "en",
+    "category": "infrastructure",
+    "constituency": "new-delhi-ls",
+    "ward": "sarojini",
+    "created_at_iso": "2026-06-20T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0016",
+    "source": "portal",
+    "text": "karol-bagh में क्लिनिक में डॉक्टर नहीं",
+    "language": "hi",
+    "category": "health",
+    "constituency": "new-delhi-ls",
+    "ward": "karol-bagh",
+    "created_at_iso": "2026-06-11T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0017",
+    "source": "news",
+    "text": "rk-puram में क्लिनिक में डॉक्टर नहीं",
+    "language": "hi",
+    "category": "health",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-29T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0018",
+    "source": "widget",
+    "text": "PHC understaffed in karol-bagh",
+    "language": "en",
+    "category": "health",
+    "constituency": "new-delhi-ls",
+    "ward": "karol-bagh",
+    "created_at_iso": "2026-06-23T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0019",
+    "source": "news",
+    "text": "PHC understaffed in sarojini",
+    "language": "en",
+    "category": "health",
+    "constituency": "new-delhi-ls",
+    "ward": "sarojini",
+    "created_at_iso": "2026-06-17T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0020",
+    "source": "whatsapp",
+    "text": "Broken road and drainage in sarojini",
+    "language": "en",
+    "category": "infrastructure",
+    "constituency": "new-delhi-ls",
+    "ward": "sarojini",
+    "created_at_iso": "2026-06-24T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0021",
+    "source": "twitter",
+    "text": "AQI severe in karol-bagh, heavy smog",
+    "language": "en",
+    "category": "air_quality",
+    "constituency": "new-delhi-ls",
+    "ward": "karol-bagh",
+    "created_at_iso": "2026-06-22T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0022",
+    "source": "twitter",
+    "text": "rk-puram में क्लिनिक में डॉक्टर नहीं",
+    "language": "hi",
+    "category": "health",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-12T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0023",
+    "source": "reddit",
+    "text": "chandrapur की सड़क खराब है",
+    "language": "hi",
+    "category": "infrastructure",
+    "constituency": "new-delhi-ls",
+    "ward": "chandrapur",
+    "created_at_iso": "2026-06-14T00:00:00.000Z"
+  },
+  {
+    "id": "sub_seed_0024",
+    "source": "news",
+    "text": "rk-puram में पानी नहीं आ रहा",
+    "language": "hi",
+    "category": "water",
+    "constituency": "new-delhi-ls",
+    "ward": "rk-puram",
+    "created_at_iso": "2026-06-30T00:00:00.000Z"
+  }
+]

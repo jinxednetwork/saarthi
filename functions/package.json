@@ -1,0 +1,19 @@
+{
+  "name": "@saarthi/functions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"(no tests yet)\" && exit 0",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@saarthi/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "typescript": "^5.6.3"
+  }
+}

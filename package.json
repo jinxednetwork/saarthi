@@ -1,0 +1,25 @@
+{
+  "name": "saarthi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Saarthi (सारथि) — AI-powered executive intelligence platform for India's Members of Parliament.",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@10.30.1",
+  "scripts": {
+    "dev:app": "pnpm --filter @saarthi/app dev",
+    "dev:worker": "pnpm --filter @saarthi/worker dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "emulators": "firebase emulators:start",
+    "seed:firestore": "pnpm --filter @saarthi/scripts seed:firestore",
+    "seed:demo": "pnpm --filter @saarthi/scripts seed:demo"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

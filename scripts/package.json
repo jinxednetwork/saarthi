@@ -1,0 +1,22 @@
+{
+  "name": "@saarthi/scripts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed:demo": "tsx src/generate-demo-data.ts",
+    "seed:firestore": "tsx src/seed-firestore.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit",
+    "test": "echo \"(no tests yet)\" && exit 0",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@saarthi/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  }
+}

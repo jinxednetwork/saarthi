@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans', 'Segoe UI', system-ui, sans-serif;
+      color: #14192A;
+      background: #F1EBDD;
+      -webkit-font-smoothing: antialiased;
+    }
+    .hi { font-family: 'Noto Sans Devanagari', 'Noto Sans', sans-serif; }
+    .num { font-variant-numeric: tabular-nums; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    input, select, textarea {
+      font-family: inherit; color: #14192A;
+      background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 6px;
+      padding: 10px 12px; font-size: 14px; outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #12325B; }
+    input[type=checkbox] { accent-color: #12325B; }
+  </style>
+</helmet>
+
+<!-- ========== MINIMAL HEADER ========== -->
+<header style="background: #FFFFFF; border-bottom: 1px solid #EDE7D7;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 68px;">
+    <a href="Dashboard.dc.html" style="display: flex; align-items: center; gap: 11px; text-decoration: none;">
+      <div style="display: flex; align-items: flex-end; gap: 2px; height: 22px;">
+        <div style="width: 3px; height: 9px; background: #12325B; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 16px; background: #12325B; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 13px; background: #12325B; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 20px; background: #C15A15; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 11px; background: #12325B; border-radius: 1px;"></div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px; line-height: 1;">
+        <div style="font-size: 19px; font-weight: 600; color: #12325B; letter-spacing: -0.015em;">Saarthi</div>
+        <div class="hi" style="font-size: 13px; color: #A69C86;">सारथि</div>
+      </div>
+    </a>
+    <div style="display: flex; align-items: center; gap: 20px; font-size: 13px; color: #7E8590;">
+      <span>Setting up your workspace</span>
+      <span style="color: #DCD3BF;">·</span>
+      <span>Est. 8 minutes</span>
+      <a href="#" style="color: #12325B; text-decoration: none;" style-hover="color: #0B2447;">Save &amp; exit</a>
+    </div>
+  </div>
+</header>
+
+<!-- ========== TWO-COLUMN LAYOUT: STEP RAIL + BODY ========== -->
+<div style="max-width: 1200px; margin: 0 auto; padding: 48px 40px 40px; display: grid; grid-template-columns: 260px 1fr; gap: 60px; align-items: start; min-height: calc(100vh - 68px);">
+
+  <!-- ========== LEFT: STEP RAIL ========== -->
+  <aside style="position: sticky; top: 40px;">
+    <div style="font-size: 12.5px; color: #7E8590; margin-bottom: 6px;">Step <span class="num">{{ stepNumber }}</span> of 8</div>
+    <div style="font-size: 22px; font-weight: 600; color: #14192A; letter-spacing: -0.015em; margin-bottom: 4px;">{{ currentStep.title }}</div>
+    <div class="hi" style="font-size: 14px; color: #A69C86; margin-bottom: 28px;">{{ currentStep.titleHi }}</div>
+
+    <div style="height: 3px; background: #EDE7D7; border-radius: 999px; overflow: hidden; margin-bottom: 24px;">
+      <div style="{{ progressBarStyle }}"></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <sc-for list="{{ stepList }}" as="s" hint-placeholder-count="8">
+        <button onClick="{{ s.goTo }}" style="{{ s.rowStyle }}">
+          <div style="{{ s.dotStyle }}">{{ s.dotLabel }}</div>
+          <div style="flex: 1; text-align: left;">
+            <div style="font-size: 13.5px; font-weight: 500; color: #14192A; margin-bottom: 2px;">{{ s.title }}</div>
+            <div style="font-size: 11.5px; color: #A69C86;">{{ s.subtitle }}</div>
+          </div>
+        </button>
+      </sc-for>
+    </div>
+  </aside>
+
+  <!-- ========== RIGHT: STEP BODY ========== -->
+  <main style="background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 12px; overflow: hidden; animation: fadeIn 0.3s ease-out;">
+
+    <!-- ========== STEP 1: IDENTITY VERIFICATION ========== -->
+    <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+      <div style="padding: 56px 60px;">
+        <div style="font-size: 12.5px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px;">Welcome</div>
+        <h1 style="font-size: 34px; font-weight: 600; color: #14192A; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 12px;">Verify your identity as a<br/>Member of Parliament.</h1>
+        <p style="font-size: 15px; color: #7E8590; line-height: 1.6; margin: 0 0 40px; max-width: 560px;">Saarthi is a governance tool restricted to elected representatives and their designated staff. We verify identity through your MP Digital Signature Certificate, linked to the Lok Sabha Secretariat.</p>
+
+        <div style="display: flex; gap: 16px; margin-bottom: 32px;">
+          <div style="flex: 1; padding: 24px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <div style="width: 32px; height: 32px; border-radius: 8px; background: #12325B; color: #FFFFFF; display: flex; align-items: center; justify-content: center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <div style="font-size: 14px; font-weight: 600; color: #14192A;">MP Digital Signature</div>
+              <div style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #DBE9DE; color: #1D6B3B; border-radius: 999px; font-size: 11px; font-weight: 500;">Recommended</div>
+            </div>
+            <p style="font-size: 13px; color: #7E8590; line-height: 1.55; margin: 0 0 16px;">Insert your official MP DSC token. We verify against the current 18th Lok Sabha member register in real time.</p>
+            <button onClick="{{ next }}" style="width: 100%; padding: 11px 16px; background: #12325B; color: #FFFFFF; border: 0; border-radius: 999px; font-size: 13.5px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" style-hover="background: #0B2447;">
+              Continue with DSC
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+          </div>
+
+          <div style="flex: 1; padding: 24px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <div style="width: 32px; height: 32px; border-radius: 8px; background: #FFFFFF; color: #12325B; border: 1px solid #EDE7D7; display: flex; align-items: center; justify-content: center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              </div>
+              <div style="font-size: 14px; font-weight: 600; color: #14192A;">Aadhaar OTP fallback</div>
+            </div>
+            <p style="font-size: 13px; color: #7E8590; line-height: 1.55; margin: 0 0 16px;">If your DSC is unavailable, verify via Aadhaar-linked mobile OTP. Requires manual review by our secretariat liaison.</p>
+            <button style="width: 100%; padding: 11px 16px; background: transparent; color: #12325B; border: 1px solid #12325B; border-radius: 999px; font-size: 13.5px; font-weight: 500; cursor: pointer;" style-hover="background: #F1EBDD;">Continue with OTP</button>
+          </div>
+        </div>
+
+        <div style="font-size: 12px; color: #A69C86; padding-top: 24px; border-top: 1px solid #F1EBDD;">By continuing you agree to the <a href="#" style="color: #12325B; text-decoration: none;">Saarthi pilot terms</a> and <a href="#" style="color: #12325B; text-decoration: none;">data handling policy</a>. All citizen data is processed on MEITY-empanelled infrastructure.</div>
+      </div>
+    </sc-if>
+
+    <!-- ========== STEP 2: CONFIRM CONSTITUENCY ========== -->
+    <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 56px 60px;">
+        <div style="font-size: 12.5px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px;">Constituency</div>
+        <h1 style="font-size: 34px; font-weight: 600; color: #14192A; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 12px;">This is your constituency.</h1>
+        <p style="font-size: 15px; color: #7E8590; line-height: 1.6; margin: 0 0 32px; max-width: 560px;">We've matched your DSC to the Election Commission of India records. Confirm the details below to lock scope.</p>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; margin-bottom: 24px;">
+          <div style="padding: 24px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px;">
+              <div style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; background: transparent; color: #1D6B3B; border: 1px solid #1D6B3B44; border-radius: 999px; font-size: 11.5px; font-weight: 500;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Verified from ECI
+              </div>
+            </div>
+            <div style="font-size: 12px; color: #7E8590; margin-bottom: 4px;">Lok Sabha constituency</div>
+            <div style="font-size: 26px; font-weight: 600; color: #14192A; letter-spacing: -0.015em; margin-bottom: 20px;">New Delhi</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; font-size: 13px;">
+              <div>
+                <div style="color: #7E8590; margin-bottom: 3px;">State</div>
+                <div style="color: #14192A;">Delhi (NCT)</div>
+              </div>
+              <div>
+                <div style="color: #7E8590; margin-bottom: 3px;">Constituency no.</div>
+                <div style="color: #14192A;" class="num">2</div>
+              </div>
+              <div>
+                <div style="color: #7E8590; margin-bottom: 3px;">Assembly segments</div>
+                <div style="color: #14192A;" class="num">10</div>
+              </div>
+              <div>
+                <div style="color: #7E8590; margin-bottom: 3px;">Est. citizens</div>
+                <div style="color: #14192A;" class="num">1,504,000</div>
+              </div>
+              <div style="grid-column: 1 / -1;">
+                <div style="color: #7E8590; margin-bottom: 3px;">District overlap</div>
+                <div style="color: #14192A;">New Delhi District &amp; South West Delhi District</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding: 24px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+            <div style="font-size: 12px; color: #7E8590; margin-bottom: 12px;">Assembly segments</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <sc-for list="{{ assemblySegments }}" as="a" hint-placeholder-count="10">
+                <div style="padding: 4px 10px; background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 999px; font-size: 12px; color: #14192A;">{{ a }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <label style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 8px; cursor: pointer; margin-bottom: 4px;">
+          <input type="checkbox" checked/>
+          <span style="font-size: 13.5px; color: #14192A;">I confirm the above constituency details are accurate.</span>
+        </label>
+      </div>
+    </sc-if>
+
+    <!-- ========== STEP 3: PROFILE IMPORT ========== -->
+    <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 56px 60px;">
+        <div style="font-size: 12.5px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px;">Your profile</div>
+        <h1 style="font-size: 34px; font-weight: 600; color: #14192A; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 12px;">Imported from Who's Who.</h1>
+        <p style="font-size: 15px; color: #7E8590; line-height: 1.6; margin: 0 0 32px; max-width: 560px;">This is the profile citizens see when they receive letters or acknowledgements from your office. Edit anything that needs updating.</p>
+
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: 32px; margin-bottom: 24px;">
+          <div>
+            <div style="width: 180px; height: 180px; border-radius: 12px; background: linear-gradient(135deg, #12325B, #054A91); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 56px; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 12px;">BS</div>
+            <button style="width: 100%; padding: 8px 12px; background: transparent; color: #12325B; border: 1px solid #EDE7D7; border-radius: 999px; font-size: 12.5px; cursor: pointer;" style-hover="border-color: #12325B;">Upload official photo</button>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div style="grid-column: 1 / -1;">
+              <label style="display: block; font-size: 12px; color: #7E8590; margin-bottom: 6px;">Full name &amp; salutation</label>
+              <input type="text" value="Hon'ble Bansuri Swaraj" style="width: 100%;"/>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #7E8590; margin-bottom: 6px;">Political party</label>
+              <input type="text" value="Bharatiya Janata Party" style="width: 100%;"/>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #7E8590; margin-bottom: 6px;">Term / Lok Sabha</label>
+              <input type="text" value="1st term · 18th Lok Sabha" style="width: 100%;"/>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #7E8590; margin-bottom: 6px;">Constituency office</label>
+              <input type="text" value="7, Talkatora Road, New Delhi – 110001" style="width: 100%;"/>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #7E8590; margin-bottom: 6px;">Parliament office</label>
+              <input type="text" value="Room 456, Parliament Annexe" style="width: 100%;"/>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #7E8590; margin-bottom: 6px;">Official email</label>
+              <input type="text" value="bansuri.swaraj@sansad.nic.in" style="width: 100%;"/>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #7E8590; margin-bottom: 6px;">Constituency helpline</label>
+              <input type="text" value="1800-XXX-XXXX (WhatsApp)" style="width: 100%;"/>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding: 14px 18px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 8px; display: flex; align-items: center; gap: 12px;">
+          <div style="width: 20px; height: 20px; border-radius: 50%; background: #DBE9DE; color: #1D6B3B; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <div style="font-size: 13px; color: #14192A;">This information is used only on outgoing letters and official communications. It is never surfaced to citizens except via letterhead.</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ========== STEP 4: CONNECT DATA CHANNELS ========== -->
+    <sc-if value="{{ isStep4 }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 56px 60px;">
+        <div style="font-size: 12.5px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px;">Data channels</div>
+        <h1 style="font-size: 34px; font-weight: 600; color: #14192A; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 12px;">Where citizens will reach you.</h1>
+        <p style="font-size: 15px; color: #7E8590; line-height: 1.6; margin: 0 0 32px; max-width: 620px;">Saarthi listens across the channels citizens actually use. Enable the ones that fit your outreach and we'll handle the plumbing. You can always change these later.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+          <sc-for list="{{ channels }}" as="ch" hint-placeholder-count="6">
+            <div style="{{ ch.rowStyle }}">
+              <div style="display: flex; align-items: flex-start; gap: 16px; flex: 1;">
+                <div style="{{ ch.iconWrap }}">{{ ch.icon }}</div>
+                <div style="flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <div style="font-size: 15px; font-weight: 500; color: #14192A;">{{ ch.name }}</div>
+                    <sc-if value="{{ ch.recommended }}" hint-placeholder-val="{{ false }}">
+                      <span style="display: inline-flex; padding: 2px 8px; background: transparent; color: #1D6B3B; border: 1px solid #1D6B3B44; border-radius: 999px; font-size: 11px; font-weight: 500;">Recommended</span>
+                    </sc-if>
+                  </div>
+                  <div style="font-size: 13px; color: #7E8590; line-height: 1.5; margin-bottom: 8px;">{{ ch.description }}</div>
+                  <div style="font-size: 12px; color: #A69C86;">{{ ch.setupNote }}</div>
+                </div>
+              </div>
+              <label style="{{ ch.toggleWrap }}" onClick="{{ ch.toggle }}">
+                <div style="{{ ch.toggleTrack }}">
+                  <div style="{{ ch.toggleKnob }}"></div>
+                </div>
+              </label>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="padding: 20px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px; display: flex; align-items: flex-start; gap: 14px;">
+          <div style="width: 32px; height: 32px; border-radius: 999px; background: #DDE6F0; color: #12325B; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+          <div>
+            <div style="font-size: 14px; font-weight: 500; color: #14192A; margin-bottom: 4px;">Public datasets connect automatically.</div>
+            <div style="font-size: 13px; color: #7E8590; line-height: 1.55;">CPCB, DUSIB, DJB, DDA, DMRC, Delhi Police, IMD, and MoSPI feed in via India's Open Government Data platform — no setup required. You can review the full source list on the Data Connectors page after setup.</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ========== STEP 5: MPLADS BASELINE ========== -->
+    <sc-if value="{{ isStep5 }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 56px 60px;">
+        <div style="font-size: 12.5px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px;">MPLADS baseline</div>
+        <h1 style="font-size: 34px; font-weight: 600; color: #14192A; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 12px;">Your fund at a glance.</h1>
+        <p style="font-size: 15px; color: #7E8590; line-height: 1.6; margin: 0 0 32px; max-width: 620px;">We've pulled your current MPLADS position from the MoSPI portal. Confirm and we'll monitor SC/ST allocation, sanction pipeline, and utilization automatically.</p>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px;">
+          <div style="padding: 20px 22px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+            <div style="font-size: 12px; color: #7E8590; margin-bottom: 10px;">Annual entitlement</div>
+            <div class="num" style="font-size: 26px; font-weight: 500; color: #14192A; letter-spacing: -0.015em; line-height: 1;">₹5.00 <span style="font-size: 14px; color: #7E8590; font-weight: 400;">Cr</span></div>
+            <div style="font-size: 11.5px; color: #A69C86; margin-top: 6px;">Per FY 2026–27</div>
+          </div>
+          <div style="padding: 20px 22px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+            <div style="font-size: 12px; color: #7E8590; margin-bottom: 10px;">Released to date</div>
+            <div class="num" style="font-size: 26px; font-weight: 500; color: #14192A; letter-spacing: -0.015em; line-height: 1;">₹2.50 <span style="font-size: 14px; color: #7E8590; font-weight: 400;">Cr</span></div>
+            <div style="font-size: 11.5px; color: #A69C86; margin-top: 6px;">2 tranches · non-lapsable</div>
+          </div>
+          <div style="padding: 20px 22px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+            <div style="font-size: 12px; color: #7E8590; margin-bottom: 10px;">Sanctioned + pending</div>
+            <div class="num" style="font-size: 26px; font-weight: 500; color: #14192A; letter-spacing: -0.015em; line-height: 1;">₹3.42 <span style="font-size: 14px; color: #7E8590; font-weight: 400;">Cr</span></div>
+            <div style="font-size: 11.5px; color: #A69C86; margin-top: 6px;">14 works in flight</div>
+          </div>
+        </div>
+
+        <div style="padding: 20px 22px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px; margin-bottom: 16px;">
+          <div style="font-size: 13px; font-weight: 500; color: #14192A; margin-bottom: 14px;">Compliance monitoring</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+              <input type="checkbox" checked style="margin-top: 2px;"/>
+              <div>
+                <div style="font-size: 13.5px; color: #14192A;">Alert me when SC allocation drops below 15%</div>
+                <div style="font-size: 11.5px; color: #A69C86; margin-top: 2px;">Currently: 12.8% · 2.2 pt short</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+              <input type="checkbox" checked style="margin-top: 2px;"/>
+              <div>
+                <div style="font-size: 13.5px; color: #14192A;">Alert me when ST allocation drops below 7.5%</div>
+                <div style="font-size: 11.5px; color: #A69C86; margin-top: 2px;">Currently: 8.2% · on track</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+              <input type="checkbox" checked style="margin-top: 2px;"/>
+              <div>
+                <div style="font-size: 13.5px; color: #14192A;">Auto-check MPLADS eligibility on every letter draft</div>
+                <div style="font-size: 11.5px; color: #A69C86; margin-top: 2px;">Against permitted works list (2023 revision)</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+              <input type="checkbox" checked style="margin-top: 2px;"/>
+              <div>
+                <div style="font-size: 13.5px; color: #14192A;">Quarterly compliance report to my office</div>
+                <div style="font-size: 11.5px; color: #A69C86; margin-top: 2px;">1st of Jan, Apr, Jul, Oct</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div style="padding: 20px 22px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+          <div style="font-size: 13px; font-weight: 500; color: #14192A; margin-bottom: 6px;">Weekly review slot</div>
+          <div style="font-size: 12.5px; color: #7E8590; margin-bottom: 14px;">When would you like your weekly briefing digest?</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <sc-for list="{{ digestSlots }}" as="slot" hint-placeholder-count="4">
+              <button onClick="{{ slot.click }}" style="{{ slot.style }}">{{ slot.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ========== STEP 6: TEAM ========== -->
+    <sc-if value="{{ isStep6 }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 56px 60px;">
+        <div style="font-size: 12.5px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px;">Your team</div>
+        <h1 style="font-size: 34px; font-weight: 600; color: #14192A; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 12px;">Invite your office.</h1>
+        <p style="font-size: 15px; color: #7E8590; line-height: 1.6; margin: 0 0 32px; max-width: 620px;">Your Chief of Staff and Constituency Secretaries can operate Saarthi day-to-day. Roles determine what each can see and do — you always keep sign-off on outgoing letters.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+          <sc-for list="{{ teamMembers }}" as="tm" hint-placeholder-count="3">
+            <div style="display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: {{ tm.avatarBg }}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 13px;">{{ tm.initials }}</div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; font-weight: 500; color: #14192A;">{{ tm.name }}</div>
+                <div style="font-size: 12.5px; color: #7E8590;">{{ tm.email }}</div>
+              </div>
+              <div style="padding: 4px 10px; background: transparent; color: #12325B; border: 1px solid #12325B44; border-radius: 999px; font-size: 11.5px; font-weight: 500;">{{ tm.role }}</div>
+              <button style="background: transparent; border: 0; padding: 4px; cursor: pointer; color: #A69C86;" style-hover="color: #A3311F;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+              </button>
+            </div>
+          </sc-for>
+        </div>
+
+        <button style="display: flex; align-items: center; gap: 8px; padding: 12px 18px; background: transparent; color: #12325B; border: 1px dashed #CDC5B4; border-radius: 10px; font-size: 13.5px; font-weight: 500; cursor: pointer; width: 100%; justify-content: center;" style-hover="border-color: #12325B; background: #FBF8F2;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Invite team member
+        </button>
+
+        <div style="padding: 16px 20px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px; margin-top: 20px;">
+          <div style="font-size: 12.5px; color: #7E8590; margin-bottom: 10px;">Roles available</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 20px 32px; font-size: 12.5px;">
+            <div><span style="color: #14192A; font-weight: 500;">Chief of Staff</span> · <span style="color: #7E8590;">full access, can send with your approval</span></div>
+            <div><span style="color: #14192A; font-weight: 500;">Constituency Secretary</span> · <span style="color: #7E8590;">draft &amp; assign, cannot dispatch</span></div>
+            <div><span style="color: #14192A; font-weight: 500;">Read-only</span> · <span style="color: #7E8590;">view dashboards, no editing</span></div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ========== STEP 7: LANGUAGE + NOTIFICATIONS ========== -->
+    <sc-if value="{{ isStep7 }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 56px 60px;">
+        <div style="font-size: 12.5px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px;">Preferences</div>
+        <h1 style="font-size: 34px; font-weight: 600; color: #14192A; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 12px;">Language &amp; delivery.</h1>
+        <p style="font-size: 15px; color: #7E8590; line-height: 1.6; margin: 0 0 32px; max-width: 620px;">Saarthi supports all 22 scheduled languages for citizen intake. Choose your working languages and how you'd like to be briefed.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+          <div style="padding: 22px 24px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+            <div style="font-size: 13px; font-weight: 500; color: #14192A; margin-bottom: 6px;">Your working language</div>
+            <div style="font-size: 12px; color: #7E8590; margin-bottom: 16px;">Interface + letter drafts + digest emails</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button style="padding: 8px 14px; background: #12325B; color: #FFFFFF; border: 0; border-radius: 999px; font-size: 13px; font-weight: 500; cursor: pointer;">English</button>
+              <button class="hi" style="padding: 8px 14px; background: transparent; color: #14192A; border: 1px solid #EDE7D7; border-radius: 999px; font-size: 13px; cursor: pointer;" style-hover="border-color: #CDC5B4;">हिन्दी</button>
+              <button style="padding: 8px 14px; background: transparent; color: #14192A; border: 1px solid #EDE7D7; border-radius: 999px; font-size: 13px; cursor: pointer;" style-hover="border-color: #CDC5B4;">Bilingual (EN + HI)</button>
+            </div>
+          </div>
+
+          <div style="padding: 22px 24px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+            <div style="font-size: 13px; font-weight: 500; color: #14192A; margin-bottom: 6px;">Citizen intake languages</div>
+            <div style="font-size: 12px; color: #7E8590; margin-bottom: 16px;">Languages we listen for on WhatsApp voice, X, Reddit</div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <sc-for list="{{ intakeLangs }}" as="lang" hint-placeholder-count="4">
+                <div style="padding: 4px 10px; background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 999px; font-size: 12px; color: #14192A;">{{ lang }}</div>
+              </sc-for>
+              <div style="padding: 4px 10px; background: transparent; color: #12325B; font-size: 12px; cursor: pointer;">+ Add more</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding: 22px 24px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px;">
+          <div style="font-size: 13px; font-weight: 500; color: #14192A; margin-bottom: 6px;">Notifications</div>
+          <div style="font-size: 12px; color: #7E8590; margin-bottom: 18px;">How Saarthi reaches you outside the dashboard</div>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+              <input type="checkbox" checked/>
+              <div style="flex: 1;">
+                <div style="font-size: 13.5px; color: #14192A;">Monday morning briefing email</div>
+                <div style="font-size: 11.5px; color: #A69C86; margin-top: 2px;">Every Monday at 8:00 AM · summary of the week's priorities and pending actions</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+              <input type="checkbox" checked/>
+              <div style="flex: 1;">
+                <div style="font-size: 13.5px; color: #14192A;">SMS on Critical-severity clusters</div>
+                <div style="font-size: 11.5px; color: #A69C86; margin-top: 2px;">Sent only for issues flagged Critical by AI · no more than 3 per day</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+              <input type="checkbox"/>
+              <div style="flex: 1;">
+                <div style="font-size: 13.5px; color: #14192A;">Push notification on staff-approved letters awaiting your dispatch</div>
+                <div style="font-size: 11.5px; color: #A69C86; margin-top: 2px;">Reminds you when drafts are ready for approval</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ========== STEP 8: READY ========== -->
+    <sc-if value="{{ isStep8 }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 56px 60px; text-align: center;">
+        <div style="width: 72px; height: 72px; border-radius: 50%; background: #DBE9DE; color: #1D6B3B; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div style="font-size: 12.5px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">All set</div>
+        <h1 style="font-size: 36px; font-weight: 600; color: #14192A; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 12px;">Saarthi is at your side.</h1>
+        <p style="font-size: 15px; color: #7E8590; line-height: 1.6; margin: 0 auto 40px; max-width: 480px;">Your first citizen signals will appear in the live feed within the next 15 minutes. Your Monday briefing arrives at 8:00 AM sharp.</p>
+
+        <div style="max-width: 500px; margin: 0 auto 40px; padding: 20px 24px; background: #FBF8F2; border: 1px solid #EDE7D7; border-radius: 10px; text-align: left;">
+          <div style="font-size: 12.5px; color: #7E8590; margin-bottom: 14px;">First-sync progress</div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <sc-for list="{{ syncSteps }}" as="sync" hint-placeholder-count="4">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="{{ sync.iconStyle }}">
+                  <sc-if value="{{ sync.done }}" hint-placeholder-val="{{ true }}">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </sc-if>
+                  <sc-if value="{{ sync.pending }}" hint-placeholder-val="{{ false }}">
+                    <div style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulseDot 1.4s ease-in-out infinite;"></div>
+                  </sc-if>
+                </div>
+                <div style="flex: 1; font-size: 13.5px; color: #14192A;">{{ sync.label }}</div>
+                <div style="font-size: 12px; color: #A69C86;">{{ sync.status }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <a href="Dashboard.dc.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; background: #12325B; color: #FFFFFF; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none;" style-hover="background: #0B2447;">
+          Open your dashboard
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </div>
+    </sc-if>
+
+    <!-- ========== ACTION BAR (all steps except 1 and 8) ========== -->
+    <sc-if value="{{ showActionBar }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 20px 60px; border-top: 1px solid #EDE7D7; background: #FBF8F2; display: flex; align-items: center; justify-content: space-between;">
+        <button onClick="{{ back }}" style="padding: 10px 18px; background: transparent; color: #14192A; border: 1px solid #EDE7D7; border-radius: 999px; font-size: 13.5px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px;" style-hover="border-color: #CDC5B4;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Back
+        </button>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <a href="#" style="font-size: 13px; color: #7E8590; text-decoration: none;" style-hover="color: #14192A;">Skip for now</a>
+          <button onClick="{{ next }}" style="padding: 10px 22px; background: #12325B; color: #FFFFFF; border: 0; border-radius: 999px; font-size: 13.5px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px;" style-hover="background: #0B2447;">
+            {{ nextLabel }}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    step: 1,
+    channels: {
+      whatsapp: true,
+      x: true,
+      reddit: true,
+      portal: true,
+      news: false,
+      website: false
+    },
+    digestSlot: 'mon-8'
+  };
+
+  _svg(size, sw, children) {
+    const e = React.createElement;
+    return e('svg', {
+      width: size, height: size, viewBox: '0 0 24 24',
+      fill: 'none', stroke: 'currentColor', strokeWidth: sw,
+      strokeLinecap: 'round', strokeLinejoin: 'round',
+      style: { display: 'block' }
+    }, children);
+  }
+
+  _channels() {
+    const e = React.createElement;
+    return [
+      {
+        key: 'whatsapp',
+        name: 'WhatsApp Business',
+        recommended: true,
+        color: '#25D366',
+        description: 'Citizens send voice notes and text in any Indian language. We transcribe, translate, and cluster automatically.',
+        setupNote: 'Uses your verified helpline number · consent language auto-shown on first contact',
+        icon: this._svg(18, 1.75, [
+          e('path', { key: 'p', d: 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z' })
+        ])
+      },
+      {
+        key: 'x',
+        name: 'X (Twitter) mentions',
+        recommended: true,
+        color: '#14192A',
+        description: 'We track @-mentions of your handle plus keyword clusters for your constituency and its wards.',
+        setupNote: 'Reads-only OAuth · we never post from your account',
+        icon: this._svg(16, 2, [
+          e('line', { key: 'l1', x1: 4, y1: 4, x2: 20, y2: 20 }),
+          e('line', { key: 'l2', x1: 4, y1: 20, x2: 20, y2: 4 })
+        ])
+      },
+      {
+        key: 'reddit',
+        name: 'Reddit monitoring',
+        recommended: false,
+        color: '#FF4500',
+        description: 'Local subreddits (r/delhi, r/india) for constituency-relevant discussions.',
+        setupNote: 'Public data only · monitored via Pushshift API',
+        icon: this._svg(18, 1.75, [
+          e('path', { key: 'p', d: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' })
+        ])
+      },
+      {
+        key: 'portal',
+        name: 'Portal submission widget',
+        recommended: true,
+        color: '#054A91',
+        description: 'A drop-in widget your website hosts so citizens can submit issues without an account.',
+        setupNote: 'One JS snippet · we send you the install code after this step',
+        icon: this._svg(18, 1.75, [
+          e('rect', { key: 'r', x: 3, y: 4, width: 18, height: 16, rx: 1 }),
+          e('line', { key: 'l', x1: 3, y1: 9, x2: 21, y2: 9 })
+        ])
+      },
+      {
+        key: 'news',
+        name: 'Local news monitoring',
+        recommended: false,
+        color: '#8A5219',
+        description: 'Regional Hindi + English dailies mentioning your constituency by name.',
+        setupNote: 'Currently: Times of India, HT, Dainik Jagran, NavBharat Times, The Hindu',
+        icon: this._svg(18, 1.75, [
+          e('path', { key: 'p', d: 'M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2' }),
+          e('path', { key: 'p2', d: 'M18 14h-8M18 10h-8M18 6h-8' })
+        ])
+      },
+      {
+        key: 'website',
+        name: 'Your MP website form',
+        recommended: false,
+        color: '#4A6A87',
+        description: 'Import submissions from an existing contact form via HTTPS webhook.',
+        setupNote: 'You provide a form URL · we handle the rest',
+        icon: this._svg(18, 1.75, [
+          e('circle', { key: 'c', cx: 12, cy: 12, r: 10 }),
+          e('path', { key: 'p1', d: 'M3 12h18' }),
+          e('path', { key: 'p2', d: 'M12 3a15 15 0 0 1 0 18' }),
+          e('path', { key: 'p3', d: 'M12 3a15 15 0 0 0 0 18' })
+        ])
+      }
+    ];
+  }
+
+  _stepList() {
+    return [
+      { n: 1, title: 'Verify identity',       subtitle: 'MP Digital Signature or Aadhaar' },
+      { n: 2, title: 'Confirm constituency',  subtitle: 'New Delhi Lok Sabha, ECI-verified' },
+      { n: 3, title: 'Your profile',          subtitle: 'Imported from Who\'s Who' },
+      { n: 4, title: 'Connect data channels', subtitle: '5 recommended sources' },
+      { n: 5, title: 'MPLADS baseline',       subtitle: 'Fund position + monitoring rules' },
+      { n: 6, title: 'Your team',             subtitle: 'Chief of staff, secretaries' },
+      { n: 7, title: 'Language &amp; delivery',   subtitle: 'Working language, alerts' },
+      { n: 8, title: 'Ready',                 subtitle: 'First-sync progress' }
+    ];
+  }
+
+  _digestSlots() {
+    return [
+      { key: 'mon-8', label: 'Monday 8:00 AM' },
+      { key: 'mon-9', label: 'Monday 9:30 AM' },
+      { key: 'sun-8', label: 'Sunday 8:00 PM' },
+      { key: 'custom', label: 'Custom…' }
+    ];
+  }
+
+  renderVals() {
+    const step = this.state.step;
+    const stepData = [
+      { title: 'Welcome to Saarthi',            titleHi: 'सारथि में आपका स्वागत है' },
+      { title: 'Confirm your constituency',   titleHi: 'अपने निर्वाचन क्षेत्र की पुष्टि करें' },
+      { title: 'Your official profile',       titleHi: 'आपकी आधिकारिक प्रोफ़ाइल' },
+      { title: 'Connect data channels',       titleHi: 'डेटा चैनल कनेक्ट करें' },
+      { title: 'MPLADS baseline',             titleHi: 'MPLADS आधार' },
+      { title: 'Your team',                   titleHi: 'आपकी टीम' },
+      { title: 'Language & delivery',         titleHi: 'भाषा और वितरण' },
+      { title: 'You\'re all set',             titleHi: 'सब तैयार है' }
+    ];
+    const currentStep = stepData[step - 1] || stepData[0];
+
+    // Step rail rows
+    const stepList = this._stepList().map(s => {
+      const isActive = s.n === step;
+      const isDone = s.n < step;
+      return {
+        ...s,
+        goTo: () => this.setState({ step: s.n }),
+        rowStyle: `display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: ${isActive ? '#F1EBDD' : 'transparent'}; border: 0; border-radius: 8px; cursor: pointer; text-align: left;`,
+        dotStyle: `width: 22px; height: 22px; border-radius: 50%; background: ${isDone ? '#1D6B3B' : (isActive ? '#12325B' : 'transparent')}; color: ${(isDone || isActive) ? '#FFFFFF' : '#7E8590'}; border: ${(isDone || isActive) ? '0' : '1px solid #CDC5B4'}; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0;`,
+        dotLabel: isDone ? '✓' : String(s.n)
+      };
+    });
+
+    // Channels for step 4
+    const channels = this._channels().map(ch => {
+      const on = !!this.state.channels[ch.key];
+      return {
+        ...ch,
+        rowStyle: `padding: 18px 22px; background: ${on ? '#FBF8F2' : '#FFFFFF'}; border: 1px solid ${on ? '#DCD3BF' : '#EDE7D7'}; border-radius: 10px; display: flex; align-items: flex-start; gap: 20px; transition: all 0.15s;`,
+        iconWrap: `width: 40px; height: 40px; border-radius: 10px; background: ${on ? ch.color + '15' : '#F6F2EA'}; color: ${on ? ch.color : '#A69C86'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;`,
+        toggleWrap: `display: flex; align-items: center; cursor: pointer; flex-shrink: 0;`,
+        toggleTrack: `width: 36px; height: 20px; background: ${on ? '#12325B' : '#DCD3BF'}; border-radius: 999px; position: relative; transition: background 0.2s;`,
+        toggleKnob: `position: absolute; top: 2px; left: ${on ? '18px' : '2px'}; width: 16px; height: 16px; background: #FFFFFF; border-radius: 50%; transition: left 0.2s;`,
+        toggle: () => this.setState(s => ({ channels: { ...s.channels, [ch.key]: !s.channels[ch.key] } }))
+      };
+    });
+
+    // Digest slots
+    const digestSlots = this._digestSlots().map(slot => {
+      const active = this.state.digestSlot === slot.key;
+      return {
+        ...slot,
+        click: () => this.setState({ digestSlot: slot.key }),
+        style: `padding: 7px 14px; background: ${active ? '#12325B' : 'transparent'}; color: ${active ? '#FFFFFF' : '#14192A'}; border: 1px solid ${active ? '#12325B' : '#EDE7D7'}; border-radius: 999px; font-size: 12.5px; font-weight: ${active ? '500' : '400'}; cursor: pointer;`
+      };
+    });
+
+    // Sync steps for final page
+    const syncSteps = [
+      { label: 'WhatsApp Business channel activated',   done: true, pending: false, status: '2 sec ago' },
+      { label: 'X mentions listener started',           done: true, pending: false, status: '4 sec ago' },
+      { label: 'Portal widget code sent to your email', done: true, pending: false, status: '6 sec ago' },
+      { label: 'Public dataset baselines loading',      done: false, pending: true,  status: '~ 12 min remaining' }
+    ].map(s => ({
+      ...s,
+      iconStyle: `width: 22px; height: 22px; border-radius: 50%; background: ${s.done ? '#DBE9DE' : '#FBF8F2'}; color: ${s.done ? '#1D6B3B' : '#12325B'}; border: 1px solid ${s.done ? 'transparent' : '#EDE7D7'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;`
+    }));
+
+    // Progress bar
+    const pct = (step / 8) * 100;
+
+    return {
+      stepNumber: String(step).padStart(2, '0'),
+      currentStep,
+      stepList,
+      progressBarStyle: `height: 100%; width: ${pct}%; background: #12325B; border-radius: 999px; transition: width 0.4s ease;`,
+
+      isStep1: step === 1,
+      isStep2: step === 2,
+      isStep3: step === 3,
+      isStep4: step === 4,
+      isStep5: step === 5,
+      isStep6: step === 6,
+      isStep7: step === 7,
+      isStep8: step === 8,
+
+      showActionBar: step > 1 && step < 8,
+      nextLabel: step === 7 ? 'Complete setup' : 'Continue',
+
+      channels,
+      assemblySegments: ['New Delhi', 'Karol Bagh', 'Patel Nagar', 'Moti Nagar', 'Delhi Cantonment', 'Rajinder Nagar', 'R.K. Puram', 'Greater Kailash', 'Malviya Nagar', 'Kasturba Nagar'],
+      digestSlots,
+      teamMembers: [
+        { name: 'Priya Nair',       initials: 'PN', email: 'priya@bansuriswaraj.in',    role: 'Chief of Staff',         avatarBg: '#12325B' },
+        { name: 'Rajat Kaushik',    initials: 'RK', email: 'rajat@bansuriswaraj.in',    role: 'Constituency Secretary', avatarBg: '#8A5219' },
+        { name: 'Anushka Sharma',   initials: 'AS', email: 'anushka@bansuriswaraj.in',  role: 'Read-only',              avatarBg: '#1D6B3B' }
+      ],
+      intakeLangs: ['हिन्दी (Hindi)', 'English', 'ਪੰਜਾਬੀ (Punjabi)', 'اردو (Urdu)', 'বাংলা (Bengali)'],
+      syncSteps,
+
+      next: () => this.setState(s => ({ step: Math.min(s.step + 1, 8) })),
+      back: () => this.setState(s => ({ step: Math.max(s.step - 1, 1) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

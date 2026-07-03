@@ -1,5 +1,27 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Mono, Noto_Sans, Noto_Sans_Devanagari } from "next/font/google";
 import "./globals.css";
+
+const notoSans = Noto_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const notoDevanagari = Noto_Sans_Devanagari({
+  subsets: ["devanagari"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-devanagari",
+  display: "swap",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Saarthi — Executive intelligence for MPs",
@@ -13,7 +35,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${notoSans.variable} ${notoDevanagari.variable} ${plexMono.variable}`}
+    >
       <body className="font-sans antialiased">{children}</body>
     </html>
   );

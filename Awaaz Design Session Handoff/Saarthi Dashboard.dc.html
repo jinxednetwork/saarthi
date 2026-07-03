@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans', 'Segoe UI', system-ui, sans-serif;
+      color: #14192A;
+      background: #F1EBDD;
+      font-feature-settings: 'ss01', 'cv11';
+      -webkit-font-smoothing: antialiased;
+    }
+    .hi { font-family: 'Noto Sans Devanagari', 'Noto Sans', sans-serif; }
+    .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
+    .awaaz-marker { background: transparent !important; border: 0 !important; }
+    @keyframes halo {
+      0%   { transform: scale(1);   opacity: 0.55; }
+      100% { transform: scale(2.4); opacity: 0;    }
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.35; transform: scale(0.85); }
+    }
+    @keyframes feedIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .leaflet-container { background: #E8E2D0; font-family: inherit; outline: 0; }
+    .leaflet-control-attribution {
+      font-size: 10px; background: rgba(255,255,255,0.85);
+      color: #545869; padding: 2px 6px;
+    }
+    .leaflet-control-zoom a {
+      background: #FFFFFF; color: #12325B; border-color: #CDC5B4 !important;
+      width: 26px; height: 26px; line-height: 24px; font-weight: 500;
+    }
+    .leaflet-control-zoom a:hover { background: #F6F2EA; }
+    .leaflet-tooltip.awaaz-tt {
+      background: #14192A; color: #fff; border: 0;
+      box-shadow: 0 6px 14px rgba(20,25,42,0.18);
+      padding: 6px 10px; font-size: 12px; font-weight: 500;
+      border-radius: 3px;
+    }
+    .leaflet-tooltip.awaaz-tt::before { border-top-color: #14192A; }
+    input[type=range] { accent-color: #12325B; }
+    ::selection { background: #12325B22; }
+  </style>
+</helmet>
+
+<template id="__bundler_thumbnail" data-bg-color="#F1EBDD">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#F1EBDD"></rect>
+    <!-- 5-bar brand mark, scaled up -->
+    <g transform="translate(490 300)">
+      <rect x="0"   y="95"  width="34" height="80"  rx="4" fill="#12325B"></rect>
+      <rect x="52"  y="45"  width="34" height="130" rx="4" fill="#12325B"></rect>
+      <rect x="104" y="70"  width="34" height="105" rx="4" fill="#12325B"></rect>
+      <rect x="156" y="10"  width="34" height="165" rx="4" fill="#C15A15"></rect>
+      <rect x="208" y="80"  width="34" height="95"  rx="4" fill="#12325B"></rect>
+    </g>
+    <!-- Wordmark -->
+    <text x="600" y="530" text-anchor="middle" font-family="'Noto Sans', system-ui, sans-serif" font-size="52" font-weight="600" fill="#12325B" letter-spacing="-1">Saarthi</text>
+    <text x="600" y="580" text-anchor="middle" font-family="'Noto Sans Devanagari', system-ui, sans-serif" font-size="26" font-weight="400" fill="#A69C86">सारथि</text>
+    <!-- Loading hint -->
+    <text x="600" y="640" text-anchor="middle" font-family="'Noto Sans', system-ui, sans-serif" font-size="14" fill="#A69C86">Executive intelligence for Members of Parliament</text>
+  </svg>
+</template>
+
+<!-- Skip-to-content link retained for a11y but visually hidden -->
+<a href="#main" style="position: absolute; left: -9999px; top: 0;" style-focus="left: 16px; top: 8px; background: #12325B; color: #fff; padding: 8px 12px; z-index: 10000; border-radius: 4px;">Skip to content</a>
+
+<!-- ================== HEADER ================== -->
+<header style="background: #FFFFFF; border-bottom: 1px solid #EDE7D7;">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; gap: 36px; height: 68px;">
+    <!-- Brand -->
+    <a href="Dashboard.dc.html" style="display: flex; align-items: center; gap: 11px; text-decoration: none;">
+      <div style="display: flex; align-items: flex-end; gap: 2px; height: 22px;">
+        <div style="width: 3px; height: 9px; background: #12325B; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 16px; background: #12325B; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 13px; background: #12325B; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 20px; background: #C15A15; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 11px; background: #12325B; border-radius: 1px;"></div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px; line-height: 1;">
+        <div style="font-size: 19px; font-weight: 600; color: #12325B; letter-spacing: -0.015em;">Saarthi</div>
+        <div class="hi" style="font-size: 13px; color: #A69C86; font-weight: 400;">सारथि</div>
+      </div>
+    </a>
+
+    <!-- Navigation -->
+    <nav style="display: flex; align-items: center; gap: 4px; margin-left: 8px;">
+      <a href="Dashboard.dc.html" style="padding: 10px 12px; font-size: 13.5px; font-weight: 500; color: #14192A; text-decoration: none; position: relative;">
+        Dashboard
+        <div style="position: absolute; left: 12px; right: 12px; bottom: -21px; height: 2px; background: #12325B; border-radius: 1px;"></div>
+      </a>
+      <a href="Intelligence.dc.html" style="padding: 10px 12px; font-size: 13.5px; font-weight: 400; color: #545869; text-decoration: none;" style-hover="color: #14192A;">Intelligence</a>
+      <a href="#" style="padding: 10px 12px; font-size: 13.5px; font-weight: 400; color: #545869; text-decoration: none;" style-hover="color: #14192A;">Live feed</a>
+      <a href="#" style="padding: 10px 12px; font-size: 13.5px; font-weight: 400; color: #545869; text-decoration: none;" style-hover="color: #14192A;">MPLADS</a>
+      <a href="#" style="padding: 10px 12px; font-size: 13.5px; font-weight: 400; color: #545869; text-decoration: none;" style-hover="color: #14192A;">Actions</a>
+    </nav>
+
+    <!-- Spacer -->
+    <div style="flex: 1;"></div>
+
+    <!-- Scope pill (single tap; opens popover in future) -->
+    <button style="display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; background: transparent; border: 1px solid #EDE7D7; border-radius: 999px; cursor: pointer; font-size: 12.5px; color: #14192A;" style-hover="border-color: #CDC5B4;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7E8590" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a15 15 0 0 1 0 18"></path><path d="M12 3a15 15 0 0 0 0 18"></path></svg>
+      <span style="font-weight: 500;">Constituency</span>
+      <span style="color: #A69C86;">New Delhi</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#7E8590" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+
+    <!-- MP Identity -->
+    <button onClick="{{ toggleMenu }}" style="display: flex; align-items: center; gap: 10px; background: transparent; border: 0; padding: 4px 4px 4px 6px; cursor: pointer; border-radius: 999px;" style-hover="background: #F6F2EA;">
+      <div style="width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #12325B, #054A91); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12.5px;">BS</div>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7E8590" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+  </div>
+
+  <!-- Sub-context strip (very quiet) -->
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px 14px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #7E8590;">
+    <div style="display: flex; align-items: baseline; gap: 8px;">
+      <span style="font-size: 22px; font-weight: 600; color: #14192A; letter-spacing: -0.015em;">Hon'ble Bansuri Swaraj</span>
+      <span style="color: #A69C86;">·</span>
+      <span>New Delhi Lok Sabha · 10 assembly segments · 1.5M citizens</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <div style="width: 5px; height: 5px; border-radius: 50%; background: #1D6B3B; animation: livePulse 2s ease-in-out infinite;"></div>
+      <span>Synced 12:47 PM · Week 44</span>
+    </div>
+  </div>
+</header>
+
+<!-- ================== METRICS STRIP ================== -->
+<section id="main" style="background: #FFFFFF; border-bottom: 1px solid #EDE7D7;">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 28px 40px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 40px;">
+    <!-- Metric 1: Signals -->
+    <div>
+      <div style="font-size: 12.5px; color: #7E8590; font-weight: 400; margin-bottom: 10px;">{{ l.mSignals }}</div>
+      <div style="display: flex; align-items: baseline; gap: 10px;">
+        <div class="num" style="font-size: 32px; font-weight: 500; color: #14192A; letter-spacing: -0.025em; line-height: 1;">1,842</div>
+        <div style="display: flex; align-items: center; gap: 2px; color: #1D6B3B; font-size: 12px; font-weight: 500;">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          <span class="num">18%</span>
+        </div>
+      </div>
+      <div style="font-size: 12px; color: #A69C86; margin-top: 8px;">across 5 channels</div>
+    </div>
+
+    <!-- Metric 2: MPLADS -->
+    <div>
+      <div style="font-size: 12.5px; color: #7E8590; font-weight: 400; margin-bottom: 10px;">{{ l.mMplads }}</div>
+      <div style="display: flex; align-items: baseline; gap: 6px;">
+        <div class="num" style="font-size: 32px; font-weight: 500; color: #14192A; letter-spacing: -0.025em; line-height: 1;">₹3.42<span style="font-size: 17px; color: #7E8590; font-weight: 400;"> Cr</span></div>
+      </div>
+      <div style="margin-top: 12px; height: 3px; background: #F1EBDD; border-radius: 999px; overflow: hidden;">
+        <div style="width: 68.4%; height: 100%; background: #12325B; border-radius: 999px;"></div>
+      </div>
+      <div style="font-size: 12px; color: #A69C86; margin-top: 6px;">68% of ₹5.0 Cr</div>
+    </div>
+
+    <!-- Metric 3: SC allocation (soft alert) -->
+    <div>
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px;">
+        <div style="font-size: 12.5px; color: #7E8590; font-weight: 400;">{{ l.mSc }}</div>
+        <div style="width: 6px; height: 6px; border-radius: 50%; background: #B77321;" title="Below required 15%"></div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 4px;">
+        <div class="num" style="font-size: 32px; font-weight: 500; color: #14192A; letter-spacing: -0.025em; line-height: 1;">12.8<span style="font-size: 17px; color: #7E8590; font-weight: 400;">%</span></div>
+      </div>
+      <div style="font-size: 12px; color: #A69C86; margin-top: 8px;">2.2 pt below required · <span class="num" style="color: #B77321;">₹11 L gap</span></div>
+    </div>
+
+    <!-- Metric 4: ST allocation -->
+    <div>
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px;">
+        <div style="font-size: 12.5px; color: #7E8590; font-weight: 400;">{{ l.mSt }}</div>
+        <div style="width: 6px; height: 6px; border-radius: 50%; background: #1D6B3B;"></div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 4px;">
+        <div class="num" style="font-size: 32px; font-weight: 500; color: #14192A; letter-spacing: -0.025em; line-height: 1;">8.2<span style="font-size: 17px; color: #7E8590; font-weight: 400;">%</span></div>
+      </div>
+      <div style="font-size: 12px; color: #A69C86; margin-top: 8px;">0.7 pt buffer above required</div>
+    </div>
+
+    <!-- Metric 5: Open clusters -->
+    <div>
+      <div style="font-size: 12.5px; color: #7E8590; font-weight: 400; margin-bottom: 10px;">{{ l.mOpen }}</div>
+      <div style="display: flex; align-items: baseline; gap: 10px;">
+        <div class="num" style="font-size: 32px; font-weight: 500; color: #14192A; letter-spacing: -0.025em; line-height: 1;">47</div>
+        <div style="display: flex; align-items: center; gap: 5px; color: #A3311F; font-size: 12px; font-weight: 500;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #A3311F;"></div>
+          <span class="num">5 critical</span>
+        </div>
+      </div>
+      <div style="font-size: 12px; color: #A69C86; margin-top: 8px;">across 3 categories, 8 wards</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== MAIN GRID: LEFT / CENTER / RIGHT ================== -->
+<main style="max-width: 1440px; margin: 0 auto; padding: 28px 40px; display: grid; grid-template-columns: 340px 1fr 340px; gap: 24px; align-items: start;">
+
+  <!-- ============ LEFT: PRIORITY ACTION QUEUE ============ -->
+  <aside>
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px;">
+      <div style="font-size: 15px; font-weight: 600; color: #14192A;">{{ l.priorityHeader }}</div>
+      <div style="font-size: 12px; color: #A69C86;">Top 5 · this week</div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 8px; overflow: hidden;">
+      <sc-for list="{{ queueCards }}" as="card" hint-placeholder-count="5">
+        <div onClick="{{ card.select }}" style="{{ card.wrapStyle }}">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="mono" style="font-size: 11px; color: #A69C86; font-weight: 400;">{{ card.rank }}</div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <div style="{{ card.dotStyle }}"></div>
+                <span style="{{ card.urgencyLabelStyle }}">{{ card.urgency }}</span>
+              </div>
+            </div>
+            <div style="{{ card.trendStyle }}">
+              <span class="num">{{ card.trend }}</span>
+            </div>
+          </div>
+          <div style="font-size: 14.5px; font-weight: 500; color: #14192A; line-height: 1.4; margin-bottom: 3px; letter-spacing: -0.005em;">{{ card.title }}</div>
+          <div style="font-size: 12.5px; color: #7E8590; margin-bottom: 12px;">{{ card.ward }}</div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="{{ card.actionPillStyle }}">{{ card.actionType }}</div>
+            <div style="font-size: 12px; color: #7E8590; line-height: 1.35;">{{ card.actionSuggestion }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <a href="#" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0 0; font-size: 12.5px; color: #12325B; text-decoration: none;">
+      <span>View all 47 open clusters</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
+  </aside>
+
+  <!-- ============ CENTER: CONSTITUENCY MAP ============ -->
+  <section>
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px;">
+      <div style="font-size: 15px; font-weight: 600; color: #14192A;">{{ l.mapHeader }}</div>
+      <button onClick="{{ toggleMapFilter }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: transparent; border: 1px solid #EDE7D7; border-radius: 999px; cursor: pointer; font-size: 12.5px; color: #14192A;" style-hover="border-color: #CDC5B4;">
+        <span>{{ mapFilterLabel }}</span>
+        <span style="color: #A69C86;">·</span>
+        <span style="color: #7E8590;">Past 30 days</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#7E8590" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 8px; overflow: hidden; position: relative;">
+      <!-- Map container -->
+      <div id="awaaz-map" style="width: 100%; height: 500px; background: #E8E2D0;"></div>
+
+      <!-- Filter popover (opens on button click) -->
+      <sc-if value="{{ mapFilterOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeMapFilter }}" style="position: absolute; inset: 0; z-index: 900;"></div>
+        <div style="position: absolute; top: 14px; right: 14px; background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 8px; box-shadow: 0 8px 24px rgba(20,25,42,0.08); padding: 8px; z-index: 950; min-width: 240px;">
+          <div style="font-size: 11px; color: #A69C86; padding: 8px 10px 6px;">Filter by category</div>
+          <sc-for list="{{ filterChips }}" as="chip" hint-placeholder-count="4">
+            <button onClick="{{ chip.click }}" style="{{ chip.rowStyle }}">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="{{ chip.dotStyle }}"></div>
+                <span>{{ chip.label }}</span>
+              </div>
+              <span class="num" style="color: #A69C86; font-size: 12px;">{{ chip.count }}</span>
+            </button>
+          </sc-for>
+          <div style="height: 1px; background: #EDE7D7; margin: 6px 0;"></div>
+          <div style="font-size: 11px; color: #A69C86; padding: 8px 10px 6px;">Time range</div>
+          <div style="display: flex; gap: 4px; padding: 0 10px 8px;">
+            <button style="{{ range7Style }}">7d</button>
+            <button style="{{ range30Style }}">30d</button>
+            <button style="{{ range90Style }}">90d</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- Quiet legend -->
+      <div style="position: absolute; bottom: 14px; left: 14px; background: rgba(255,255,255,0.94); backdrop-filter: blur(10px); border: 1px solid #EDE7D7; border-radius: 6px; padding: 8px 12px; z-index: 500; display: flex; align-items: center; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #14192A;">
+          <div style="width: 8px; height: 8px; border-radius: 50%; background: #A3311F;"></div>
+          Critical
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #14192A;">
+          <div style="width: 8px; height: 8px; border-radius: 50%; background: #B77321;"></div>
+          High
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #14192A;">
+          <div style="width: 8px; height: 8px; border-radius: 50%; background: #B39B32;"></div>
+          Medium
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #14192A;">
+          <div style="width: 8px; height: 8px; border-radius: 50%; background: #4A6A87;"></div>
+          Low
+        </div>
+      </div>
+
+      <!-- Cluster count -->
+      <div style="position: absolute; bottom: 14px; right: 14px; background: rgba(255,255,255,0.94); backdrop-filter: blur(10px); border: 1px solid #EDE7D7; border-radius: 6px; padding: 8px 12px; z-index: 500; display: flex; align-items: baseline; gap: 6px;">
+        <span class="num" style="font-size: 18px; font-weight: 500; color: #14192A;">{{ visibleCount }}</span>
+        <span style="font-size: 11.5px; color: #7E8590;">visible clusters</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RIGHT: LIVE SIGNAL FEED ============ -->
+  <aside>
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="font-size: 15px; font-weight: 600; color: #14192A;">{{ l.liveHeader }}</div>
+        <div style="display: flex; align-items: center; gap: 5px;">
+          <div style="width: 5px; height: 5px; border-radius: 50%; background: #A3311F; animation: livePulse 1.4s ease-in-out infinite;"></div>
+          <span style="font-size: 11px; color: #A3311F; font-weight: 500;">Live</span>
+        </div>
+      </div>
+      <div style="font-size: 12px; color: #A69C86;">5 channels</div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 8px; overflow: hidden;">
+      <div style="max-height: 560px; overflow-y: auto;">
+        <sc-for list="{{ feedItems }}" as="item" hint-placeholder-count="8">
+          <div style="{{ item.wrapStyle }}">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+              <div style="{{ item.sourceIconWrap }}">{{ item.sourceIcon }}</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 5px;">
+                  <span style="font-size: 12px; font-weight: 500; color: #14192A;">{{ item.source }}</span>
+                  <span style="color: #CDC5B4;">·</span>
+                  <span style="font-size: 12px; color: #A69C86;">{{ item.time }}</span>
+                </div>
+                <div style="font-size: 13px; color: #14192A; line-height: 1.55; margin-bottom: 8px;" class="{{ item.snippetClass }}">{{ item.snippet }}</div>
+                <div style="{{ item.linkStyle }}">
+                  <span>{{ item.linkText }}</span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <a href="#" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0 0; font-size: 12.5px; color: #12325B; text-decoration: none;">
+      <span>Open full feed</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
+  </aside>
+</main>
+
+<!-- ================== THIS WEEK'S PRIORITIES (FULL CARDS) ================== -->
+<section style="max-width: 1440px; margin: 0 auto; padding: 16px 40px 32px;">
+  <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; padding-top: 16px;">
+    <div>
+      <div style="font-size: 22px; font-weight: 600; color: #14192A; letter-spacing: -0.015em;">{{ l.thisWeekHeader }}</div>
+      <div style="font-size: 13.5px; color: #7E8590; margin-top: 6px; max-width: 620px; line-height: 1.5;">Ranked by AI on cross-referenced evidence. Each ranking cites its sources.</div>
+    </div>
+    <a href="#" style="font-size: 13px; color: #12325B; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+      <span>View all 47</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+    <sc-for list="{{ fullCards }}" as="fc" hint-placeholder-count="3">
+      <article style="{{ fc.wrapStyle }}">
+        <!-- Header row: category label + status badge + trend -->
+        <div style="padding: 22px 22px 0; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="{{ fc.categoryIconWrap }}">{{ fc.categoryIcon }}</div>
+            <div style="font-size: 12.5px; color: #7E8590;">{{ fc.category }} · #{{ fc.id }}</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="{{ fc.statusBadgeStyle }}">{{ fc.statusLabel }}</div>
+            <span style="font-size: 12px; color: #A69C86;" class="num">{{ fc.trend }}</span>
+          </div>
+        </div>
+
+        <!-- Title + ward -->
+        <div style="padding: 14px 22px 0;">
+          <div style="font-size: 19px; font-weight: 600; color: #14192A; line-height: 1.3; letter-spacing: -0.015em;">{{ fc.title }}</div>
+          <div class="{{ fc.titleHiClass }}" style="{{ fc.titleHiStyle }}">{{ fc.titleHi }}</div>
+          <div style="font-size: 13px; color: #7E8590; margin-top: 8px;">{{ fc.ward }}</div>
+        </div>
+
+        <!-- Signals summary + Evidence chips -->
+        <div style="padding: 18px 22px 0;">
+          <div style="font-size: 12.5px; color: #7E8590; margin-bottom: 8px;">
+            <span class="num" style="font-weight: 500; color: #14192A;">{{ fc.totalSignals }}</span> signals · 5 sources
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <sc-for list="{{ fc.evidence }}" as="e" hint-placeholder-count="5">
+              <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px 4px 7px; background: #F6F2EA; border-radius: 4px; font-size: 12px; color: #14192A;">
+                <div style="width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; color: #7E8590;">{{ e.icon }}</div>
+                <span class="num" style="font-weight: 500;">{{ e.count }}</span>
+                <span style="color: #7E8590;">{{ e.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- Cross-reference (in-line, quiet) -->
+        <div style="padding: 18px 22px 0;">
+          <div style="font-size: 12.5px; color: #A69C86; margin-bottom: 6px;">Cross-reference · public data</div>
+          <div style="font-size: 13px; color: #14192A; line-height: 1.55;">{{ fc.crossRef }}</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px;">
+            <sc-for list="{{ fc.sources }}" as="s" hint-placeholder-count="3">
+              <a href="#" style="font-size: 11.5px; color: #12325B; text-decoration: none;">
+                {{ s }}<span style="color: #CDC5B4;"> · </span>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- Suggested action OR progress -->
+        <sc-if value="{{ fc.isInProgress }}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 20px 22px 0;">
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #1D6B3B; font-weight: 500; margin-bottom: 6px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Dispatched · {{ fc.actionDate }}
+            </div>
+            <div style="font-size: 13.5px; color: #14192A; line-height: 1.55;">{{ fc.actionDetail }}</div>
+            <div style="margin-top: 12px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: #A69C86; margin-bottom: 5px;">
+                <span>Awaiting response</span>
+                <span class="num">{{ fc.actionProgress }}%</span>
+              </div>
+              <div style="height: 3px; background: #F1EBDD; border-radius: 999px; overflow: hidden;">
+                <div style="{{ fc.progressBarStyle }}"></div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ fc.isDefault }}" hint-placeholder-val="{{ true }}">
+          <div style="padding: 20px 22px 0;">
+            <div style="font-size: 12.5px; color: #A69C86; margin-bottom: 6px;">Suggested action</div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="{{ fc.actionPillStyle }}">{{ fc.actionType }}</div>
+              <span style="font-size: 12.5px; color: #14192A;">{{ fc.mpladsFlag }}</span>
+            </div>
+            <div style="font-size: 13.5px; color: #14192A; line-height: 1.55;">{{ fc.actionSuggestion }}</div>
+          </div>
+        </sc-if>
+
+        <!-- Actions row: single primary + overflow -->
+        <div style="padding: 22px; margin-top: auto; display: flex; align-items: center; gap: 10px;">
+          <sc-if value="{{ fc.isDefault }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ fc.draft }}" style="flex: 1; padding: 10px 16px; background: #12325B; color: #FFFFFF; border: 0; border-radius: 999px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" style-hover="background: #0B2447;">
+              {{ l.draftLetter }}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+            <button onClick="{{ fc.toggleMore }}" style="width: 38px; height: 38px; background: transparent; color: #7E8590; border: 1px solid #EDE7D7; border-radius: 999px; cursor: pointer; display: flex; align-items: center; justify-content: center;" style-hover="border-color: #CDC5B4; color: #14192A;" title="More actions">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
+            </button>
+          </sc-if>
+          <sc-if value="{{ fc.isInProgress }}" hint-placeholder-val="{{ false }}">
+            <button style="flex: 1; padding: 10px 16px; background: transparent; color: #1D6B3B; border: 1px solid #1D6B3B; border-radius: 999px; font-size: 13px; font-weight: 500; cursor: pointer;" style-hover="background: #F0F4EE;">View action</button>
+            <button style="width: 38px; height: 38px; background: transparent; color: #7E8590; border: 1px solid #EDE7D7; border-radius: 999px; cursor: pointer; display: flex; align-items: center; justify-content: center;" style-hover="border-color: #CDC5B4; color: #14192A;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
+            </button>
+          </sc-if>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+</section>
+
+<!-- ================== FOOTER ================== -->
+<section style="max-width: 1440px; margin: 0 auto; padding: 40px 40px 60px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; color: #A69C86;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <span>Saarthi v0.4 · Pilot programme, Government of India</span>
+      <span style="color: #DCD3BF;">·</span>
+      <a href="DataConnectors.dc.html" style="color: #7E8590; text-decoration: none;" style-hover="color: #12325B;">Data sources ({{ dataSourceCount }})</a>
+      <a href="#" style="color: #7E8590; text-decoration: none;" style-hover="color: #12325B;">Methodology</a>
+      <a href="#" style="color: #7E8590; text-decoration: none;" style-hover="color: #12325B;">Privacy</a>
+      <a href="#" style="color: #7E8590; text-decoration: none;" style-hover="color: #12325B;">Accessibility</a>
+    </div>
+    <div>Built on UX4G Design System 2.0</div>
+  </div>
+</section>
+
+<!-- ================== ACTION COMPOSER MODAL ================== -->
+<sc-if value="{{ composerOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeComposer }}" style="position: fixed; inset: 0; background: rgba(11, 36, 71, 0.55); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 40px 20px; animation: fadeIn 0.15s ease-out;">
+    <div onClick="{{ stopProp }}" style="width: 100%; max-width: 720px; max-height: 92vh; background: #FFFFFF; border-radius: 8px; box-shadow: 0 24px 64px rgba(11,36,71,0.35); display: flex; flex-direction: column; overflow: hidden;">
+      <!-- Modal header -->
+      <div style="padding: 20px 28px 18px; border-bottom: 1px solid #E6DFD1; display: flex; align-items: flex-start; justify-content: space-between;">
+        <div>
+          <div style="font-size: 11px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 6px;">Action composer · MPLADS recommendation</div>
+          <div style="font-size: 20px; font-weight: 700; color: #14192A; letter-spacing: -0.01em;">Draft MPLADS Recommendation Letter</div>
+          <div style="font-size: 12px; color: #545869; margin-top: 6px; display: flex; align-items: center; gap: 8px;">
+            <span>Cluster #01 · Waterlogging on arterial roads</span>
+            <span style="color: #CDC5B4;">·</span>
+            <span>Karol Bagh, Rajinder Nagar</span>
+            <span style="color: #CDC5B4;">·</span>
+            <span style="display: inline-flex; align-items: center; gap: 3px; padding: 1px 6px; background: #FCE8E1; color: #A3311F; border-radius: 3px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em;">CRITICAL</span>
+          </div>
+        </div>
+        <button onClick="{{ closeComposer }}" style="background: transparent; border: 0; padding: 4px; cursor: pointer; color: #7E8590;" style-hover="color: #14192A;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Modal body -->
+      <div style="flex: 1; overflow-y: auto; padding: 22px 28px;">
+        <!-- Form fields grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div>
+            <label style="display: block; font-size: 11px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 6px;">Recipient</label>
+            <div style="padding: 10px 12px; background: #FBF8F2; border: 1px solid #E6DFD1; border-radius: 4px; font-size: 13px; color: #14192A;">
+              The District Magistrate, New Delhi District
+              <div style="font-size: 11px; color: #7E8590; margin-top: 2px;">Delhi Secretariat, IP Estate, New Delhi – 110002</div>
+            </div>
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 6px;">Reference no.</label>
+            <div class="mono" style="padding: 10px 12px; background: #FBF8F2; border: 1px solid #E6DFD1; border-radius: 4px; font-size: 13px; color: #14192A;">MP-NDL-MPLADS-2026-W44-004</div>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <label style="display: block; font-size: 11px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 6px;">Subject</label>
+            <div style="padding: 10px 12px; background: #FBF8F2; border: 1px solid #E6DFD1; border-radius: 4px; font-size: 13px; color: #14192A;">Recommendation for emergency drain de-silting works — Karol Bagh &amp; Rajinder Nagar arterial road stretches (MPLADS eligible)</div>
+          </div>
+        </div>
+
+        <!-- Letter body preview -->
+        <div>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 8px;">
+            <span>Letter body · AI-drafted, editable</span>
+            <span style="display: inline-flex; align-items: center; gap: 4px; color: #054A91; text-transform: none; letter-spacing: 0; font-size: 11px; font-weight: 500;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c-2.21 0-4-4.03-4-9s1.79-9 4-9m0 18c2.21 0 4-4.03 4-9s-1.79-9-4-9m0 0a9 9 0 0 0-9 9"></path></svg>
+              12 sources cited
+            </span>
+          </label>
+          <div style="padding: 18px 20px; background: #FBF8F2; border: 1px solid #E6DFD1; border-radius: 4px; font-size: 13px; color: #14192A; line-height: 1.7; max-height: 260px; overflow-y: auto;">
+            <p style="margin: 0 0 12px;">Respected Sir/Madam,</p>
+            <p style="margin: 0 0 12px;">I am writing to bring to your attention a matter requiring urgent intervention in the Karol Bagh and Rajinder Nagar assembly segments of the New Delhi Lok Sabha Constituency. Over the past week, my office has received <span style="background: #FFF3CE; padding: 0 3px;">71 verified citizen signals</span> concerning severe waterlogging on the arterial road network, representing a <span style="background: #FFF3CE; padding: 0 3px;">340% week-on-week increase</span> in complaint volume.</p>
+            <p style="margin: 0 0 12px;">Cross-referencing with DUSIB's public drain-maintenance register indicates that <span style="background: #FFF3CE; padding: 0 3px;">Drain #4 (Karol Bagh main)</span> was last de-silted in September 2025, and the IMD forecast projects an additional 24mm of rainfall in the next 48 hours. This confluence of factors poses a significant public safety risk.</p>
+            <p style="margin: 0 0 12px;">Under the MPLADS guidelines (as revised 2023), works pertaining to drainage and de-silting of public arterial roads are permissible under the "Urban Development" category. I hereby <strong>recommend the sanction of ₹28.5 Lakh</strong> from my constituency development fund for emergency de-silting of the affected drain network, to be executed via the designated District Authority within a stipulated period of 14 days.</p>
+            <p style="margin: 0 0 12px;">Detailed geo-tagged evidence, citizen signal metadata, and cross-referenced public dataset extracts are enclosed with this recommendation as Annexure A.</p>
+            <p style="margin: 0;">I request your kind offices to expedite the sanction and issuance of the work order at the earliest.</p>
+            <p style="margin: 12px 0 0; color: #545869;">With regards,<br/>Bansuri Swaraj<br/>Member of Parliament, New Delhi Lok Sabha</p>
+          </div>
+        </div>
+
+        <!-- Attachments -->
+        <div style="margin-top: 20px; padding: 14px 16px; background: #F6F2EA; border: 1px solid #E6DFD1; border-radius: 4px;">
+          <div style="font-size: 11px; color: #7E8590; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 8px;">Annexures · auto-attached</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #14192A; cursor: pointer;"><input type="checkbox" checked style="accent-color: #12325B;"/> Evidence bundle (71 signals)</label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #14192A; cursor: pointer;"><input type="checkbox" checked style="accent-color: #12325B;"/> Public data extracts (DUSIB, IMD, CPWD)</label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #14192A; cursor: pointer;"><input type="checkbox" checked style="accent-color: #12325B;"/> Geo-tagged photo evidence (12)</label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #14192A; cursor: pointer;"><input type="checkbox" style="accent-color: #12325B;"/> MPLADS compliance memo</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div style="padding: 16px 28px; border-top: 1px solid #E6DFD1; background: #FBF8F2; display: flex; align-items: center; justify-content: space-between;">
+        <div style="font-size: 11px; color: #7E8590; display: flex; align-items: center; gap: 6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Digitally signed with your MP DSC · dispatched via NIC secure channel
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button onClick="{{ closeComposer }}" style="padding: 8px 14px; background: transparent; color: #545869; border: 1px solid #E6DFD1; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer;" style-hover="border-color: #12325B; color: #12325B;">Cancel</button>
+          <button style="padding: 8px 14px; background: transparent; color: #12325B; border: 1px solid #12325B; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer;" style-hover="background: #F6F2EA;">Preview on letterhead</button>
+          <button style="padding: 8px 14px; background: transparent; color: #12325B; border: 1px solid #12325B; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer;" style-hover="background: #F6F2EA;">Save draft</button>
+          <button onClick="{{ sendLetter }}" style="padding: 8px 16px; background: #12325B; color: #FFFFFF; border: 0; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" style-hover="background: #0B2447;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            Approve &amp; send
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    lang: 'en',
+    mapMode: 'dots',
+    timeRange: '30d',
+    activeFilter: 'all',
+    mapFilterOpen: false,
+    composerOpen: false,
+    dispatched: [],
+    feedTick: 0
+  };
+
+  componentDidMount() {
+    try { this._initMap(); } catch (e) { console.warn('map init error', e); }
+    // Simulate live feed cadence: bump tick every 22s to prepend a new item
+    this._feedTimer = setInterval(() => {
+      this.setState(s => ({ feedTick: s.feedTick + 1 }));
+    }, 22000);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    try {
+      // Re-init map if the DOM node changed or it's not initialized
+      const el = document.getElementById('awaaz-map');
+      if (el && !el._leaflet_id) {
+        this._mapReady = false;
+        this._map = null;
+        this._initMap();
+      }
+      // Update map markers when filter changes
+      if (prevState && prevState.activeFilter !== this.state.activeFilter && this._map) {
+        this._renderMarkers();
+      }
+    } catch (e) { console.warn('map update error', e); }
+  }
+
+  componentWillUnmount() {
+    if (this._feedTimer) clearInterval(this._feedTimer);
+    if (this._map) { try { this._map.remove(); } catch(e){} this._map = null; this._mapReady = false; }
+  }
+
+  _initMap() {
+    const el = document.getElementById('awaaz-map');
+    if (!el || !window.L) {
+      if (!this._retryScheduled) {
+        this._retryScheduled = true;
+        setTimeout(() => { this._retryScheduled = false; this._initMap(); }, 150);
+      }
+      return;
+    }
+    if (el._leaflet_id && this._map) return; // already initialized on this element
+    if (el._leaflet_id && !this._map) {
+      // Stale flag — do not touch; wait for a fresh element
+      this._mapReady = true;
+      return;
+    }
+    try {
+      const map = L.map(el, {
+        center: [28.5900, 77.2050],
+        zoom: 12,
+        zoomControl: true,
+        scrollWheelZoom: false,
+        attributionControl: true,
+        preferCanvas: true
+      });
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap contributors © CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(map);
+      this._map = map;
+      this._mapReady = true;
+      this._renderMarkers();
+    } catch (e) {
+      console.warn('leaflet init error', e);
+    }
+  }
+
+  _renderMarkers() {
+    if (!this._map) return;
+    // Clear existing markers
+    if (this._markerLayer) { this._map.removeLayer(this._markerLayer); }
+    const layer = L.layerGroup().addTo(this._map);
+    this._markerLayer = layer;
+
+    const urgencyColor = { Critical: '#A3311F', High: '#B77321', Medium: '#B39B32', Low: '#4A6A87' };
+    const categoryMap = { water: 'Water & Sanitation', health: 'Public Health', infra: 'Urban Infrastructure' };
+    const filter = this.state.activeFilter;
+
+    this._clusterList().forEach(m => {
+      if (filter !== 'all' && m.categoryKey !== filter) return;
+      const isCritical = m.urgency === 'Critical';
+      const size = isCritical ? 20 : (m.urgency === 'High' ? 16 : 13);
+      const color = urgencyColor[m.urgency];
+      const html = `
+        <div style="position:relative;width:${size}px;height:${size}px;">
+          ${isCritical ? `<div style="position:absolute;inset:0;border-radius:50%;background:${color};opacity:0.5;animation: halo 1.8s ease-out infinite;"></div>` : ''}
+          <div style="position:absolute;inset:0;border-radius:50%;background:${color};border:2px solid #FFFFFF;box-shadow: 0 0 0 1px ${color}, 0 2px 4px rgba(0,0,0,0.2);"></div>
+        </div>`;
+      const icon = L.divIcon({
+        className: 'awaaz-marker',
+        html: html,
+        iconSize: [size, size],
+        iconAnchor: [size/2, size/2]
+      });
+      const marker = L.marker([m.lat, m.lng], { icon }).addTo(layer);
+      marker.bindTooltip(
+        `<div style="font-weight:600;margin-bottom:2px;">${m.title}</div>
+         <div style="opacity:0.7;font-size:11px;">${m.ward} · ${m.urgency}</div>`,
+        { direction: 'top', offset: [0, -size/2], className: 'awaaz-tt' }
+      );
+    });
+  }
+
+  _clusterList() {
+    return [
+      { id: 1, lat: 28.6519, lng: 77.1902, urgency: 'Critical', title: 'Waterlogging on arterial roads', ward: 'Karol Bagh', categoryKey: 'infra' },
+      { id: 2, lat: 28.5423, lng: 77.2531, urgency: 'Critical', title: 'Contaminated drinking water', ward: 'Kalkaji Ext.', categoryKey: 'water' },
+      { id: 3, lat: 28.5985, lng: 77.1893, urgency: 'High',     title: 'Air quality — construction dust', ward: 'Chanakyapuri', categoryKey: 'health' },
+      { id: 4, lat: 28.6398, lng: 77.1802, urgency: 'High',     title: 'Broken street lights', ward: 'Rajinder Nagar', categoryKey: 'infra' },
+      { id: 5, lat: 28.5665, lng: 77.1794, urgency: 'High',     title: 'Sewer overflow', ward: 'R.K. Puram', categoryKey: 'water' },
+      { id: 6, lat: 28.5730, lng: 77.1936, urgency: 'Medium',   title: 'Waste collection irregular', ward: 'Sarojini Nagar', categoryKey: 'infra' },
+      { id: 7, lat: 28.5470, lng: 77.2260, urgency: 'Medium',   title: 'Stray dog complaints', ward: 'Kasturba Nagar', categoryKey: 'health' },
+      { id: 8, lat: 28.6280, lng: 77.1580, urgency: 'Medium',   title: 'Water supply irregular', ward: 'Patel Nagar', categoryKey: 'water' },
+      { id: 9, lat: 28.5382, lng: 77.2109, urgency: 'Low',      title: 'Potholes on approach roads', ward: 'Delhi Cantt', categoryKey: 'infra' },
+      { id: 10, lat: 28.6120, lng: 77.2400, urgency: 'High',    title: 'Dust pollution — metro construction', ward: 'Sarai Kale Khan', categoryKey: 'health' },
+      { id: 11, lat: 28.5510, lng: 77.2020, urgency: 'Medium',  title: 'Public toilet sanitation', ward: 'Green Park', categoryKey: 'water' },
+      { id: 12, lat: 28.5645, lng: 77.2410, urgency: 'Low',     title: 'Park maintenance', ward: 'Greater Kailash', categoryKey: 'infra' }
+    ];
+  }
+
+  _translations() {
+    return {
+      en: {
+        mSignals: 'Signals this week',
+        mMplads: 'MPLADS utilised',
+        mSc: 'SC allocation',
+        mSt: 'ST allocation',
+        mOpen: 'Open clusters',
+        priorityHeader: 'Priority action queue',
+        mapHeader: 'Constituency map',
+        liveHeader: 'Live signal feed',
+        thisWeekHeader: "This week's priorities",
+        draftLetter: 'Draft letter',
+        suggestedAction: 'Suggested action'
+      },
+      hi: {
+        mSignals: 'इस सप्ताह के संकेत',
+        mMplads: 'MPLADS उपयोग',
+        mSc: 'SC आवंटन',
+        mSt: 'ST आवंटन',
+        mOpen: 'खुले क्लस्टर',
+        priorityHeader: 'प्राथमिकता क्रिया सूची',
+        mapHeader: 'निर्वाचन क्षेत्र मानचित्र',
+        liveHeader: 'लाइव सिग्नल फ़ीड',
+        thisWeekHeader: 'इस सप्ताह की प्राथमिकताएँ',
+        draftLetter: 'पत्र का मसौदा',
+        suggestedAction: 'सुझाई गई कार्रवाई'
+      }
+    };
+  }
+
+  _urgencyStyles(urgency) {
+    // Softer palette — dot + label only where color matters
+    const map = {
+      Critical: { color: '#A3311F', bg: 'transparent' },
+      High:     { color: '#B77321', bg: 'transparent' },
+      Medium:   { color: '#8A7515', bg: 'transparent' },
+      Low:      { color: '#7E8590', bg: 'transparent' }
+    };
+    return map[urgency] || map.Low;
+  }
+
+  _actionPillStyle(type) {
+    // Quieter pills — border-only, sentence case
+    const map = {
+      'MPLADS':      { color: '#12325B' },
+      'State':       { color: '#8A5219' },
+      'Central':     { color: '#1D6B3B' },
+      'Coordination':{ color: '#054A91' }
+    };
+    const t = map[type] || map['State'];
+    return `display: inline-flex; align-items: center; padding: 2px 8px; background: transparent; color: ${t.color}; border: 1px solid ${t.color}44; border-radius: 999px; font-size: 11.5px; font-weight: 500; letter-spacing: 0; flex-shrink: 0;`;
+  }
+
+  _svg(size, strokeWidth, children) {
+    const e = React.createElement;
+    return e('svg', {
+      width: size, height: size, viewBox: '0 0 24 24',
+      fill: 'none', stroke: 'currentColor', strokeWidth: strokeWidth,
+      strokeLinecap: 'round', strokeLinejoin: 'round',
+      style: { display: 'block' }
+    }, children);
+  }
+
+  _sourceIcon(source) {
+    const e = React.createElement;
+    switch (source) {
+      case 'WhatsApp':
+        return this._svg(12, 1.75, [
+          e('path', { key: 'p', d: 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z' })
+        ]);
+      case 'X (post)':
+        return this._svg(12, 1.75, [
+          e('line', { key: 'l1', x1: 4, y1: 4, x2: 20, y2: 20 }),
+          e('line', { key: 'l2', x1: 4, y1: 20, x2: 20, y2: 4 })
+        ]);
+      case 'Reddit':
+        return this._svg(12, 1.75, [
+          e('path', { key: 'p', d: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' })
+        ]);
+      case 'Portal':
+        return this._svg(12, 1.75, [
+          e('rect', { key: 'r', x: 3, y: 4, width: 18, height: 16, rx: 1 }),
+          e('line', { key: 'l', x1: 3, y1: 9, x2: 21, y2: 9 }),
+          e('circle', { key: 'c1', cx: 7, cy: 6.5, r: 0.5, fill: 'currentColor' }),
+          e('circle', { key: 'c2', cx: 9.5, cy: 6.5, r: 0.5, fill: 'currentColor' })
+        ]);
+      case 'News':
+        return this._svg(12, 1.75, [
+          e('path', { key: 'p', d: 'M4 4h12v16H4z' }),
+          e('line', { key: 'l1', x1: 16, y1: 8, x2: 20, y2: 8 }),
+          e('line', { key: 'l2', x1: 16, y1: 12, x2: 20, y2: 12 }),
+          e('line', { key: 'l3', x1: 16, y1: 16, x2: 20, y2: 16 }),
+          e('line', { key: 'l4', x1: 7, y1: 8, x2: 13, y2: 8 }),
+          e('line', { key: 'l5', x1: 7, y1: 12, x2: 13, y2: 12 }),
+          e('line', { key: 'l6', x1: 7, y1: 16, x2: 13, y2: 16 })
+        ]);
+      case 'Action':
+        return this._svg(12, 2, [
+          e('line', { key: 'l', x1: 22, y1: 2, x2: 11, y2: 13 }),
+          e('polygon', { key: 'p', points: '22 2 15 22 11 13 2 9 22 2' })
+        ]);
+      default:
+        return this._svg(12, 1.75, [e('circle', { key: 'c', cx: 12, cy: 12, r: 6 })]);
+    }
+  }
+
+  _categoryIcon(category) {
+    const e = React.createElement;
+    switch (category) {
+      case 'Urban Infrastructure':
+        return this._svg(14, 1.75, [
+          e('path', { key: 'p1', d: 'M3 21h18' }),
+          e('path', { key: 'p2', d: 'M5 21V7l7-4 7 4v14' }),
+          e('path', { key: 'p3', d: 'M9 21v-4h6v4' }),
+          e('path', { key: 'p4', d: 'M9 12h.01M12 12h.01M15 12h.01M9 8h.01M12 8h.01M15 8h.01' })
+        ]);
+      case 'Water & Sanitation':
+        return this._svg(14, 1.75, [
+          e('path', { key: 'p', d: 'M12 2s-6 8-6 12a6 6 0 0 0 12 0c0-4-6-12-6-12z' })
+        ]);
+      case 'Public Health':
+        return this._svg(14, 1.75, [
+          e('path', { key: 'p', d: 'M3 12h4l2-6 4 12 2-6h6' })
+        ]);
+      default:
+        return this._svg(14, 1.75, [e('circle', { key: 'c', cx: 12, cy: 12, r: 6 })]);
+    }
+  }
+
+  _categoryDot(category) {
+    const map = {
+      'Urban Infrastructure': '#4A6A87',
+      'Water & Sanitation':   '#054A91',
+      'Public Health':        '#8A5219'
+    };
+    return map[category] || '#7E8590';
+  }
+
+  _feedItemsBase() {
+    return [
+      { source: 'X (post)', category: 'Urban Infrastructure', timeMin: 2, snippet: 'Waterlogging in Karol Bagh main market crossed knee level again — 3rd day running.', link: 'joins cluster #01', linkNew: false },
+      { source: 'WhatsApp', category: 'Water & Sanitation',   timeMin: 4, snippet: 'पानी बहुत गंदा है, बदबू भी आ रही है। कृपया देखें।', linkText: 'voice note · Hindi · joins cluster #02', link: 'joins cluster #02', linkNew: false, hi: true },
+      { source: 'Reddit',   category: 'Public Health',        timeMin: 7, snippet: 'r/delhi · AQI 380 outside the embassy zone at 8am — third day above severe.', link: 'joins cluster #03', linkNew: false },
+      { source: 'Portal',   category: 'Urban Infrastructure', timeMin: 12, snippet: 'Widget submission · Streetlights on Pusa Road out for 4 nights now, unsafe for women commuters.', link: 'joins cluster #04', linkNew: false },
+      { source: 'News',     category: 'Water & Sanitation',   timeMin: 18, snippet: 'Local daily · "DUSIB sewer complaints spike in RK Puram; residents demand action."', link: 'joins cluster #05', linkNew: false },
+      { source: 'X (post)', category: 'Public Health',        timeMin: 24, snippet: 'Metro construction dust on the DND stretch — masks required through Nov.', link: 'creates new cluster · #12', linkNew: true },
+      { source: 'WhatsApp', category: 'Urban Infrastructure', timeMin: 33, snippet: 'Garbage not collected in Kasturba Nagar for three days. Attaching photo.', link: 'joins cluster #06', linkNew: false },
+      { source: 'X (post)', category: 'Water & Sanitation',   timeMin: 41, snippet: 'Malviya Nagar water tanker delayed again this morning, entire block affected.', link: 'joins cluster #02', linkNew: false }
+    ];
+  }
+
+  _buildQueueCards(l) {
+    const cards = [
+      { id: 1, rank: '01', urgency: 'Critical', trend: '↑ 340%', title: 'Waterlogging on arterial roads', ward: 'Karol Bagh · Rajinder Nagar', actionType: 'MPLADS', actionSuggestion: 'Emergency drain de-silting works' },
+      { id: 2, rank: '02', urgency: 'Critical', trend: '↑ 180%', title: 'Contaminated drinking water', ward: 'Kalkaji Ext. · Malviya Nagar',   actionType: 'State',  actionSuggestion: 'Coordinate DJB × DUSIB inspection' },
+      { id: 3, rank: '03', urgency: 'High',     trend: '↑ 62%',  title: 'Air quality — construction dust', ward: 'Chanakyapuri · Sarai Kale Khan',actionType: 'Central',actionSuggestion: 'Ministry letter · MoEFCC' },
+      { id: 4, rank: '04', urgency: 'High',     trend: '↑ 41%',  title: 'Broken street lights, public safety', ward: 'Rajinder Nagar · Patel Nagar',actionType: 'MPLADS', actionSuggestion: 'LED replacement programme' },
+      { id: 5, rank: '05', urgency: 'High',     trend: 'new',    title: 'Sewer overflow near residences',  ward: 'R.K. Puram Sector 4 & 7',       actionType: 'State',  actionSuggestion: 'Escalate to DUSIB' }
+    ];
+
+    return cards.map((c, i) => {
+      const u = this._urgencyStyles(c.urgency);
+      const isDispatched = this.state.dispatched.includes(c.id);
+      const isLast = i === cards.length - 1;
+      const isCritical = c.urgency === 'Critical';
+      return {
+        ...c,
+        select: () => this.setState({ selectedId: c.id }),
+        wrapStyle: `padding: 18px 20px; border-bottom: ${isLast ? '0' : '1px solid #F1EBDD'}; cursor: pointer; ${isDispatched ? 'background: #F7F9F5;' : ''}`,
+        dotStyle: `width: 6px; height: 6px; border-radius: 50%; background: ${u.color};`,
+        urgencyLabelStyle: `font-size: 11.5px; font-weight: 500; color: ${u.color};`,
+        trendStyle: c.trend === 'new'
+          ? `font-size: 11.5px; font-weight: 500; color: #12325B;`
+          : (isCritical ? `font-size: 11.5px; font-weight: 500; color: #A3311F;` : `font-size: 11.5px; color: #7E8590;`),
+        actionPillStyle: this._actionPillStyle(c.actionType)
+      };
+    });
+  }
+
+  _buildFilterChips() {
+    const chips = [
+      { key: 'all',    label: 'All categories', count: 12, color: '#7E8590' },
+      { key: 'water',  label: 'Water & Sanitation', count: 4, color: '#054A91' },
+      { key: 'health', label: 'Public Health', count: 3, color: '#8A5219' },
+      { key: 'infra',  label: 'Urban Infrastructure', count: 5, color: '#4A6A87' }
+    ];
+    return chips.map(c => {
+      const active = this.state.activeFilter === c.key;
+      return {
+        ...c,
+        click: () => this.setState({ activeFilter: c.key, mapFilterOpen: false }),
+        rowStyle: `display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 8px 10px; background: ${active ? '#F1EBDD' : 'transparent'}; border: 0; border-radius: 4px; font-size: 13px; color: #14192A; cursor: pointer; text-align: left;`,
+        dotStyle: `width: 8px; height: 8px; border-radius: 50%; background: ${c.color};`
+      };
+    });
+  }
+
+  _buildFeedItems() {
+    // Pull the fresh events from dispatched actions, then base items
+    const dispatchedItems = this.state.dispatched.map(id => ({
+      source: 'Action', category: 'Urban Infrastructure', timeMin: 0,
+      snippet: `Letter dispatched · Ref MP-NDL-MPLADS-2026-W44-00${id} to District Magistrate, New Delhi District.`,
+      link: `action tracked · cluster #0${id}`,
+      linkNew: false,
+      isAction: true
+    }));
+
+    const base = this._feedItemsBase();
+    // Rotate: every feedTick brings a new prepended synthetic item (not persisted between ticks)
+    const rotatedIndex = this.state.feedTick % base.length;
+    const rotated = [...base.slice(rotatedIndex), ...base.slice(0, rotatedIndex)];
+    const list = [...dispatchedItems, ...rotated];
+
+    return list.map((item, i) => {
+      const catColor = this._categoryDot(item.category);
+      const isAction = item.isAction;
+      return {
+        ...item,
+        wrapStyle: `padding: 16px 20px; border-bottom: 1px solid #F1EBDD; ${i === 0 ? 'animation: feedIn 0.35s ease-out;' : ''} ${isAction ? 'box-shadow: inset 2px 0 0 #1D6B3B;' : ''}`,
+        sourceIconWrap: `width: 24px; height: 24px; border-radius: 999px; background: ${isAction ? '#1D6B3B' : '#F1EBDD'}; color: ${isAction ? '#FFFFFF' : '#545869'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;`,
+        sourceIcon: this._sourceIcon(item.source),
+        time: item.timeMin === 0 ? 'just now' : `${item.timeMin} min ago`,
+        snippetClass: item.hi ? 'hi' : '',
+        linkStyle: `display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: ${isAction ? '#1D6B3B' : '#12325B'}; font-weight: 500; text-decoration: none; cursor: pointer;`,
+        linkText: item.link
+      };
+    }).slice(0, 8);
+  }
+
+  _buildFullCards(l) {
+    const cardsBase = [
+      {
+        id: '01',
+        category: 'Urban Infrastructure',
+        title: 'Waterlogging on arterial roads',
+        titleHi: 'मुख्य सड़कों पर जलभराव',
+        ward: 'Karol Bagh, Rajinder Nagar · 4 wards',
+        urgency: 'Critical',
+        trend: '↑ 340% w/w',
+        totalSignals: 71,
+        evidence: [
+          { source: 'WhatsApp', count: 12, label: 'WhatsApp' },
+          { source: 'X (post)', count: 47, label: 'X posts' },
+          { source: 'Reddit',   count: 8,  label: 'Reddit' },
+          { source: 'Portal',   count: 3,  label: 'Portal' },
+          { source: 'News',     count: 1,  label: 'News' }
+        ],
+        crossRef: 'DUSIB Drain #4 (Karol Bagh main) last de-silted Sep 2025. IMD forecast 24mm rain in next 48h. CPWD road-repair contract active on adjoining stretch since Oct 12.',
+        sources: ['DUSIB · Drain register', 'IMD · Delhi forecast', 'CPWD · works portal'],
+        actionType: 'MPLADS',
+        mpladsFlag: 'MPLADS-eligible',
+        actionSuggestion: 'Recommend emergency de-silting works — est. ₹28.5 L from MPLADS Urban Development window.',
+        state: 'default'
+      },
+      {
+        id: '03',
+        category: 'Public Health',
+        title: 'Air quality — construction dust',
+        titleHi: null,
+        ward: 'Chanakyapuri, Sarai Kale Khan · 3 wards',
+        urgency: 'High',
+        trend: '↑ 62% w/w',
+        totalSignals: 44,
+        evidence: [
+          { source: 'X (post)', count: 24, label: 'X posts' },
+          { source: 'WhatsApp', count: 11, label: 'WhatsApp' },
+          { source: 'Reddit',   count: 6,  label: 'Reddit' },
+          { source: 'Portal',   count: 3,  label: 'Portal' }
+        ],
+        crossRef: 'CPCB Chanakyapuri station · 7-day PM2.5 avg 168 μg/m³ (Very Poor). 3 active construction permits within 500m (DDA public register). Metro line-4 spoil-yard operational.',
+        sources: ['CPCB · monitoring', 'DDA · permits', 'DMRC · works log'],
+        actionType: 'Central',
+        actionDate: '3 days ago · 01 Nov',
+        actionDetail: 'Ministry letter dispatched to Union Environment Minister (MoEFCC) requesting review of construction dust control and short-term sprinkler deployment.',
+        actionProgress: 42,
+        state: 'in-progress'
+      },
+      {
+        id: '02',
+        category: 'Water & Sanitation',
+        title: 'Contaminated drinking water',
+        titleHi: null,
+        ward: 'Kalkaji Ext., Malviya Nagar · 2 wards',
+        urgency: 'Critical',
+        trend: '↑ 180% w/w',
+        totalSignals: 58,
+        evidence: [
+          { source: 'WhatsApp', count: 22, label: 'WhatsApp' },
+          { source: 'X (post)', count: 19, label: 'X posts' },
+          { source: 'Portal',   count: 12, label: 'Portal' },
+          { source: 'Reddit',   count: 4,  label: 'Reddit' },
+          { source: 'News',     count: 1,  label: 'News' }
+        ],
+        crossRef: 'DJB water quality test 21 Oct · TDS 890 mg/L (BIS limit 500). CGWB shows falling water table in Kalkaji Ext borewell array. No DJB tanker route serving 4 of 7 affected pockets.',
+        sources: ['DJB · quality register', 'CGWB · groundwater', 'DJB · tanker routes'],
+        actionType: 'State',
+        mpladsFlag: 'State subject',
+        actionSuggestion: 'Coordinate joint DJB × DUSIB inspection · request temporary tanker augmentation to affected pockets.',
+        state: 'default'
+      }
+    ];
+
+    return cardsBase.map(c => {
+      const u = this._urgencyStyles(c.urgency);
+      // If default card is dispatched, transition to in-progress on the fly
+      const isDispatched = this.state.dispatched.includes(parseInt(c.id, 10));
+      const effectiveState = isDispatched && c.state === 'default' ? 'in-progress' : c.state;
+      const isDefault = effectiveState === 'default';
+      const isInProgress = effectiveState === 'in-progress';
+
+      return {
+        ...c,
+        isDefault,
+        isInProgress,
+        evidence: c.evidence.map(ev => ({ ...ev, icon: this._sourceIcon(ev.source) })),
+        categoryIcon: this._categoryIcon(c.category),
+        // For newly dispatched cards, synthesize action data
+        actionDate: c.actionDate || (isDispatched ? 'moments ago · just now' : c.actionDate),
+        actionDetail: c.actionDetail || (isDispatched ? `MPLADS recommendation letter dispatched to District Magistrate, New Delhi District. Awaiting acknowledgement.` : c.actionDetail),
+        actionProgress: c.actionProgress || (isDispatched ? 8 : 0),
+        progressBarStyle: `height: 100%; width: ${c.actionProgress || (isDispatched ? 8 : 0)}%; background: #1D6B3B; border-radius: 999px; transition: width 0.4s ease;`,
+        wrapStyle: `background: #FFFFFF; border: 1px solid ${isInProgress ? '#DBE9DE' : '#EDE7D7'}; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 480px;`,
+        categoryIconWrap: `width: 28px; height: 28px; border-radius: 999px; background: ${this._categoryDot(c.category)}12; color: ${this._categoryDot(c.category)}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;`,
+        statusBadgeStyle: isInProgress
+          ? `display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px; background: transparent; color: #1D6B3B; border: 1px solid #1D6B3B44; border-radius: 999px; font-size: 11.5px; font-weight: 500;`
+          : `display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px; background: transparent; color: ${u.color}; border: 1px solid ${u.color}44; border-radius: 999px; font-size: 11.5px; font-weight: 500;`,
+        statusLabel: isInProgress ? 'In progress' : c.urgency,
+        titleHiClass: c.titleHi ? 'hi' : '',
+        titleHiStyle: c.titleHi ? 'font-size: 15px; color: #7E8590; margin-top: 6px; line-height: 1.35;' : 'display: none;',
+        actionPillStyle: this._actionPillStyle(c.actionType),
+        draft: () => this.setState({ composerOpen: true, composerCluster: c.id }),
+        toggleMore: (e) => { e && e.stopPropagation && e.stopPropagation(); }
+      };
+    });
+  }
+
+  _dataSources() {
+    return [
+      { short: 'CPCB',    name: 'Central Pollution Control Board · air quality',       updated: '2 min ago' },
+      { short: 'DUSIB',   name: 'Delhi Urban Shelter Improvement · works register',    updated: '1 hr ago' },
+      { short: 'DJB',     name: 'Delhi Jal Board · water quality & tankers',           updated: '18 min ago' },
+      { short: 'DDA',     name: 'Delhi Development Authority · permits',               updated: '4 hr ago' },
+      { short: 'DMRC',    name: 'Delhi Metro · works log',                             updated: '30 min ago' },
+      { short: 'Delhi Police', name: 'FIRs & public safety incident log',              updated: '12 min ago' },
+      { short: 'IMD',     name: 'Meteorological Dept · forecast + rainfall',           updated: '15 min ago' },
+      { short: 'MoSPI',   name: 'MPLADS portal · sanction & release',                  updated: '1 day ago' }
+    ];
+  }
+
+  renderVals() {
+    const t = this._translations();
+    const l = t[this.state.lang];
+    const visibleCount = this.state.activeFilter === 'all'
+      ? 12
+      : this._clusterList().filter(c => c.categoryKey === this.state.activeFilter).length;
+
+    // Time range pill buttons in popover
+    const rangeBtn = (range) => `flex: 1; padding: 6px 8px; font-size: 12px; font-weight: 500; background: ${this.state.timeRange === range ? '#12325B' : 'transparent'}; color: ${this.state.timeRange === range ? '#FFFFFF' : '#545869'}; border: 1px solid ${this.state.timeRange === range ? '#12325B' : '#EDE7D7'}; border-radius: 999px; cursor: pointer;`;
+
+    // Map filter label
+    const filterLabels = {
+      all: 'All categories',
+      water: 'Water & Sanitation',
+      health: 'Public Health',
+      infra: 'Urban Infrastructure'
+    };
+
+    return {
+      l,
+      queueCards: this._buildQueueCards(l),
+      filterChips: this._buildFilterChips(),
+      feedItems: this._buildFeedItems(),
+      fullCards: this._buildFullCards(l),
+      dataSources: this._dataSources(),
+      dataSourceCount: this._dataSources().length,
+      visibleCount,
+
+      // Language (kept in state; toggle surface removed from header, may return in MP menu)
+      setLangEn: () => this.setState({ lang: 'en' }),
+      setLangHi: () => this.setState({ lang: 'hi' }),
+
+      // Map filter popover
+      mapFilterOpen: this.state.mapFilterOpen,
+      toggleMapFilter: () => this.setState(s => ({ mapFilterOpen: !s.mapFilterOpen })),
+      closeMapFilter: () => this.setState({ mapFilterOpen: false }),
+      mapFilterLabel: filterLabels[this.state.activeFilter] || 'All categories',
+
+      setRange7: () => this.setState({ timeRange: '7d' }),
+      setRange30: () => this.setState({ timeRange: '30d' }),
+      setRange90: () => this.setState({ timeRange: '90d' }),
+      range7Style: rangeBtn('7d'),
+      range30Style: rangeBtn('30d'),
+      range90Style: rangeBtn('90d'),
+
+      // Header MP menu (placeholder for now)
+      toggleMenu: () => {},
+
+      // Composer
+      composerOpen: this.state.composerOpen,
+      closeComposer: () => this.setState({ composerOpen: false }),
+      stopProp: (e) => e.stopPropagation(),
+      sendLetter: () => {
+        const id = parseInt(this.state.composerCluster || '01', 10);
+        this.setState(s => ({
+          composerOpen: false,
+          dispatched: s.dispatched.includes(id) ? s.dispatched : [id, ...s.dispatched]
+        }));
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

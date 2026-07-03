@@ -1,15 +1,18 @@
 import type {
+  Category,
   Cluster,
   Constituency,
   SourceBreakdown,
+  SubmissionSource,
   Timestamp,
+  Urgency,
 } from "@saarthi/shared";
 
 /**
- * Deterministic mock data for the offline skeleton (SAARTHI_MODE=emulator).
- * Everything here is typed against @saarthi/shared — if a Firestore shape changes
- * in the shared package, this file fails to compile. That's the anti-drift check
- * working (§4). Replaced by real Firestore listeners in Phase 4.
+ * Deterministic demo data — content ported from the design session handoff
+ * (`Awaaz Design Session Handoff/Dashboard.dc.html`). Typed against
+ * @saarthi/shared: if a Firestore shape changes, this fails to compile (§4).
+ * Replaced by real Firestore listeners in Phase 4.
  */
 
 /** Build an SDK-agnostic Timestamp from epoch millis (deterministic). */
@@ -23,7 +26,7 @@ export function ts(ms: number): Timestamp {
 }
 
 const DAY = 86_400_000;
-const NOW = 1_751_500_000_000; // fixed reference instant (~2025-07); keeps mocks stable
+const NOW = 1_751_500_000_000; // fixed reference instant; keeps mocks stable
 
 function breakdown(p: Partial<SourceBreakdown>): SourceBreakdown {
   return {
@@ -50,215 +53,373 @@ export const MOCK_CONSTITUENCY: Constituency = {
   },
   boundaries_geojson_url: "/data/constituencies/new-delhi-ls.geojson",
   wards: [
-    { id: "chandrapur", name: "Chandrapur", sc_majority: true, st_majority: false },
-    { id: "karol-bagh", name: "Karol Bagh", sc_majority: false, st_majority: false },
+    { id: "karol-bagh", name: "Karol Bagh", sc_majority: true, st_majority: false },
+    { id: "rajinder-nagar", name: "Rajinder Nagar", sc_majority: false, st_majority: false },
+    { id: "kalkaji-ext", name: "Kalkaji Ext.", sc_majority: false, st_majority: false },
+    { id: "malviya-nagar", name: "Malviya Nagar", sc_majority: false, st_majority: false },
+    { id: "chanakyapuri", name: "Chanakyapuri", sc_majority: false, st_majority: false },
+    { id: "sarai-kale-khan", name: "Sarai Kale Khan", sc_majority: true, st_majority: false },
+    { id: "patel-nagar", name: "Patel Nagar", sc_majority: true, st_majority: false },
     { id: "rk-puram", name: "R.K. Puram", sc_majority: false, st_majority: false },
-    { id: "sarojini", name: "Sarojini Nagar", sc_majority: true, st_majority: false },
+    { id: "sarojini-nagar", name: "Sarojini Nagar", sc_majority: false, st_majority: false },
+    { id: "kasturba-nagar", name: "Kasturba Nagar", sc_majority: false, st_majority: false },
+    { id: "green-park", name: "Green Park", sc_majority: false, st_majority: false },
+    { id: "greater-kailash", name: "Greater Kailash", sc_majority: false, st_majority: false },
+    { id: "delhi-cantt", name: "Delhi Cantt", sc_majority: false, st_majority: false },
   ],
   mplads: {
-    allocation_annual: 50_000_000,
-    utilization_ytd: 31_000_000,
-    sc_percent_ytd: 0.11,
-    st_percent_ytd: 0.06,
+    allocation_annual: 50_000_000, // ₹5.0 Cr
+    utilization_ytd: 34_200_000, //  ₹3.42 Cr → 68.4%
+    sc_percent_ytd: 0.128, //        12.8% (₹11 L below the 15% floor)
+    st_percent_ytd: 0.082, //        8.2% (0.7 pt buffer above 7.5%)
     fiscal_year: "2026-27",
   },
 };
 
-export const MOCK_CLUSTERS: Cluster[] = [
-  {
-    id: "cl_water_chandrapur",
-    title: "Water shortage — Chandrapur Ward",
-    title_hi: "पानी की कमी — चंद्रपुर वार्ड",
-    category: "water",
-    subcategory: "supply_interruption",
-    geo: {
-      constituency: "new-delhi-ls",
-      ward: "chandrapur",
-      locality: "Block C",
-      centroid: { lat: 28.6139, lng: 77.209 },
-      bounding_box: [77.2, 28.61, 77.22, 28.62],
-    },
-    urgency: "critical",
-    submission_ids: [],
-    submission_count: 34,
-    source_breakdown: breakdown({ whatsapp: 20, twitter: 8, news: 4, reddit: 2 }),
-    trend: { current_week: 34, previous_week: 19, percent_change: 78.9 },
-    cross_reference: [
-      {
-        dataset: "Census-2011",
-        metric: "Households with tap water",
-        value: "41% (below constituency avg 68%)",
-        citation_url: "https://censusindia.gov.in/",
-      },
-    ],
-    suggested_action: {
-      type: "MPLADS",
-      title: "Sanction borewell + storage tank, Chandrapur Block C",
-      body: "Draft recommendation to install a community borewell and 20,000L storage tank...",
-      mplads_eligible: true,
-      mplads_sector: "drinking_water",
-      estimated_cost_lakhs: 18,
-      compliance_notes: ["Permitted sector: drinking water", "Helps close SC gap: current 11%, target 15%"],
-    },
-    rank_score: 92,
-    rank_components: {
-      demand_signal: 0.9,
-      public_data_severity: 0.85,
-      urgency: 1,
-      mplads_eligibility: 1,
-      compliance_leverage: 0.9,
-      trend: 0.8,
-    },
-    status: "new",
-    centroid_embedding: [],
-    created_at: ts(NOW - 6 * DAY),
-    updated_at: ts(NOW - 1 * DAY),
-  },
-  {
-    id: "cl_air_rkpuram",
-    title: "Air quality spike — R.K. Puram",
-    title_hi: "वायु गुणवत्ता में गिरावट — आर.के. पुरम",
-    category: "air_quality",
-    subcategory: "pm25_exceedance",
-    geo: {
-      constituency: "new-delhi-ls",
-      ward: "rk-puram",
-      centroid: { lat: 28.5636, lng: 77.1766 },
-      bounding_box: [77.17, 28.56, 77.19, 28.57],
-    },
-    urgency: "high",
-    submission_ids: [],
-    submission_count: 21,
-    source_breakdown: breakdown({ twitter: 11, news: 6, widget: 4 }),
-    trend: { current_week: 21, previous_week: 12, percent_change: 75 },
-    cross_reference: [
-      {
-        dataset: "CPCB",
-        metric: "PM2.5 (7-day avg)",
-        value: "312 µg/m³ (severe)",
-        citation_url: "https://cpcb.nic.in/",
-      },
-    ],
-    suggested_action: {
-      type: "COORDINATION",
-      title: "Convene DPCC + MCD on construction-dust enforcement",
-      body: "Draft coordination note to Delhi Pollution Control Committee...",
-      mplads_eligible: false,
-      compliance_notes: ["Requires multi-stakeholder coordination (DPCC + MCD)"],
-    },
-    rank_score: 81,
-    status: "new",
-    centroid_embedding: [],
-    created_at: ts(NOW - 4 * DAY),
-    updated_at: ts(NOW - 1 * DAY),
-  },
-  {
-    id: "cl_road_karolbagh",
-    title: "Road & drainage collapse — Karol Bagh",
-    title_hi: "सड़क और नाली क्षति — करोल बाग",
-    category: "infrastructure",
-    subcategory: "road_drainage",
-    geo: {
-      constituency: "new-delhi-ls",
-      ward: "karol-bagh",
-      centroid: { lat: 28.6516, lng: 77.1907 },
-      bounding_box: [77.18, 28.65, 77.2, 28.66],
-    },
-    urgency: "high",
-    submission_ids: [],
-    submission_count: 17,
-    source_breakdown: breakdown({ whatsapp: 9, reddit: 5, widget: 3 }),
-    trend: { current_week: 17, previous_week: 15, percent_change: 13.3 },
-    cross_reference: [],
-    suggested_action: {
-      type: "MPLADS",
-      title: "Resurface arterial lane + storm drain, Karol Bagh",
-      body: "Draft recommendation for road resurfacing and drain repair...",
-      mplads_eligible: true,
-      mplads_sector: "roads_pathways_bridges",
-      estimated_cost_lakhs: 42,
-      compliance_notes: ["Permitted sector: roads/pathways/bridges"],
-    },
-    rank_score: 74,
-    status: "reviewed",
-    centroid_embedding: [],
-    created_at: ts(NOW - 9 * DAY),
-    updated_at: ts(NOW - 2 * DAY),
-  },
-  {
-    id: "cl_health_sarojini",
-    title: "PHC staffing shortfall — Sarojini Nagar",
-    title_hi: "पीएचसी स्टाफ की कमी — सरोजिनी नगर",
-    category: "health",
-    subcategory: "facility_staffing",
-    geo: {
-      constituency: "new-delhi-ls",
-      ward: "sarojini",
-      centroid: { lat: 28.5772, lng: 77.1946 },
-      bounding_box: [77.19, 28.57, 77.2, 28.58],
-    },
-    urgency: "medium",
-    submission_ids: [],
-    submission_count: 12,
-    source_breakdown: breakdown({ whatsapp: 6, news: 3, document: 3 }),
-    trend: { current_week: 12, previous_week: 11, percent_change: 9.1 },
-    cross_reference: [
-      {
-        dataset: "NFHS-5",
-        metric: "PHC beds per 10k",
-        value: "4.1 (below norm 6.0)",
-        citation_url: "https://rchiips.org/nfhs/",
-      },
-    ],
-    suggested_action: {
-      type: "STATE",
-      title: "Letter to Delhi Health Dept on PHC staffing",
-      body: "Draft letter to the Delhi Directorate of Health Services...",
-      mplads_eligible: false,
-      compliance_notes: ["Health staffing is a state subject — STATE pathway"],
-    },
-    rank_score: 63,
-    status: "new",
-    centroid_embedding: [],
-    created_at: ts(NOW - 5 * DAY),
-    updated_at: ts(NOW - 2 * DAY),
-  },
-  {
-    id: "cl_water_sarojini",
-    title: "Sewage overflow — Sarojini market",
-    title_hi: "सीवेज ओवरफ्लो — सरोजिनी बाज़ार",
-    category: "water",
-    subcategory: "sanitation",
-    geo: {
-      constituency: "new-delhi-ls",
-      ward: "sarojini",
-      centroid: { lat: 28.5779, lng: 77.1955 },
-      bounding_box: [77.19, 28.57, 77.2, 28.58],
-    },
-    urgency: "medium",
-    submission_ids: [],
-    submission_count: 9,
-    source_breakdown: breakdown({ whatsapp: 5, widget: 2, twitter: 2 }),
-    trend: { current_week: 9, previous_week: 4, percent_change: 125 },
-    cross_reference: [],
-    suggested_action: {
-      type: "MPLADS",
-      title: "Sanction drain de-silting, Sarojini market",
-      body: "Draft recommendation for market-area sewage line de-silting...",
-      mplads_eligible: true,
-      mplads_sector: "healthcare_sanitation",
-      estimated_cost_lakhs: 7,
-      compliance_notes: ["Permitted sector: healthcare/sanitation"],
-    },
-    rank_score: 58,
-    status: "new",
-    centroid_embedding: [],
-    created_at: ts(NOW - 3 * DAY),
-    updated_at: ts(NOW - 1 * DAY),
-  },
+/** Dashboard-wide header/KPI copy from the design. */
+export const DASHBOARD_META = {
+  signalsThisWeek: 1842,
+  sourceCount: 5,
+  openClusters: 47,
+  criticalClusters: 5,
+  openClustersSub: "3 categories · 8 wards",
+  scGapCopy: "₹11 L below required",
+  stBufferCopy: "0.7 pt buffer above required",
+  syncedCopy: "Synced 12:47 PM · Week 44",
+  constituencyCopy: "New Delhi Lok Sabha · 10 assembly segments · 1.5M citizens",
+  weekLabel: "Week 44, 2026",
+} as const;
+
+/** One radial-hub channel spoke (design `_radialSpec`). */
+export interface RadialChannel {
+  key: SubmissionSource;
+  name: string;
+  angle: number;
+  color: string;
+  count: number;
+  trend: string;
+  live: boolean;
+}
+
+export const RADIAL_CHANNELS: RadialChannel[] = [
+  { key: "whatsapp", name: "WhatsApp", angle: 0, color: "#25D366", count: 892, trend: "↑ 24%", live: true },
+  { key: "twitter", name: "X (post)", angle: 72, color: "#14192A", count: 617, trend: "↑ 18%", live: true },
+  { key: "reddit", name: "Reddit", angle: 144, color: "#FF4500", count: 128, trend: "↑ 9%", live: false },
+  { key: "portal", name: "Portal", angle: 216, color: "#054A91", count: 143, trend: "↑ 42%", live: false },
+  { key: "news", name: "News", angle: 288, color: "#8A5219", count: 62, trend: "↑ 4%", live: false },
 ];
 
-/** Top-N clusters by rank, as the dashboard's "Today's Top 5" would compute. */
-export function topClusters(n = 5): Cluster[] {
+/** UI-only extras the design attaches to a cluster (narrative cross-ref, links). */
+export interface ClusterUi {
+  /** Human-written cross-reference narrative shown on full cards. */
+  crossRefProse?: string;
+  /** Compact "Ward A · Ward B" location line. */
+  wardLabel: string;
+  /** Short suggestion line for the queue rail. */
+  queueSuggestion?: string;
+  /** "MPLADS-eligible" / "State subject" flag next to the pathway pill. */
+  pathwayFlag?: string;
+  /** Pre-seeded dispatch state (cluster #03 in the design ships in-progress). */
+  dispatched?: { date: string; detail: string; progress: number };
+}
+
+export interface DemoCluster extends Cluster {
+  ui: ClusterUi;
+}
+
+interface ClusterSeed {
+  num: number;
+  title: string;
+  title_hi?: string;
+  category: Category;
+  subcategory: string;
+  urgency: Urgency;
+  ward: string;
+  wardLabel: string;
+  lat: number;
+  lng: number;
+  count?: number;
+  sources?: Partial<SourceBreakdown>;
+  trendPct?: number; // percent_change; 0 + previous 0 renders as "new"
+  isNew?: boolean;
+  crossRefProse?: string;
+  crossRefs?: { dataset: string; metric: string }[];
+  actionType?: Cluster["suggested_action"]["type"];
+  actionTitle?: string;
+  actionBody?: string;
+  mpladsEligible?: boolean;
+  costLakhs?: number;
+  queueSuggestion?: string;
+  pathwayFlag?: string;
+  rank: number;
+  status?: Cluster["status"];
+  dispatched?: ClusterUi["dispatched"];
+}
+
+function mkCluster(s: ClusterSeed): DemoCluster {
+  const count = s.count ?? 8;
+  const previous = s.isNew ? 0 : Math.max(1, Math.round(count / (1 + (s.trendPct ?? 10) / 100)));
+  return {
+    id: `cl_${String(s.num).padStart(2, "0")}`,
+    title: s.title,
+    title_hi: s.title_hi ?? s.title,
+    category: s.category,
+    subcategory: s.subcategory,
+    geo: {
+      constituency: "new-delhi-ls",
+      ward: s.ward,
+      centroid: { lat: s.lat, lng: s.lng },
+      bounding_box: [s.lng - 0.01, s.lat - 0.01, s.lng + 0.01, s.lat + 0.01],
+    },
+    urgency: s.urgency,
+    submission_ids: [],
+    submission_count: count,
+    source_breakdown: breakdown(s.sources ?? { whatsapp: count }),
+    trend: {
+      current_week: count,
+      previous_week: previous,
+      percent_change: s.isNew ? 0 : (s.trendPct ?? 10),
+    },
+    cross_reference: (s.crossRefs ?? []).map((c) => ({
+      dataset: c.dataset,
+      metric: c.metric,
+      value: "",
+      citation_url: "#",
+    })),
+    suggested_action: {
+      type: s.actionType ?? "COORDINATION",
+      title: s.actionTitle ?? `Review ${s.title}`,
+      body: s.actionBody ?? "",
+      mplads_eligible: s.mpladsEligible ?? false,
+      estimated_cost_lakhs: s.costLakhs,
+      compliance_notes: [],
+    },
+    rank_score: s.rank,
+    status: s.status ?? "new",
+    centroid_embedding: [],
+    created_at: ts(NOW - 10 * DAY),
+    updated_at: ts(NOW - 1 * DAY),
+    ui: {
+      crossRefProse: s.crossRefProse,
+      wardLabel: s.wardLabel,
+      queueSuggestion: s.queueSuggestion,
+      pathwayFlag: s.pathwayFlag,
+      dispatched: s.dispatched,
+    },
+  };
+}
+
+/** All 12 demo clusters (design `_clusterList` + enriched top 5). */
+export const MOCK_CLUSTERS: DemoCluster[] = [
+  mkCluster({
+    num: 1,
+    title: "Waterlogging on arterial roads",
+    title_hi: "मुख्य सड़कों पर जलभराव",
+    category: "infrastructure",
+    subcategory: "drainage",
+    urgency: "critical",
+    ward: "karol-bagh",
+    wardLabel: "Karol Bagh · Rajinder Nagar",
+    lat: 28.6519,
+    lng: 77.1902,
+    count: 71,
+    sources: { whatsapp: 12, twitter: 47, reddit: 8, portal: 3, news: 1 },
+    trendPct: 340,
+    crossRefProse:
+      "DUSIB Drain #4 (Karol Bagh main) last de-silted Sep 2025. IMD forecast 24mm rain in next 48h. CPWD road-repair contract active on adjoining stretch since Oct 12.",
+    crossRefs: [
+      { dataset: "DUSIB", metric: "Drain register" },
+      { dataset: "IMD", metric: "Delhi forecast" },
+      { dataset: "CPWD", metric: "works portal" },
+    ],
+    actionType: "MPLADS",
+    actionTitle: "Emergency drain de-silting works",
+    actionBody:
+      "Recommend emergency de-silting works — est. ₹28.5 L from MPLADS Urban Development window.",
+    mpladsEligible: true,
+    costLakhs: 28.5,
+    queueSuggestion: "Emergency drain de-silting works",
+    pathwayFlag: "MPLADS-eligible",
+    rank: 97,
+  }),
+  mkCluster({
+    num: 2,
+    title: "Contaminated drinking water",
+    category: "water",
+    subcategory: "quality",
+    urgency: "critical",
+    ward: "kalkaji-ext",
+    wardLabel: "Kalkaji Ext. · Malviya Nagar",
+    lat: 28.5423,
+    lng: 77.2531,
+    count: 58,
+    sources: { whatsapp: 22, twitter: 19, portal: 12, reddit: 4, news: 1 },
+    trendPct: 180,
+    crossRefProse:
+      "DJB water quality test 21 Oct · TDS 890 mg/L (BIS limit 500). CGWB shows falling water table in Kalkaji Ext borewell array. No DJB tanker route serving 4 of 7 affected pockets.",
+    crossRefs: [
+      { dataset: "DJB", metric: "quality register" },
+      { dataset: "CGWB", metric: "groundwater" },
+      { dataset: "DJB", metric: "tanker routes" },
+    ],
+    actionType: "STATE",
+    actionTitle: "Coordinate DJB × DUSIB inspection",
+    actionBody:
+      "Coordinate joint DJB × DUSIB inspection · request temporary tanker augmentation to affected pockets.",
+    queueSuggestion: "Coordinate DJB × DUSIB inspection",
+    pathwayFlag: "State subject",
+    rank: 93,
+  }),
+  mkCluster({
+    num: 3,
+    title: "Air quality — construction dust",
+    category: "air_quality",
+    subcategory: "construction_dust",
+    urgency: "high",
+    ward: "chanakyapuri",
+    wardLabel: "Chanakyapuri · Sarai Kale Khan",
+    lat: 28.5985,
+    lng: 77.1893,
+    count: 44,
+    sources: { twitter: 24, whatsapp: 11, reddit: 6, portal: 3 },
+    trendPct: 62,
+    crossRefProse:
+      "CPCB Chanakyapuri station · 7-day PM2.5 avg 168 μg/m³ (Very Poor). 3 active construction permits within 500m (DDA public register). Metro line-4 spoil-yard operational.",
+    crossRefs: [
+      { dataset: "CPCB", metric: "monitoring" },
+      { dataset: "DDA", metric: "permits" },
+      { dataset: "DMRC", metric: "works log" },
+    ],
+    actionType: "CENTRAL",
+    actionTitle: "Ministry letter · MoEFCC",
+    actionBody:
+      "Ministry letter dispatched to Union Environment Minister (MoEFCC) requesting review of construction dust control and short-term sprinkler deployment.",
+    queueSuggestion: "Ministry letter · MoEFCC",
+    rank: 84,
+    status: "action_taken",
+    dispatched: {
+      date: "3 days ago · 01 Nov",
+      detail:
+        "Ministry letter dispatched to Union Environment Minister (MoEFCC) requesting review of construction dust control and short-term sprinkler deployment.",
+      progress: 42,
+    },
+  }),
+  mkCluster({
+    num: 4,
+    title: "Broken street lights, public safety",
+    category: "infrastructure",
+    subcategory: "street_lighting",
+    urgency: "high",
+    ward: "rajinder-nagar",
+    wardLabel: "Rajinder Nagar · Patel Nagar",
+    lat: 28.6398,
+    lng: 77.1802,
+    count: 29,
+    sources: { whatsapp: 14, portal: 9, twitter: 6 },
+    trendPct: 41,
+    actionType: "MPLADS",
+    actionTitle: "LED replacement programme",
+    mpladsEligible: true,
+    queueSuggestion: "LED replacement programme",
+    rank: 71,
+  }),
+  mkCluster({
+    num: 5,
+    title: "Sewer overflow near residences",
+    category: "water",
+    subcategory: "sanitation",
+    urgency: "high",
+    ward: "rk-puram",
+    wardLabel: "R.K. Puram Sector 4 & 7",
+    lat: 28.5665,
+    lng: 77.1794,
+    count: 17,
+    sources: { whatsapp: 9, news: 3, widget: 5 },
+    isNew: true,
+    actionType: "STATE",
+    actionTitle: "Escalate to DUSIB",
+    queueSuggestion: "Escalate to DUSIB",
+    rank: 66,
+  }),
+  mkCluster({
+    num: 6, title: "Waste collection irregular", category: "infrastructure", subcategory: "waste",
+    urgency: "medium", ward: "sarojini-nagar", wardLabel: "Sarojini Nagar",
+    lat: 28.573, lng: 77.1936, count: 11, trendPct: 12, rank: 48,
+  }),
+  mkCluster({
+    num: 7, title: "Stray dog complaints", category: "health", subcategory: "animal_control",
+    urgency: "medium", ward: "kasturba-nagar", wardLabel: "Kasturba Nagar",
+    lat: 28.547, lng: 77.226, count: 9, trendPct: 8, rank: 42,
+  }),
+  mkCluster({
+    num: 8, title: "Water supply irregular", category: "water", subcategory: "supply",
+    urgency: "medium", ward: "patel-nagar", wardLabel: "Patel Nagar",
+    lat: 28.628, lng: 77.158, count: 8, trendPct: 15, rank: 40,
+  }),
+  mkCluster({
+    num: 9, title: "Potholes on approach roads", category: "infrastructure", subcategory: "roads",
+    urgency: "low", ward: "delhi-cantt", wardLabel: "Delhi Cantt",
+    lat: 28.5382, lng: 77.2109, count: 6, trendPct: 5, rank: 30,
+  }),
+  mkCluster({
+    num: 10, title: "Dust pollution — metro construction", category: "air_quality", subcategory: "construction_dust",
+    urgency: "high", ward: "sarai-kale-khan", wardLabel: "Sarai Kale Khan",
+    lat: 28.612, lng: 77.24, count: 13, trendPct: 22, rank: 55,
+  }),
+  mkCluster({
+    num: 11, title: "Public toilet sanitation", category: "water", subcategory: "sanitation",
+    urgency: "medium", ward: "green-park", wardLabel: "Green Park",
+    lat: 28.551, lng: 77.202, count: 7, trendPct: 6, rank: 36,
+  }),
+  mkCluster({
+    num: 12, title: "Park maintenance", category: "infrastructure", subcategory: "parks",
+    urgency: "low", ward: "greater-kailash", wardLabel: "Greater Kailash",
+    lat: 28.5645, lng: 77.241, count: 4, trendPct: 3, rank: 22,
+  }),
+];
+
+/** Top-N clusters by rank ("Priority action queue" / "This week's priorities"). */
+export function topClusters(n = 5): DemoCluster[] {
   return [...MOCK_CLUSTERS].sort((a, b) => b.rank_score - a.rank_score).slice(0, n);
 }
+
+/** The three clusters shown as full cards, in the design's display order. */
+export function fullCardClusters(): DemoCluster[] {
+  const byNum = (n: number) => MOCK_CLUSTERS.find((c) => c.id === `cl_${String(n).padStart(2, "0")}`)!;
+  return [byNum(1), byNum(3), byNum(2)];
+}
+
+/** Live signal feed items (design `_feedItemsBase`). */
+export interface FeedItem {
+  source: SubmissionSource;
+  sourceName: string;
+  category: Category;
+  timeMin: number;
+  snippet: string;
+  link: string;
+  linkNew?: boolean;
+  hi?: boolean;
+}
+
+export const FEED_ITEMS: FeedItem[] = [
+  { source: "twitter", sourceName: "X (post)", category: "infrastructure", timeMin: 2, snippet: "Waterlogging in Karol Bagh main market crossed knee level again — 3rd day running.", link: "joins cluster #01" },
+  { source: "whatsapp", sourceName: "WhatsApp", category: "water", timeMin: 4, snippet: "पानी बहुत गंदा है, बदबू भी आ रही है। कृपया देखें।", link: "voice note · Hindi · joins cluster #02", hi: true },
+  { source: "reddit", sourceName: "Reddit", category: "air_quality", timeMin: 7, snippet: "r/delhi · AQI 380 outside the embassy zone at 8am — third day above severe.", link: "joins cluster #03" },
+  { source: "portal", sourceName: "Portal", category: "infrastructure", timeMin: 12, snippet: "Widget submission · Streetlights on Pusa Road out for 4 nights now, unsafe for women commuters.", link: "joins cluster #04" },
+  { source: "news", sourceName: "News", category: "water", timeMin: 18, snippet: 'Local daily · "DUSIB sewer complaints spike in RK Puram; residents demand action."', link: "joins cluster #05" },
+  { source: "twitter", sourceName: "X (post)", category: "air_quality", timeMin: 24, snippet: "Metro construction dust on the DND stretch — masks required through Nov.", link: "creates new cluster · #12", linkNew: true },
+  { source: "whatsapp", sourceName: "WhatsApp", category: "infrastructure", timeMin: 33, snippet: "Garbage not collected in Kasturba Nagar for three days. Attaching photo.", link: "joins cluster #06" },
+  { source: "twitter", sourceName: "X (post)", category: "water", timeMin: 41, snippet: "Malviya Nagar water tanker delayed again this morning, entire block affected.", link: "joins cluster #02" },
+];
+
+/** Footer data-source registry (design `_dataSources`). */
+export const DATA_SOURCES = [
+  { short: "CPCB", name: "Central Pollution Control Board · air quality", updated: "2 min ago" },
+  { short: "DUSIB", name: "Delhi Urban Shelter Improvement · works register", updated: "1 hr ago" },
+  { short: "DJB", name: "Delhi Jal Board · water quality & tankers", updated: "18 min ago" },
+  { short: "DDA", name: "Delhi Development Authority · permits", updated: "4 hr ago" },
+  { short: "DMRC", name: "Delhi Metro · works log", updated: "30 min ago" },
+  { short: "Delhi Police", name: "FIRs & public safety incident log", updated: "12 min ago" },
+  { short: "IMD", name: "Meteorological Dept · forecast + rainfall", updated: "15 min ago" },
+  { short: "MoSPI", name: "MPLADS portal · sanction & release", updated: "1 day ago" },
+] as const;

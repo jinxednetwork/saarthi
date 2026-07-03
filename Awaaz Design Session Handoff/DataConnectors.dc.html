@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans', 'Segoe UI', system-ui, sans-serif;
+      color: #14192A;
+      background: #F1EBDD;
+      -webkit-font-smoothing: antialiased;
+    }
+    .hi { font-family: 'Noto Sans Devanagari', 'Noto Sans', sans-serif; }
+    .num { font-variant-numeric: tabular-nums; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
+    @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    input { font-family: inherit; }
+  </style>
+</helmet>
+
+<!-- ========== HEADER ========== -->
+<header style="background: #FFFFFF; border-bottom: 1px solid #EDE7D7;">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; gap: 36px; height: 68px;">
+    <a href="Dashboard.dc.html" style="display: flex; align-items: center; gap: 11px; text-decoration: none;">
+      <div style="display: flex; align-items: flex-end; gap: 2px; height: 22px;">
+        <div style="width: 3px; height: 9px; background: #12325B; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 16px; background: #12325B; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 13px; background: #12325B; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 20px; background: #C15A15; border-radius: 1px;"></div>
+        <div style="width: 3px; height: 11px; background: #12325B; border-radius: 1px;"></div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px; line-height: 1;">
+        <div style="font-size: 19px; font-weight: 600; color: #12325B; letter-spacing: -0.015em;">Saarthi</div>
+        <div class="hi" style="font-size: 13px; color: #A69C86;">सारथि</div>
+      </div>
+    </a>
+    <nav style="display: flex; align-items: center; gap: 4px; margin-left: 8px;">
+      <a href="Dashboard.dc.html" style="padding: 10px 12px; font-size: 13.5px; font-weight: 400; color: #545869; text-decoration: none;" style-hover="color: #14192A;">Dashboard</a>
+      <a href="Intelligence.dc.html" style="padding: 10px 12px; font-size: 13.5px; font-weight: 400; color: #545869; text-decoration: none;" style-hover="color: #14192A;">Intelligence</a>
+      <a href="#" style="padding: 10px 12px; font-size: 13.5px; font-weight: 400; color: #545869; text-decoration: none;" style-hover="color: #14192A;">Live feed</a>
+      <a href="#" style="padding: 10px 12px; font-size: 13.5px; font-weight: 400; color: #545869; text-decoration: none;" style-hover="color: #14192A;">MPLADS</a>
+      <a href="#" style="padding: 10px 12px; font-size: 13.5px; font-weight: 400; color: #545869; text-decoration: none;" style-hover="color: #14192A;">Actions</a>
+    </nav>
+    <div style="flex: 1;"></div>
+    <button style="display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; background: transparent; border: 1px solid #EDE7D7; border-radius: 999px; cursor: pointer; font-size: 12.5px; color: #14192A;" style-hover="border-color: #CDC5B4;">
+      <span style="font-weight: 500;">Constituency</span>
+      <span style="color: #A69C86;">New Delhi</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#7E8590" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+    <button style="display: flex; align-items: center; gap: 10px; background: transparent; border: 0; padding: 4px 4px 4px 6px; cursor: pointer; border-radius: 999px;" style-hover="background: #F6F2EA;">
+      <div style="width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #12325B, #054A91); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12.5px;">BS</div>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7E8590" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ========== PAGE HEADER + BREADCRUMB ========== -->
+<div style="max-width: 1440px; margin: 0 auto; padding: 32px 40px 24px;">
+  <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #A69C86; margin-bottom: 14px;">
+    <a href="#" style="color: #7E8590; text-decoration: none;" style-hover="color: #14192A;">Settings</a>
+    <span>/</span>
+    <span style="color: #14192A;">Data connectors</span>
+  </div>
+  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+    <div>
+      <h1 style="font-size: 28px; font-weight: 600; color: #14192A; letter-spacing: -0.02em; margin: 0 0 6px;">Data connectors</h1>
+      <p style="font-size: 14px; color: #7E8590; max-width: 620px; line-height: 1.55; margin: 0;">Where Saarthi listens for citizen signals and cross-references against government data. All channels are opt-in and reversible.</p>
+    </div>
+    <button style="display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; background: #12325B; color: #FFFFFF; border: 0; border-radius: 999px; font-size: 13px; font-weight: 500; cursor: pointer;" style-hover="background: #0B2447;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Add channel
+    </button>
+  </div>
+</div>
+
+<!-- ========== HEALTH SUMMARY ========== -->
+<section style="max-width: 1440px; margin: 0 auto; padding: 0 40px;">
+  <div style="background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 12px; padding: 28px 32px;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #7E8590; margin-bottom: 10px;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #1D6B3B; animation: livePulse 2s ease-in-out infinite;"></div>
+          <span>Overall health</span>
+        </div>
+        <div style="font-size: 28px; font-weight: 500; color: #14192A; letter-spacing: -0.02em; line-height: 1;">Healthy</div>
+        <div style="font-size: 12px; color: #A69C86; margin-top: 8px;">10 of 11 connectors reporting</div>
+      </div>
+      <div>
+        <div style="font-size: 12.5px; color: #7E8590; margin-bottom: 10px;">Signals ingested · 24 hr</div>
+        <div class="num" style="font-size: 28px; font-weight: 500; color: #14192A; letter-spacing: -0.02em; line-height: 1;">4,318</div>
+        <div style="font-size: 12px; color: #1D6B3B; margin-top: 8px;">+12% vs 7-day avg</div>
+      </div>
+      <div>
+        <div style="font-size: 12.5px; color: #7E8590; margin-bottom: 10px;">Public dataset syncs</div>
+        <div class="num" style="font-size: 28px; font-weight: 500; color: #14192A; letter-spacing: -0.02em; line-height: 1;">8 / 8</div>
+        <div style="font-size: 12px; color: #A69C86; margin-top: 8px;">All fresh · median lag 14 min</div>
+      </div>
+      <div>
+        <div style="font-size: 12.5px; color: #7E8590; margin-bottom: 10px;">Requires attention</div>
+        <div class="num" style="font-size: 28px; font-weight: 500; color: #B77321; letter-spacing: -0.02em; line-height: 1;">1</div>
+        <div style="font-size: 12px; color: #A69C86; margin-top: 8px;">Reddit auth token expiring in 7 days</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== INTAKE CHANNELS ========== -->
+<section style="max-width: 1440px; margin: 0 auto; padding: 40px 40px 0;">
+  <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px;">
+    <div>
+      <div style="font-size: 20px; font-weight: 600; color: #14192A; letter-spacing: -0.015em;">Citizen intake channels</div>
+      <div style="font-size: 13px; color: #7E8590; margin-top: 4px;">Where citizens reach your office — voice, text, social, portal</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; font-size: 12.5px; color: #A69C86;">
+      <span>Sorted by signal volume</span>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <sc-for list="{{ intakeChannels }}" as="ch" hint-placeholder-count="6">
+      <article style="{{ ch.wrapStyle }}">
+        <!-- Row 1: identity + status -->
+        <div style="padding: 22px 24px 0; display: flex; align-items: flex-start; justify-content: space-between;">
+          <div style="display: flex; align-items: flex-start; gap: 14px;">
+            <div style="{{ ch.iconWrap }}">{{ ch.icon }}</div>
+            <div>
+              <div style="font-size: 15px; font-weight: 500; color: #14192A;">{{ ch.name }}</div>
+              <div style="font-size: 12px; color: #7E8590; margin-top: 2px;">{{ ch.subtitle }}</div>
+            </div>
+          </div>
+          <div style="{{ ch.statusBadge }}">
+            <div style="{{ ch.statusDot }}"></div>
+            <span>{{ ch.statusLabel }}</span>
+          </div>
+        </div>
+
+        <!-- Row 2: identity value (handle / number / URL) -->
+        <div style="padding: 16px 24px 0;">
+          <div style="font-size: 11.5px; color: #A69C86; margin-bottom: 4px;">{{ ch.identityLabel }}</div>
+          <div class="mono" style="font-size: 13px; color: #14192A;">{{ ch.identity }}</div>
+        </div>
+
+        <!-- Row 3: stats -->
+        <div style="padding: 18px 24px 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+          <div>
+            <div style="font-size: 11.5px; color: #A69C86; margin-bottom: 4px;">Last sync</div>
+            <div style="font-size: 13px; color: #14192A;" class="num">{{ ch.lastSync }}</div>
+          </div>
+          <div>
+            <div style="font-size: 11.5px; color: #A69C86; margin-bottom: 4px;">Volume · 24 hr</div>
+            <div class="num" style="font-size: 13px; color: #14192A;">{{ ch.volume }}</div>
+          </div>
+          <div>
+            <div style="font-size: 11.5px; color: #A69C86; margin-bottom: 4px;">7-day trend</div>
+            <div style="font-size: 13px;" class="num"><span style="{{ ch.trendStyle }}">{{ ch.trend }}</span></div>
+          </div>
+        </div>
+
+        <!-- Row 4: mini sparkline -->
+        <div style="padding: 16px 24px 0;">
+          <svg viewBox="0 0 320 40" style="width: 100%; height: 40px; display: block;">
+            <polyline points="{{ ch.sparkPoints }}" fill="none" stroke="{{ ch.brandColor }}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"></polyline>
+            <polyline points="{{ ch.sparkFillPoints }}" fill="{{ ch.brandColor }}" fill-opacity="0.08" stroke="none"></polyline>
+          </svg>
+        </div>
+
+        <!-- Row 5: actions -->
+        <div style="padding: 14px 24px 22px; margin-top: 12px; border-top: 1px solid #F1EBDD; display: flex; align-items: center; justify-content: space-between;">
+          <a href="#" style="font-size: 12.5px; color: #12325B; text-decoration: none;">Configure →</a>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button style="padding: 6px 12px; background: transparent; color: #545869; border: 1px solid #EDE7D7; border-radius: 999px; font-size: 12px; cursor: pointer;" style-hover="border-color: #CDC5B4; color: #14192A;">Test</button>
+            <button style="padding: 6px 12px; background: transparent; color: #545869; border: 1px solid #EDE7D7; border-radius: 999px; font-size: 12px; cursor: pointer;" style-hover="border-color: #CDC5B4; color: #14192A;">{{ ch.toggleLabel }}</button>
+          </div>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+</section>
+
+<!-- ========== PORTAL WIDGET INSTALL ========== -->
+<section style="max-width: 1440px; margin: 0 auto; padding: 40px 40px 0;">
+  <div style="background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 12px; overflow: hidden;">
+    <div style="padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #F1EBDD;">
+      <div>
+        <div style="font-size: 17px; font-weight: 600; color: #14192A; letter-spacing: -0.01em;">Portal widget install code</div>
+        <div style="font-size: 12.5px; color: #7E8590; margin-top: 4px;">Drop this into your MP website's &lt;head&gt; to accept submissions from citizens without an account.</div>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button style="padding: 8px 14px; background: transparent; color: #12325B; border: 1px solid #EDE7D7; border-radius: 999px; font-size: 12.5px; font-weight: 500; cursor: pointer;" style-hover="border-color: #12325B;">Email to my webmaster</button>
+        <button style="padding: 8px 14px; background: #12325B; color: #FFFFFF; border: 0; border-radius: 999px; font-size: 12.5px; font-weight: 500; cursor: pointer;" style-hover="background: #0B2447;">Copy snippet</button>
+      </div>
+    </div>
+    <div style="padding: 20px 32px 24px; background: #FBF8F2;">
+      <pre class="mono" style="margin: 0; font-size: 12.5px; color: #14192A; line-height: 1.7; white-space: pre-wrap; word-break: break-all;">&lt;!-- Saarthi citizen submission widget --&gt;
+&lt;script src=&quot;https://saarthi.gov.in/w/v1/widget.js&quot; async data-mp=&quot;bansuri-swaraj-newdelhi&quot; data-locale=&quot;auto&quot;&gt;&lt;/script&gt;
+&lt;div id=&quot;saarthi-widget&quot; data-position=&quot;bottom-right&quot; data-theme=&quot;government&quot;&gt;&lt;/div&gt;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PUBLIC DATASETS ========== -->
+<section style="max-width: 1440px; margin: 0 auto; padding: 40px 40px 0;">
+  <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px;">
+    <div>
+      <div style="font-size: 20px; font-weight: 600; color: #14192A; letter-spacing: -0.015em;">Public datasets</div>
+      <div style="font-size: 13px; color: #7E8590; margin-top: 4px;">Government data feeds we cross-reference against citizen signals. All connect automatically.</div>
+    </div>
+    <a href="#" style="font-size: 12.5px; color: #12325B; text-decoration: none;">Request an additional feed →</a>
+  </div>
+
+  <div style="background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 12px; overflow: hidden;">
+    <div style="display: grid; grid-template-columns: 240px 1fr 120px 120px 100px; gap: 20px; padding: 14px 24px; background: #FBF8F2; border-bottom: 1px solid #EDE7D7; font-size: 11.5px; color: #A69C86;">
+      <div>Source</div>
+      <div>Description</div>
+      <div>Update cadence</div>
+      <div>Last sync</div>
+      <div style="text-align: right;">Status</div>
+    </div>
+    <sc-for list="{{ publicDatasets }}" as="ds" hint-placeholder-count="8">
+      <div style="display: grid; grid-template-columns: 240px 1fr 120px 120px 100px; gap: 20px; padding: 18px 24px; border-bottom: 1px solid #F1EBDD; align-items: center;">
+        <div>
+          <div style="font-size: 13px; font-weight: 500; color: #14192A;">{{ ds.short }}</div>
+          <div style="font-size: 11.5px; color: #A69C86; margin-top: 2px;">{{ ds.dept }}</div>
+        </div>
+        <div style="font-size: 12.5px; color: #545869; line-height: 1.5;">{{ ds.description }}</div>
+        <div style="font-size: 12px; color: #14192A;">{{ ds.cadence }}</div>
+        <div style="font-size: 12px; color: #14192A;" class="num">{{ ds.lastSync }}</div>
+        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+          <div style="{{ ds.dotStyle }}"></div>
+          <span style="font-size: 12px; color: {{ ds.statusColor }};">{{ ds.status }}</span>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<!-- ========== PRIVACY + PROVENANCE NOTE ========== -->
+<section style="max-width: 1440px; margin: 0 auto; padding: 40px 40px 0;">
+  <div style="background: #FFFFFF; border: 1px solid #EDE7D7; border-radius: 12px; padding: 24px 32px; display: flex; align-items: flex-start; gap: 20px;">
+    <div style="width: 40px; height: 40px; border-radius: 999px; background: #DDE6F0; color: #12325B; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </div>
+    <div style="flex: 1;">
+      <div style="font-size: 14.5px; font-weight: 500; color: #14192A; margin-bottom: 6px;">How your channels handle citizen data</div>
+      <div style="font-size: 13px; color: #545869; line-height: 1.65; margin-bottom: 12px;">Saarthi never surfaces citizen usernames on your dashboard's priority ranking. Identifiable information lives only inside the evidence drawer and only appears when you explicitly click through. Political sentiment classifiers are off by default. All processing runs on MEITY-empanelled infrastructure with data residency in India.</div>
+      <div style="display: flex; gap: 20px;">
+        <a href="#" style="font-size: 12.5px; color: #12325B; text-decoration: none;">Read the data-handling policy</a>
+        <a href="#" style="font-size: 12.5px; color: #12325B; text-decoration: none;">Ethical constraints reference</a>
+        <a href="#" style="font-size: 12.5px; color: #12325B; text-decoration: none;">Audit log</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<section style="max-width: 1440px; margin: 0 auto; padding: 48px 40px 60px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; color: #A69C86;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <span>Saarthi v0.4 · Pilot programme, Government of India</span>
+      <span style="color: #DCD3BF;">·</span>
+      <a href="#" style="color: #7E8590; text-decoration: none;" style-hover="color: #12325B;">Methodology</a>
+      <a href="#" style="color: #7E8590; text-decoration: none;" style-hover="color: #12325B;">Privacy</a>
+      <a href="#" style="color: #7E8590; text-decoration: none;" style-hover="color: #12325B;">Accessibility</a>
+    </div>
+    <div>Built on UX4G Design System 2.0</div>
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  _svg(size, sw, children) {
+    const e = React.createElement;
+    return e('svg', {
+      width: size, height: size, viewBox: '0 0 24 24',
+      fill: 'none', stroke: 'currentColor', strokeWidth: sw,
+      strokeLinecap: 'round', strokeLinejoin: 'round',
+      style: { display: 'block' }
+    }, children);
+  }
+
+  _sparkline(values) {
+    // Build points string for a 320x40 SVG viewbox given ~30 values
+    const w = 320, h = 40, pad = 4;
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    const range = max - min || 1;
+    const stepX = (w - 2 * pad) / (values.length - 1);
+    const points = values.map((v, i) => {
+      const x = pad + i * stepX;
+      const y = h - pad - ((v - min) / range) * (h - 2 * pad);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    // Fill polygon: same points + bottom right + bottom left
+    const fill = points + ` ${w - pad},${h - pad} ${pad},${h - pad}`;
+    return { line: points, fill };
+  }
+
+  _intakeChannels() {
+    const e = React.createElement;
+    const wa = this._sparkline([32,38,42,55,48,52,45,60,72,68,75,81,79,88,95,101,108,102,98,110,124,132,128,135,142,138,145,152,148,158]);
+    const xp = this._sparkline([120,135,142,148,155,162,168,175,182,178,185,192,201,208,215,222,218,225,232,241,238,242,236,231,240,245,251,258,262,268]);
+    const rd = this._sparkline([12,14,16,15,18,20,22,24,26,25,28,30,32,34,33,35,37,39,41,40,42,44,46,45,47,48,49,51,53,55]);
+    const pt = this._sparkline([8,10,9,12,14,16,15,17,18,20,22,24,23,25,27,26,28,30,32,34,33,35,37,39,38,40,42,44,43,45]);
+    const nw = this._sparkline([2,3,2,4,5,3,4,5,6,5,4,5,7,6,5,6,7,8,7,6,8,9,7,8,9,8,7,9,10,8]);
+    const wb = this._sparkline([5,6,4,7,5,8,6,9,7,10,8,11,9,12,10,13,11,14,12,15,13,16,14,17,15,18,16,19,17,20]);
+
+    return [
+      {
+        key: 'whatsapp', name: 'WhatsApp Business', brandColor: '#25D366',
+        subtitle: 'Verified helpline · voice + text · 22 languages',
+        identityLabel: 'Verified number',
+        identity: '+91 1800-XXX-XXXX',
+        status: 'active',
+        statusLabel: 'Active',
+        lastSync: '38 sec ago',
+        volume: '1,842',
+        trend: '↑ 18%',
+        trendPositive: true,
+        toggleLabel: 'Pause',
+        spark: wa,
+        icon: this._svg(20, 1.75, [
+          e('path', { key: 'p', d: 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z' })
+        ])
+      },
+      {
+        key: 'x', name: 'X (Twitter)', brandColor: '#14192A',
+        subtitle: 'Mentions + keyword tracking · New Delhi wards',
+        identityLabel: 'Handle',
+        identity: '@BansuriSwaraj',
+        status: 'active',
+        statusLabel: 'Active',
+        lastSync: '12 sec ago',
+        volume: '2,014',
+        trend: '↑ 22%',
+        trendPositive: true,
+        toggleLabel: 'Pause',
+        spark: xp,
+        icon: this._svg(18, 2, [
+          e('line', { key: 'l1', x1: 4, y1: 4, x2: 20, y2: 20 }),
+          e('line', { key: 'l2', x1: 4, y1: 20, x2: 20, y2: 4 })
+        ])
+      },
+      {
+        key: 'reddit', name: 'Reddit', brandColor: '#FF4500',
+        subtitle: 'r/delhi, r/india, r/IndiaSpeaks · public threads',
+        identityLabel: 'OAuth application',
+        identity: 'saarthi-listener-v2 · read-only',
+        status: 'warning',
+        statusLabel: 'Token expiring · 7 days',
+        lastSync: '2 min ago',
+        volume: '284',
+        trend: '↑ 8%',
+        trendPositive: true,
+        toggleLabel: 'Pause',
+        spark: rd,
+        icon: this._svg(20, 1.75, [
+          e('path', { key: 'p', d: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' })
+        ])
+      },
+      {
+        key: 'portal', name: 'Portal widget', brandColor: '#054A91',
+        subtitle: 'Drop-in JS widget on MP website · anonymous submissions OK',
+        identityLabel: 'Site key',
+        identity: 'bansuri-swaraj-newdelhi',
+        status: 'active',
+        statusLabel: 'Active',
+        lastSync: '58 sec ago',
+        volume: '134',
+        trend: '↑ 42%',
+        trendPositive: true,
+        toggleLabel: 'Pause',
+        spark: pt,
+        icon: this._svg(20, 1.75, [
+          e('rect', { key: 'r', x: 3, y: 4, width: 18, height: 16, rx: 1 }),
+          e('line', { key: 'l', x1: 3, y1: 9, x2: 21, y2: 9 })
+        ])
+      },
+      {
+        key: 'news', name: 'News monitoring', brandColor: '#8A5219',
+        subtitle: 'Times of India, HT, Dainik Jagran, Navbharat Times, The Hindu',
+        identityLabel: 'Publisher agreements',
+        identity: '5 dailies · via NewsAPI + RSS',
+        status: 'active',
+        statusLabel: 'Active',
+        lastSync: '4 min ago',
+        volume: '38',
+        trend: '↑ 4%',
+        trendPositive: true,
+        toggleLabel: 'Pause',
+        spark: nw,
+        icon: this._svg(20, 1.75, [
+          e('path', { key: 'p', d: 'M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2' }),
+          e('path', { key: 'p2', d: 'M18 14h-8M18 10h-8M18 6h-8' })
+        ])
+      },
+      {
+        key: 'website', name: 'MP website form', brandColor: '#4A6A87',
+        subtitle: 'Existing contact form via HTTPS webhook',
+        identityLabel: 'Webhook URL',
+        identity: 'https://bansuriswaraj.in/api/contact',
+        status: 'inactive',
+        statusLabel: 'Not configured',
+        lastSync: '—',
+        volume: '—',
+        trend: '—',
+        trendPositive: null,
+        toggleLabel: 'Set up',
+        spark: wb,
+        icon: this._svg(20, 1.75, [
+          e('circle', { key: 'c', cx: 12, cy: 12, r: 10 }),
+          e('path', { key: 'p1', d: 'M3 12h18' }),
+          e('path', { key: 'p2', d: 'M12 3a15 15 0 0 1 0 18' }),
+          e('path', { key: 'p3', d: 'M12 3a15 15 0 0 0 0 18' })
+        ])
+      }
+    ].map(ch => {
+      const statusMap = {
+        active:   { color: '#1D6B3B', bg: '#DBE9DE' },
+        warning:  { color: '#B77321', bg: '#FBEDD8' },
+        error:    { color: '#A3311F', bg: '#FCE8E1' },
+        inactive: { color: '#7E8590', bg: '#F1EBDD' }
+      };
+      const s = statusMap[ch.status];
+      const trendColor = ch.trendPositive === true ? '#1D6B3B'
+                      : ch.trendPositive === false ? '#A3311F'
+                      : '#A69C86';
+      return {
+        ...ch,
+        wrapStyle: `background: #FFFFFF; border: 1px solid ${ch.status === 'warning' ? '#F0E0C2' : (ch.status === 'inactive' ? '#EDE7D7' : '#EDE7D7')}; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;`,
+        iconWrap: `width: 40px; height: 40px; border-radius: 10px; background: ${ch.brandColor}15; color: ${ch.brandColor}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;`,
+        statusBadge: `display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: transparent; color: ${s.color}; border: 1px solid ${s.color}44; border-radius: 999px; font-size: 11.5px; font-weight: 500;`,
+        statusDot: `width: 6px; height: 6px; border-radius: 50%; background: ${s.color}; ${ch.status === 'active' ? 'animation: livePulse 2s ease-in-out infinite;' : ''}`,
+        trendStyle: `color: ${trendColor}; font-weight: 500;`,
+        sparkPoints: ch.spark.line,
+        sparkFillPoints: ch.spark.fill
+      };
+    });
+  }
+
+  _publicDatasets() {
+    const list = [
+      { short: 'CPCB',        dept: 'Central Pollution Control Board', description: 'Air quality readings from 40 monitoring stations across Delhi, refreshed every 15 minutes.', cadence: 'Every 15 min', lastSync: '2 min ago', status: 'active' },
+      { short: 'DUSIB',       dept: 'Delhi Urban Shelter Board',       description: 'Drain de-silting log, sanitation complaints register, and shelter capacity feed.',              cadence: 'Hourly',       lastSync: '38 min ago', status: 'active' },
+      { short: 'DJB',         dept: 'Delhi Jal Board',                 description: 'Water quality test results, tanker delivery routes, and pressure diagnostics for the network.',cadence: 'Every 30 min',lastSync: '14 min ago', status: 'active' },
+      { short: 'DDA',         dept: 'Delhi Development Authority',     description: 'Active construction permits, layout plans, and land-use certifications for the constituency.', cadence: 'Daily',        lastSync: '4 hr ago',   status: 'active' },
+      { short: 'DMRC',        dept: 'Delhi Metro Rail Corp.',          description: 'Works log for line construction, spoil-yard operations, and station-area disruptions.',        cadence: 'Every 2 hr',    lastSync: '32 min ago', status: 'active' },
+      { short: 'Delhi Police',dept: 'FIR + incident feed',             description: 'Public FIRs and incident reports filtered to the constituency boundary.',                     cadence: 'Every 15 min', lastSync: '8 min ago',  status: 'active' },
+      { short: 'IMD',         dept: 'India Meteorological Dept.',      description: 'Forecast, rainfall, and severe-weather advisories at 3km resolution.',                        cadence: 'Every 15 min', lastSync: '11 min ago', status: 'active' },
+      { short: 'MoSPI',       dept: 'MPLADS portal',                   description: 'Fund release, sanction, and utilization data for your constituency.',                          cadence: 'Daily',        lastSync: '1 day ago',  status: 'active' }
+    ];
+    const statusMap = {
+      active:   { color: '#1D6B3B', label: 'Fresh' },
+      stale:    { color: '#B77321', label: 'Stale' },
+      error:    { color: '#A3311F', label: 'Error' }
+    };
+    return list.map(ds => {
+      const s = statusMap[ds.status];
+      return {
+        ...ds,
+        status: s.label,
+        statusColor: s.color,
+        dotStyle: `width: 6px; height: 6px; border-radius: 50%; background: ${s.color};`
+      };
+    });
+  }
+
+  renderVals() {
+    return {
+      intakeChannels: this._intakeChannels(),
+      publicDatasets: this._publicDatasets()
+    };
+  }
+}
+</script>
+</body>
+</html>

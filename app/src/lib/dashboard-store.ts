@@ -1,30 +1,35 @@
 "use client";
 
 import { create } from "zustand";
+import type { SubmissionSource } from "@saarthi/shared";
 import type { CategoryGroup } from "./categories";
 
 /**
  * Cross-component dashboard UI state (§3.3 — Zustand for map filters, selected
- * cluster, composer). Component-local state (splash timer, feed tick, radial
- * hover) stays in the components.
+ * cluster, composer, shell). Component-local state (splash timer, feed tick,
+ * radial hover) stays in the components.
  */
 export type MapFilter = CategoryGroup | "all";
 export type TimeRange = "7d" | "30d" | "90d";
+export type SourceFilter = SubmissionSource | "all";
 
 interface DashboardState {
   activeFilter: MapFilter;
   timeRange: TimeRange;
+  /** Radial-hub spoke filter — narrows the live feed panel by channel. */
+  sourceFilter: SourceFilter;
+  /** Cluster whose detail drawer is open (null = closed). */
+  selectedClusterId: string | null;
   composerClusterId: string | null;
   /** Cluster ids whose MPLADS letter was approved & sent this session. */
   dispatched: string[];
   /** Shell */
   sidebarCollapsed: boolean;
-  /** Transitional (C3 removes with MapSection) */
-  mapFilterOpen: boolean;
-  toggleMapFilter(): void;
-  closeMapFilter(): void;
   setFilter(filter: MapFilter): void;
   setTimeRange(range: TimeRange): void;
+  setSourceFilter(filter: SourceFilter): void;
+  selectCluster(id: string): void;
+  closeDetail(): void;
   openComposer(clusterId: string): void;
   closeComposer(): void;
   sendLetter(): void;
@@ -35,14 +40,16 @@ interface DashboardState {
 export const useDashboardStore = create<DashboardState>((set) => ({
   activeFilter: "all",
   timeRange: "30d",
+  sourceFilter: "all",
+  selectedClusterId: null,
   composerClusterId: null,
   dispatched: [],
   sidebarCollapsed: false,
-  mapFilterOpen: false,
-  toggleMapFilter: () => set((s) => ({ mapFilterOpen: !s.mapFilterOpen })),
-  closeMapFilter: () => set({ mapFilterOpen: false }),
-  setFilter: (activeFilter) => set({ activeFilter, mapFilterOpen: false }),
+  setFilter: (activeFilter) => set({ activeFilter }),
   setTimeRange: (timeRange) => set({ timeRange }),
+  setSourceFilter: (sourceFilter) => set({ sourceFilter }),
+  selectCluster: (selectedClusterId) => set({ selectedClusterId }),
+  closeDetail: () => set({ selectedClusterId: null }),
   openComposer: (composerClusterId) => set({ composerClusterId }),
   closeComposer: () => set({ composerClusterId: null }),
   sendLetter: () =>

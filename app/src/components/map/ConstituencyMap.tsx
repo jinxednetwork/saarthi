@@ -2,27 +2,50 @@
 
 import { useEffect, useRef } from "react";
 import type * as Leaflet from "leaflet";
+import { useTheme } from "next-themes";
 import { groupOf } from "@/lib/categories";
 import type { MapFilter } from "@/lib/dashboard-store";
 import { MOCK_CLUSTERS } from "@/lib/mock-data";
 import { URGENCY_UI } from "@/lib/ui";
 
-const MARKER_SIZE = { critical: 20, high: 16, medium: 13, low: 13 } as const;
+const MARKER_SIZE = { critical: 22, high: 17, medium: 14, low: 14 } as const;
+const TILE_LIGHT = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+const TILE_DARK = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 
 /**
- * Leaflet cluster map (design: CARTO light tiles, urgency-coloured dot markers,
- * pulsing halo on critical). Client-only — the parent imports this with
- * `dynamic(..., { ssr: false })`.
- *
- * NOTE: the engineering handoff (§3.2) locks Google Maps Platform; the design
- * prototype ships Leaflet + CARTO (key-free). Swapping later only touches this
- * file — the section interface (filter in, markers out) stays put.
+ * Global handle so the cluster drawer's "View on map" can pan without prop
+ * drilling. Set while the map is mounted.
  */
-export function ConstituencyMap({ filter }: { filter: MapFilter }) {
+export const mapRegistry: { current: Leaflet.Map | null } = { current: null };
+
+export function flyToCluster(lat: number, lng: number) {
+  mapRegistry.current?.flyTo([lat, lng], 14, { duration: 0.8 });
+}
+
+/**
+ * Full-bleed Leaflet stage (the dashboard's hero). Theme switches tiles via
+ * setUrl — no re-init, markers keep their DOM. Markers are keyboard-focusable
+ * (Leaflet keyboard: true on divIcon markers) and click through to the cluster
+ * drawer via onSelect. Colours ride CSS vars so they retheme instantly.
+ *
+ * NOTE: §3.2 of the engineering handoff locks Google Maps Platform; Leaflet +
+ * CARTO is the key-free stand-in. Swapping later only touches this file.
+ */
+export function ConstituencyMap({
+  filter,
+  onSelect,
+}: {
+  filter: MapFilter;
+  onSelect?: (clusterId: string) => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Leaflet.Map | null>(null);
+  const tileRef = useRef<Leaflet.TileLayer | null>(null);
   const layerRef = useRef<Leaflet.LayerGroup | null>(null);
   const leafletRef = useRef<typeof Leaflet | null>(null);
+  const onSelectRef = useRef(onSelect);
+  onSelectRef.current = onSelect;
+  const { resolvedTheme } = useTheme();
 
   // Init once
   useEffect(() => {
@@ -32,37 +55,47 @@ export function ConstituencyMap({ filter }: { filter: MapFilter }) {
       if (cancelled || !containerRef.current || mapRef.current) return;
       leafletRef.current = L;
       const map = L.map(containerRef.current, {
-        center: [28.59, 77.205],
-        zoom: 12,
-        zoomControl: true,
-        scrollWheelZoom: false,
+        center: [28.59, 77.19],
+        zoom: 13,
+        zoomControl: false,
+        scrollWheelZoom: true,
         attributionControl: true,
         preferCanvas: true,
+        keyboard: true,
       });
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      L.control.zoom({ position: "bottomright" }).addTo(map);
+      const isDark = document.documentElement.classList.contains("dark");
+      tileRef.current = L.tileLayer(isDark ? TILE_DARK : TILE_LIGHT, {
         attribution: "© OpenStreetMap contributors © CARTO",
         subdomains: "abcd",
         maxZoom: 19,
       }).addTo(map);
       mapRef.current = map;
-      renderMarkers(L, map, layerRef, filter);
+      mapRegistry.current = map;
+      renderMarkers(L, map, layerRef, filter, (id) => onSelectRef.current?.(id));
     })();
     return () => {
       cancelled = true;
+      mapRegistry.current = null;
       mapRef.current?.remove();
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Re-render markers on filter change
+  // Theme → tile swap, no re-init
+  useEffect(() => {
+    tileRef.current?.setUrl(resolvedTheme === "dark" ? TILE_DARK : TILE_LIGHT);
+  }, [resolvedTheme]);
+
+  // Filter → re-render markers
   useEffect(() => {
     const L = leafletRef.current;
     const map = mapRef.current;
-    if (L && map) renderMarkers(L, map, layerRef, filter);
+    if (L && map) renderMarkers(L, map, layerRef, filter, (id) => onSelectRef.current?.(id));
   }, [filter]);
 
-  return <div ref={containerRef} className="h-[500px] w-full bg-[#E8E2D0]" />;
+  return <div ref={containerRef} className="h-full w-full bg-[hsl(var(--map-canvas))]" />;
 }
 
 function renderMarkers(
@@ -70,6 +103,7 @@ function renderMarkers(
   map: Leaflet.Map,
   layerRef: React.MutableRefObject<Leaflet.LayerGroup | null>,
   filter: MapFilter,
+  onSelect: (clusterId: string) => void,
 ) {
   layerRef.current?.remove();
   const layer = L.layerGroup().addTo(map);
@@ -87,7 +121,7 @@ function renderMarkers(
             ? `<div style="position:absolute;inset:0;border-radius:50%;background:${u.dot};opacity:0.5;animation: halo 1.8s ease-out infinite;"></div>`
             : ""
         }
-        <div style="position:absolute;inset:0;border-radius:50%;background:${u.dot};border:2px solid #FFFFFF;box-shadow: 0 0 0 1px ${u.dot}, 0 2px 4px rgba(0,0,0,0.2);"></div>
+        <div style="position:absolute;inset:0;border-radius:50%;background:${u.dot};border:2px solid hsl(var(--surface));box-shadow: 0 0 0 1px ${u.dot}, 0 2px 6px rgba(0,0,0,0.3);"></div>
       </div>`;
     const icon = L.divIcon({
       className: "saarthi-marker",
@@ -95,12 +129,19 @@ function renderMarkers(
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
     });
-    L.marker([c.geo.centroid.lat, c.geo.centroid.lng], { icon })
-      .addTo(layer)
-      .bindTooltip(
-        `<div style="font-weight:600;margin-bottom:2px;">${c.title}</div>
-         <div style="opacity:0.7;font-size:11px;">${c.ui.wardLabel} · ${u.label}</div>`,
-        { direction: "top", offset: [0, -size / 2], className: "saarthi-tt" },
-      );
+    const marker = L.marker([c.geo.centroid.lat, c.geo.centroid.lng], {
+      icon,
+      keyboard: true,
+      alt: `${c.title} — ${c.ui.wardLabel}, ${u.label}`,
+    }).addTo(layer);
+    marker.bindTooltip(
+      `<div style="font-weight:600;margin-bottom:2px;">${c.title}</div>
+       <div style="opacity:0.7;font-size:11px;">${c.ui.wardLabel} · ${u.label} · click for detail</div>`,
+      { direction: "top", offset: [0, -size / 2], className: "saarthi-tt" },
+    );
+    marker.on("click", () => onSelect(c.id));
+    marker.on("keypress", (e) => {
+      if ((e.originalEvent as KeyboardEvent).key === "Enter") onSelect(c.id);
+    });
   }
 }

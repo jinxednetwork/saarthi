@@ -397,19 +397,21 @@ export interface FeedItem {
   timeMin: number;
   snippet: string;
   link: string;
+  /** Cluster this signal joined — click-through target. */
+  clusterId?: string;
   linkNew?: boolean;
   hi?: boolean;
 }
 
 export const FEED_ITEMS: FeedItem[] = [
-  { source: "twitter", sourceName: "X (post)", category: "infrastructure", timeMin: 2, snippet: "Waterlogging in Karol Bagh main market crossed knee level again — 3rd day running.", link: "joins cluster #01" },
-  { source: "whatsapp", sourceName: "WhatsApp", category: "water", timeMin: 4, snippet: "पानी बहुत गंदा है, बदबू भी आ रही है। कृपया देखें।", link: "voice note · Hindi · joins cluster #02", hi: true },
-  { source: "reddit", sourceName: "Reddit", category: "air_quality", timeMin: 7, snippet: "r/delhi · AQI 380 outside the embassy zone at 8am — third day above severe.", link: "joins cluster #03" },
-  { source: "portal", sourceName: "Portal", category: "infrastructure", timeMin: 12, snippet: "Widget submission · Streetlights on Pusa Road out for 4 nights now, unsafe for women commuters.", link: "joins cluster #04" },
-  { source: "news", sourceName: "News", category: "water", timeMin: 18, snippet: 'Local daily · "DUSIB sewer complaints spike in RK Puram; residents demand action."', link: "joins cluster #05" },
-  { source: "twitter", sourceName: "X (post)", category: "air_quality", timeMin: 24, snippet: "Metro construction dust on the DND stretch — masks required through Nov.", link: "creates new cluster · #12", linkNew: true },
-  { source: "whatsapp", sourceName: "WhatsApp", category: "infrastructure", timeMin: 33, snippet: "Garbage not collected in Kasturba Nagar for three days. Attaching photo.", link: "joins cluster #06" },
-  { source: "twitter", sourceName: "X (post)", category: "water", timeMin: 41, snippet: "Malviya Nagar water tanker delayed again this morning, entire block affected.", link: "joins cluster #02" },
+  { source: "twitter", sourceName: "X (post)", category: "infrastructure", timeMin: 2, snippet: "Waterlogging in Karol Bagh main market crossed knee level again — 3rd day running.", link: "joins cluster #01", clusterId: "cl_01" },
+  { source: "whatsapp", sourceName: "WhatsApp", category: "water", timeMin: 4, snippet: "पानी बहुत गंदा है, बदबू भी आ रही है। कृपया देखें।", link: "voice note · Hindi · joins cluster #02", clusterId: "cl_02", hi: true },
+  { source: "reddit", sourceName: "Reddit", category: "air_quality", timeMin: 7, snippet: "r/delhi · AQI 380 outside the embassy zone at 8am — third day above severe.", link: "joins cluster #03", clusterId: "cl_03" },
+  { source: "portal", sourceName: "Portal", category: "infrastructure", timeMin: 12, snippet: "Widget submission · Streetlights on Pusa Road out for 4 nights now, unsafe for women commuters.", link: "joins cluster #04", clusterId: "cl_04" },
+  { source: "news", sourceName: "News", category: "water", timeMin: 18, snippet: 'Local daily · "DUSIB sewer complaints spike in RK Puram; residents demand action."', link: "joins cluster #05", clusterId: "cl_05" },
+  { source: "twitter", sourceName: "X (post)", category: "air_quality", timeMin: 24, snippet: "Metro construction dust on the DND stretch — masks required through Nov.", link: "creates new cluster · #12", clusterId: "cl_12", linkNew: true },
+  { source: "whatsapp", sourceName: "WhatsApp", category: "infrastructure", timeMin: 33, snippet: "Garbage not collected in Kasturba Nagar for three days. Attaching photo.", link: "joins cluster #06", clusterId: "cl_06" },
+  { source: "twitter", sourceName: "X (post)", category: "water", timeMin: 41, snippet: "Malviya Nagar water tanker delayed again this morning, entire block affected.", link: "joins cluster #02", clusterId: "cl_02" },
 ];
 
 /** Footer data-source registry (design `_dataSources`). */

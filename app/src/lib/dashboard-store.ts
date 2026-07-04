@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import type { SubmissionSource } from "@saarthi/shared";
+import { ask, SUGGESTED_CHIPS, type AssistantMessage } from "./assistant-brain";
 import type { CategoryGroup } from "./categories";
 
 /**
@@ -36,6 +37,12 @@ interface DashboardState {
   dispatched: DispatchRecord[];
   /** Shell */
   sidebarCollapsed: boolean;
+  /** Collapsible dashboard panels (persisted). */
+  collapsedPanels: Record<PanelId, boolean>;
+  /** Saarthi Assistant (session-only thread). */
+  assistantOpen: boolean;
+  assistantThinking: boolean;
+  assistantMessages: AssistantMessage[];
   setFilter(filter: MapFilter): void;
   setTimeRange(range: TimeRange): void;
   setSourceFilter(filter: SourceFilter): void;
@@ -46,7 +53,18 @@ interface DashboardState {
   sendLetter(): void;
   setSidebarCollapsed(collapsed: boolean): void;
   toggleSidebar(): void;
+  togglePanel(id: PanelId): void;
+  hydratePanels(): void;
+  openAssistant(): void;
+  closeAssistant(): void;
+  toggleAssistant(): void;
+  askAssistant(query: string): void;
 }
+
+export type PanelId = "kpis" | "queue" | "radial" | "feed";
+
+const PANELS_KEY = "saarthi-panels";
+let msgSeq = 0;
 
 export const useDashboardStore = create<DashboardState>((set) => ({
   activeFilter: "all",
@@ -83,4 +101,62 @@ export const useDashboardStore = create<DashboardState>((set) => ({
       } catch {}
       return { sidebarCollapsed: collapsed };
     }),
+  collapsedPanels: { kpis: false, queue: false, radial: false, feed: false },
+  togglePanel: (id) =>
+    set((s) => {
+      const collapsedPanels = { ...s.collapsedPanels, [id]: !s.collapsedPanels[id] };
+      try {
+        localStorage.setItem(PANELS_KEY, JSON.stringify(collapsedPanels));
+      } catch {}
+      return { collapsedPanels };
+    }),
+  hydratePanels: () => {
+    try {
+      const raw = localStorage.getItem(PANELS_KEY);
+      if (raw) set({ collapsedPanels: { ...JSON.parse(raw) } });
+    } catch {}
+  },
+  assistantOpen: false,
+  assistantThinking: false,
+  assistantMessages: [
+    {
+      id: "welcome",
+      role: "assistant",
+      text: "Namaste. I answer from this constituency's live signals, budget, and actions — every claim cited.",
+      chips: SUGGESTED_CHIPS,
+    },
+  ],
+  openAssistant: () => set({ assistantOpen: true }),
+  closeAssistant: () => set({ assistantOpen: false }),
+  toggleAssistant: () => set((s) => ({ assistantOpen: !s.assistantOpen })),
+  askAssistant: (query) => {
+    const q = query.trim();
+    if (!q) return;
+    set((s) => ({
+      assistantOpen: true,
+      assistantThinking: true,
+      assistantMessages: [
+        ...s.assistantMessages,
+        { id: `u${++msgSeq}`, role: "user", text: q },
+      ],
+    }));
+    // Scripted brain answers after a short "thinking" beat; Gemini replaces
+    // this call in Phase 4 with the same message contract.
+    setTimeout(() => {
+      const answer = ask(q);
+      set((s) => ({
+        assistantThinking: false,
+        assistantMessages: [
+          ...s.assistantMessages,
+          {
+            id: `a${++msgSeq}`,
+            role: "assistant",
+            text: answer.text,
+            citations: answer.citations,
+            chips: answer.chips,
+          },
+        ],
+      }));
+    }, 650);
+  },
 }));

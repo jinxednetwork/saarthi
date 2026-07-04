@@ -9,8 +9,8 @@ import { OUTLOOK_CHART as C } from "@/lib/intelligence-data";
  */
 export function OutlookChart() {
   return (
-    <section className="mx-auto max-w-[1440px] px-10 pt-10">
-      <div className="mb-5 flex items-baseline justify-between">
+    <section>
+      <div className="mb-4 flex items-baseline justify-between">
         <div>
           <div className="text-[22px] font-semibold tracking-tight text-ink">12-week outlook</div>
           <div className="mt-1.5 text-[13.5px] text-muted-foreground">
@@ -27,7 +27,7 @@ export function OutlookChart() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-line bg-surface px-8 py-7">
+      <div className="glass-strong overflow-hidden rounded-xl px-8 py-6">
         <svg viewBox="0 0 1280 300" className="block h-[300px] w-full" role="img" aria-label="Line chart projecting weekly signal volume for public health, water, and infrastructure over the next 12 weeks. Public health peaks near 220 signals around Diwali in week 45.">
           {/* Axes */}
           <line x1={60} y1={30} x2={60} y2={260} stroke="hsl(var(--line))" strokeWidth={1} />

@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { HeroInsights } from "@/components/intelligence/HeroInsights";
-import { InsightGrid } from "@/components/intelligence/InsightGrid";
 import { OutlookChart } from "@/components/intelligence/OutlookChart";
+import { AnomaliesTile } from "@/components/intelligence/tiles/AnomaliesTile";
+import { CategoryDonut } from "@/components/intelligence/tiles/CategoryDonut";
+import { CrossRefsTile } from "@/components/intelligence/tiles/CrossRefsTile";
+import { ResponseBenchmark } from "@/components/intelligence/tiles/ResponseBenchmark";
+import { WardHotspots } from "@/components/intelligence/tiles/WardHotspots";
+import { WeeklyPulse } from "@/components/intelligence/tiles/WeeklyPulse";
+import { PageHeader } from "@/components/shell/PageHeader";
 import { INTELLIGENCE_META } from "@/lib/intelligence-data";
 
 export const metadata: Metadata = {
@@ -9,34 +15,49 @@ export const metadata: Metadata = {
 };
 
 /**
- * Intelligence screen — hero recommendations → 12-week forecast chart
- * (staggered draw-in) → cross-references / anomalies / benchmark, under the
- * shared glass shell.
+ * Intelligence — a bento of derived analytics. Hero recommendations → 12-week
+ * forecast → category / ward / benchmark tiles → weekly pulse + anomalies +
+ * cross-references. Every tile draws from lib/insights (the same source the
+ * assistant speaks from), so the page and the assistant never disagree.
  */
 export default function IntelligencePage() {
   return (
     <div className="h-full overflow-y-auto pt-16">
-      {/* Page header */}
-      <div className="mx-auto flex max-w-[1440px] items-baseline justify-between px-10 pt-6">
-        <div className="flex items-baseline gap-2">
-          <h1 className="text-[22px] font-semibold tracking-tight text-ink">Intelligence</h1>
-          <span className="text-faint">·</span>
-          <span className="text-xs text-muted-foreground">{INTELLIGENCE_META.subtitle}</span>
+      <div className="mx-auto max-w-[1440px] px-6 pb-16 pt-6">
+        <PageHeader
+          title="Intelligence"
+          subtitle={INTELLIGENCE_META.subtitle}
+          right={
+            <span className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex">
+              <span className="h-[5px] w-[5px] animate-livePulse rounded-full bg-success" />
+              {INTELLIGENCE_META.modelLine}
+            </span>
+          }
+        />
+
+        <div className="flex flex-col gap-4">
+          <HeroInsights />
+          <OutlookChart />
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <CategoryDonut />
+            <WardHotspots />
+            <ResponseBenchmark />
+          </div>
+
+          <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-4">
+            <div className="lg:col-span-2 [&>*]:h-full">
+              <WeeklyPulse />
+            </div>
+            <AnomaliesTile />
+            <CrossRefsTile />
+          </div>
         </div>
-        <span className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex">
-          <span className="h-[5px] w-[5px] animate-livePulse rounded-full bg-success" />
-          {INTELLIGENCE_META.modelLine}
-        </span>
-      </div>
 
-      <HeroInsights />
-      <OutlookChart />
-      <InsightGrid />
-
-      {/* Footer */}
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-10 pb-16 pt-12 text-[12.5px] text-faint">
-        <span>Saarthi v0.5 · Pilot programme, Government of India</span>
-        <span>{INTELLIGENCE_META.modelFooter}</span>
+        <div className="mt-8 flex items-center justify-between text-[12px] text-faint">
+          <span>Saarthi v0.5 · Pilot programme, Government of India</span>
+          <span>{INTELLIGENCE_META.modelFooter}</span>
+        </div>
       </div>
     </div>
   );

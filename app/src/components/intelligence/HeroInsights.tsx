@@ -29,28 +29,21 @@ function RupeeIcon() {
  */
 export function HeroInsights() {
   return (
-    <section className="mx-auto max-w-[1440px] px-10 pt-10">
-      <div className="mb-5 flex items-baseline justify-between">
+    <section>
+      <div className="mb-3 flex items-baseline justify-between">
         <div>
-          <div className="text-[22px] font-semibold tracking-tight text-ink">
+          <div className="text-[17px] font-semibold tracking-tight text-ink">
             Attention this week
           </div>
-          <div className="mt-1.5 text-[13.5px] text-muted-foreground">
-            Two recommendations the model flagged as high-leverage. Each links to its full
-            reasoning trail.
+          <div className="mt-1 text-[12.5px] text-muted-foreground">
+            Two high-leverage recommendations, each cited.
           </div>
         </div>
-        <button className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-transparent px-3 py-[7px] text-[12.5px] text-ink hover:border-line-dark">
-          <span>Past 30 days</span>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--muted-fg))" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Forecast hero */}
-        <article className="relative overflow-hidden rounded-xl border border-line bg-surface px-8 py-7">
+        <article className="glass-strong relative overflow-hidden rounded-xl px-7 py-6">
           <div
             className="pointer-events-none absolute right-0 top-0 h-[220px] w-[220px]"
             style={{ background: "radial-gradient(circle at top right, hsl(var(--saffron))12, transparent 70%)" }}
@@ -103,7 +96,7 @@ export function HeroInsights() {
         </article>
 
         {/* Budget optimizer hero */}
-        <article className="relative overflow-hidden rounded-xl border border-line bg-surface px-8 py-7">
+        <article className="glass-strong relative overflow-hidden rounded-xl px-7 py-6">
           <div
             className="pointer-events-none absolute right-0 top-0 h-[220px] w-[220px]"
             style={{ background: "radial-gradient(circle at top right, hsl(var(--primary-brand))12, transparent 70%)" }}

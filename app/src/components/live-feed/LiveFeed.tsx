@@ -4,16 +4,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 import { SourceIcon } from "@/components/icons";
+import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDashboardStore } from "@/lib/dashboard-store";
 import { FEED_ITEMS, RADIAL_CHANNELS } from "@/lib/mock-data";
 import { minutesAgo } from "@/lib/ui";
 
 /**
- * Live signal feed — floating glass panel over the map. Rotates every 22s to
- * simulate live cadence; the radial hub's channel filter narrows it; items
- * that joined a cluster click through to the detail drawer. Dispatched letters
- * prepend an action entry.
+ * Live signal feed — collapsible glass panel. Rotates every 22s; the radial
+ * hub's channel filter narrows it; items with clusters open the drawer;
+ * dispatched letters prepend an action entry.
  */
 export function LiveFeed() {
   const { dispatched, sourceFilter, setSourceFilter, selectCluster } = useDashboardStore();
@@ -46,29 +46,31 @@ export function LiveFeed() {
   const filterName = RADIAL_CHANNELS.find((c) => c.key === sourceFilter)?.name;
 
   return (
-    <section className="glass-strong flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl">
-      <header className="flex items-center justify-between border-b border-line/60 px-4 py-3">
+    <CollapsiblePanel
+      id="feed"
+      title="Live signals"
+      fill
+      headerRight={
         <span className="flex items-center gap-2">
-          <h2 className="text-[13px] font-semibold text-ink">Live signals</h2>
           <span className="flex items-center gap-1">
             <span className="h-[5px] w-[5px] animate-livePulseFast rounded-full bg-success" />
             <span className="text-[10.5px] font-medium text-success">Live</span>
           </span>
+          {filterName ? (
+            <button
+              onClick={() => setSourceFilter("all")}
+              className="flex items-center gap-1 rounded-full bg-chip px-2 py-0.5 text-[10.5px] font-medium text-ink hover:bg-line/60"
+              aria-label={`Clear ${filterName} filter`}
+            >
+              {filterName}
+              <X className="h-2.5 w-2.5" />
+            </button>
+          ) : (
+            <span className="text-[11px] text-faint">{RADIAL_CHANNELS.length} channels</span>
+          )}
         </span>
-        {filterName ? (
-          <button
-            onClick={() => setSourceFilter("all")}
-            className="flex items-center gap-1 rounded-full bg-chip px-2 py-0.5 text-[10.5px] font-medium text-ink hover:bg-line/60"
-            aria-label={`Clear ${filterName} filter`}
-          >
-            {filterName}
-            <X className="h-2.5 w-2.5" />
-          </button>
-        ) : (
-          <span className="text-[11px] text-faint">{RADIAL_CHANNELS.length} channels</span>
-        )}
-      </header>
-
+      }
+    >
       <ScrollArea className="min-h-0 flex-1">
         <div>
           {list.length === 0 && (
@@ -126,11 +128,11 @@ export function LiveFeed() {
 
       <Link
         href="/live"
-        className="flex items-center justify-between border-t border-line/60 px-4 py-2.5 text-[12px] font-medium text-primary no-underline hover:bg-chip/60"
+        className="flex shrink-0 items-center justify-between border-t border-line/60 px-4 py-2.5 text-[12px] font-medium text-primary no-underline hover:bg-chip/60"
       >
         <span>Open full feed</span>
         <ChevronRight className="h-3 w-3" />
       </Link>
-    </section>
+    </CollapsiblePanel>
   );
 }

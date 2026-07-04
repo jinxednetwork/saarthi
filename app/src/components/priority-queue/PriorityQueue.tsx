@@ -1,13 +1,14 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
+import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDashboardStore } from "@/lib/dashboard-store";
 import { DASHBOARD_META, topClusters } from "@/lib/mock-data";
 import { PATHWAY_UI, URGENCY_UI, trendLabel } from "@/lib/ui";
 
 /**
- * Priority action queue — floating glass panel over the map. Each card is a
+ * Priority action queue — collapsible glass panel over the map. Each card is a
  * real button opening the cluster detail drawer (keyboard included).
  */
 export function PriorityQueue() {
@@ -15,14 +16,14 @@ export function PriorityQueue() {
   const cards = topClusters(5);
 
   return (
-    <section className="glass-strong flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl">
-      <header className="flex items-baseline justify-between border-b border-line/60 px-4 py-3">
-        <h2 className="text-[13px] font-semibold text-ink">Priority action queue</h2>
-        <span className="text-[11px] text-faint">
-          Top 5 of {DASHBOARD_META.openClusters} open
-        </span>
-      </header>
-
+    <CollapsiblePanel
+      id="queue"
+      title="Priority action queue"
+      fill
+      headerRight={
+        <span className="text-[11px] text-faint">Top 5 of {DASHBOARD_META.openClusters} open</span>
+      }
+    >
       <ScrollArea className="min-h-0 flex-1">
         <div>
           {cards.map((c, i) => {
@@ -86,6 +87,6 @@ export function PriorityQueue() {
           })}
         </div>
       </ScrollArea>
-    </section>
+    </CollapsiblePanel>
   );
 }

@@ -28,7 +28,7 @@ export function PriorityQueue() {
           {cards.map((c, i) => {
             const u = URGENCY_UI[c.urgency];
             const p = PATHWAY_UI[c.suggested_action.type];
-            const isDispatched = dispatched.includes(c.id) || c.ui.dispatched != null;
+            const isDispatched = dispatched.some((d) => d.id === c.id) || c.ui.dispatched != null;
             const trend = trendLabel(c.trend);
 
             return (

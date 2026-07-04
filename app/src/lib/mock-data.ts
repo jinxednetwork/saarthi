@@ -7,6 +7,7 @@ import type {
   Timestamp,
   Urgency,
 } from "@saarthi/shared";
+import { CLUSTER_MEDIA, type MediaAsset } from "./media";
 
 /**
  * Deterministic demo data — content ported from the design session handoff
@@ -111,6 +112,8 @@ export const RADIAL_CHANNELS: RadialChannel[] = [
 
 /** UI-only extras the design attaches to a cluster (narrative cross-ref, links). */
 export interface ClusterUi {
+  /** Citizen-submitted photos/videos (demo: curated stock stand-ins). */
+  media?: MediaAsset[];
   /** Human-written cross-reference narrative shown on full cards. */
   crossRefProse?: string;
   /** Compact "Ward A · Ward B" location line. */
@@ -200,6 +203,7 @@ function mkCluster(s: ClusterSeed): DemoCluster {
     created_at: ts(NOW - 10 * DAY),
     updated_at: ts(NOW - 1 * DAY),
     ui: {
+      media: CLUSTER_MEDIA[`cl_${String(s.num).padStart(2, "0")}`],
       crossRefProse: s.crossRefProse,
       wardLabel: s.wardLabel,
       queueSuggestion: s.queueSuggestion,

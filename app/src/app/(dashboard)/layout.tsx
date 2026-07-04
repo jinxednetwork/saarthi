@@ -1,3 +1,5 @@
+import { ActionComposer } from "@/components/action-composer/ActionComposer";
+import { ClusterDrawer } from "@/components/cluster/ClusterDrawer";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
 import { WelcomeSplash } from "@/components/splash/WelcomeSplash";
@@ -20,6 +22,8 @@ export default function DashboardShellLayout({
         <TopBar />
         <main className="h-full">{children}</main>
       </div>
+      <ClusterDrawer />
+      <ActionComposer />
     </div>
   );
 }

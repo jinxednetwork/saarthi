@@ -1,202 +1,283 @@
 "use client";
 
-import { CitationsIcon, CloseIcon, LockIcon, SendIcon } from "@/components/icons";
-import { useDashboardStore } from "@/lib/dashboard-store";
+import { useEffect, useMemo, useState } from "react";
+import { CheckCircle2, Globe, Lock, Send } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { letterRef, useDashboardStore } from "@/lib/dashboard-store";
 import { MOCK_CLUSTERS } from "@/lib/mock-data";
 
+function draftLetter(title: string, ward: string, count: number, trend: number): string {
+  return `Respected Sir/Madam,
+
+I am writing to bring to your attention a matter requiring urgent intervention in the ${ward} area of the New Delhi Lok Sabha Constituency. Over the past week, my office has received ${count} verified citizen signals concerning "${title}", representing a ${Math.round(trend)}% week-on-week increase in complaint volume.
+
+Cross-referencing with public department records indicates conditions warranting immediate remedial work. Under the MPLADS guidelines (as revised 2023), the recommended works are permissible under the applicable sector.
+
+I hereby recommend the sanction of the proposed works from my constituency development fund, to be executed via the designated District Authority within a stipulated period of 14 days.
+
+Detailed geo-tagged evidence, citizen signal metadata, and cross-referenced public dataset extracts are enclosed with this recommendation as Annexure A.
+
+I request your kind offices to expedite the sanction and issuance of the work order at the earliest.
+
+With regards,
+Bansuri Swaraj
+Member of Parliament, New Delhi Lok Sabha`;
+}
+
 /**
- * Action Composer modal (design): AI-drafted MPLADS recommendation letter with
- * cited evidence highlights, auto-attached annexures, approve & send flow.
- * Letter copy is the design's demo draft; Phase 5 swaps in Gemini-drafted
- * bodies via /api/briefs (§8.7) with real citations (§14).
+ * Action composer — Dialog (Radix: Esc/trap/aria) with a genuinely editable
+ * letter body, resolvable citations, an AlertDialog dispatch confirmation, and
+ * a success ceremony with the reference number. Approve & send is the highest-
+ * stakes act in the product; it earns a two-step.
  */
 export function ActionComposer() {
-  const { composerClusterId, closeComposer, sendLetter } = useDashboardStore();
-  if (!composerClusterId) return null;
-
+  const { composerClusterId, closeComposer, sendLetter, dispatched } = useDashboardStore();
   const cluster = MOCK_CLUSTERS.find((c) => c.id === composerClusterId);
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [body, setBody] = useState("");
+
+  const isSent = cluster != null && dispatched.some((d) => d.id === cluster.id);
+  const refNo = cluster ? letterRef(cluster.id) : "";
+
+  const seeded = useMemo(
+    () =>
+      cluster
+        ? draftLetter(
+            cluster.title,
+            cluster.ui.wardLabel,
+            cluster.submission_count,
+            cluster.trend.percent_change,
+          )
+        : "",
+    [cluster],
+  );
+
+  useEffect(() => setBody(seeded), [seeded]);
+
   if (!cluster) return null;
 
-  const num = cluster.id.replace("cl_", "");
+  const citations = [
+    ...cluster.cross_reference.map((r) => `${r.dataset} · ${r.metric}`),
+    `Saarthi signal archive · ${cluster.submission_count} citizen signals`,
+  ];
+
+  const onApprove = () => {
+    setConfirmOpen(false);
+    sendLetter();
+    toast.success("Letter dispatched via NIC secure channel", {
+      description: `Ref ${refNo} · District Magistrate, New Delhi District`,
+    });
+  };
 
   return (
-    <div
-      onClick={closeComposer}
-      className="fixed inset-0 z-[9999] flex animate-fadeIn items-center justify-center bg-[rgba(11,36,71,0.55)] px-5 py-10"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[92vh] w-full max-w-[720px] flex-col overflow-hidden rounded-lg bg-surface shadow-[0_24px_64px_rgba(11,36,71,0.35)]"
-      >
-        {/* Header */}
-        <div className="flex items-start justify-between border-b border-line-warm px-7 pb-[18px] pt-5">
-          <div>
-            <div className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
-              Action composer · MPLADS recommendation
-            </div>
-            <div className="text-xl font-bold tracking-tight text-ink">
-              Draft MPLADS Recommendation Letter
-            </div>
-            <div className="mt-1.5 flex items-center gap-2 text-xs text-body">
-              <span>
-                Cluster #{num} · {cluster.title}
+    <>
+      <Dialog open onOpenChange={(open) => !open && closeComposer()}>
+        <DialogContent className="flex max-h-[92vh] w-full max-w-[720px] flex-col gap-0 overflow-hidden border-line/60 bg-surface p-0">
+          {isSent ? (
+            /* ---- Success ceremony ---- */
+            <div className="flex flex-col items-center px-8 py-12 text-center">
+              <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-success/15 text-success">
+                <CheckCircle2 className="h-7 w-7" strokeWidth={1.75} />
               </span>
-              <span className="text-line-dark">·</span>
-              <span>{cluster.ui.wardLabel}</span>
-              <span className="text-line-dark">·</span>
-              <span className="inline-flex items-center rounded-[3px] bg-[#FCE8E1] px-1.5 py-px text-[10px] font-bold tracking-wide text-urgency-critical">
-                {cluster.urgency.toUpperCase()}
-              </span>
+              <DialogTitle className="text-xl font-semibold tracking-tight text-ink">
+                Letter dispatched
+              </DialogTitle>
+              <DialogDescription className="mt-2 max-w-[400px] text-[13px] leading-relaxed text-muted-foreground">
+                Digitally signed with your MP DSC and dispatched via the NIC secure channel to
+                the District Magistrate, New Delhi District.
+              </DialogDescription>
+              <p className="mt-4 rounded-lg bg-chip px-4 py-2 font-mono text-[13px] text-ink">
+                {refNo}
+              </p>
+              <div className="mt-7 flex items-center gap-2.5">
+                <Button onClick={closeComposer} className="rounded-full px-6">
+                  Done
+                </Button>
+                <Button variant="outline" className="rounded-full px-5" onClick={closeComposer}>
+                  Track in queue
+                </Button>
+              </div>
             </div>
-          </div>
-          <button
-            onClick={closeComposer}
-            className="cursor-pointer border-0 bg-transparent p-1 text-muted-foreground hover:text-ink"
-          >
-            <CloseIcon />
-          </button>
-        </div>
+          ) : (
+            /* ---- Draft state ---- */
+            <>
+              <DialogHeader className="border-b border-line/60 px-6 pb-4 pt-5 text-left">
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                  Action composer · MPLADS recommendation
+                </p>
+                <DialogTitle className="text-lg font-semibold tracking-tight text-ink">
+                  Draft MPLADS Recommendation Letter
+                </DialogTitle>
+                <DialogDescription className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-body">
+                  <span>
+                    Cluster #{cluster.id.replace("cl_", "")} · {cluster.title}
+                  </span>
+                  <span className="text-line-dark">·</span>
+                  <span>{cluster.ui.wardLabel}</span>
+                </DialogDescription>
+              </DialogHeader>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-7 py-[22px]">
-          <div className="mb-5 grid grid-cols-2 gap-4">
-            <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                Recipient
-              </label>
-              <div className="rounded border border-line-warm bg-panel px-3 py-2.5 text-[13px] text-ink">
-                The District Magistrate, New Delhi District
-                <div className="mt-0.5 text-[11px] text-muted-foreground">
-                  Delhi Secretariat, IP Estate, New Delhi – 110002
+              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+                {/* Fields */}
+                <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                      Recipient
+                    </label>
+                    <div className="rounded-lg border border-input bg-panel px-3 py-2 text-[12.5px] text-ink">
+                      The District Magistrate, New Delhi District
+                      <span className="mt-0.5 block text-[10.5px] text-muted-foreground">
+                        Delhi Secretariat, IP Estate, New Delhi – 110002
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                      Reference no.
+                    </label>
+                    <div className="rounded-lg border border-input bg-panel px-3 py-2 font-mono text-[12.5px] text-ink">
+                      {refNo}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Letter body — genuinely editable */}
+                <div className="mb-1.5 flex items-center justify-between">
+                  <label
+                    htmlFor="letter-body"
+                    className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted-foreground"
+                  >
+                    Letter body · AI-drafted, editable
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="inline-flex items-center gap-1 text-[11px] font-medium text-primary-link hover:underline">
+                        <Globe className="h-3 w-3" />
+                        {citations.length} sources cited
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-72 p-3">
+                      <p className="mb-2 text-[10.5px] uppercase tracking-wide text-faint">
+                        Evidence cited in this draft
+                      </p>
+                      <ul className="flex flex-col gap-1.5">
+                        {citations.map((c) => (
+                          <li key={c} className="text-[12px] text-ink">
+                            <span className="mr-1.5 inline-block h-1 w-1 rounded-full bg-primary align-middle" />
+                            {c}
+                          </li>
+                        ))}
+                      </ul>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <textarea
+                  id="letter-body"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  rows={12}
+                  className="w-full resize-y rounded-lg border border-input bg-panel px-4 py-3 font-sans text-[12.5px] leading-relaxed text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
+                />
+
+                {/* Annexures */}
+                <div className="mt-4 rounded-lg border border-line/60 bg-chip/60 px-4 py-3">
+                  <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                    Annexures · auto-attached
+                  </p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                    {[
+                      `Evidence bundle (${cluster.submission_count} signals)`,
+                      "Public data extracts",
+                      `Geo-tagged media (${cluster.ui.media?.length ?? 0})`,
+                    ].map((a) => (
+                      <label
+                        key={a}
+                        className="flex cursor-pointer items-center gap-1.5 text-[11.5px] text-ink"
+                      >
+                        <input type="checkbox" defaultChecked className="accent-[hsl(var(--primary-brand))]" />
+                        {a}
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                Reference no.
-              </label>
-              <div className="rounded border border-line-warm bg-panel px-3 py-2.5 font-mono text-[13px] text-ink">
-                MP-NDL-MPLADS-2026-W44-0{num}
-              </div>
-            </div>
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                Subject
-              </label>
-              <div className="rounded border border-line-warm bg-panel px-3 py-2.5 text-[13px] text-ink">
-                Recommendation for emergency drain de-silting works — Karol Bagh &amp; Rajinder
-                Nagar arterial road stretches (MPLADS eligible)
-              </div>
-            </div>
-          </div>
 
-          {/* Letter body */}
-          <div>
-            <label className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-              <span>Letter body · AI-drafted, editable</span>
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium normal-case tracking-normal text-primary-link">
-                <CitationsIcon />
-                12 sources cited
+              {/* Footer */}
+              <div className="flex flex-col gap-3 border-t border-line/60 bg-panel/60 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
+                  <Lock className="h-3 w-3" />
+                  Signed with your MP DSC · dispatched via NIC secure channel
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" className="rounded-full" onClick={closeComposer}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="rounded-full"
+                    onClick={() => toast("Draft saved", { description: refNo })}
+                  >
+                    Save draft
+                  </Button>
+                  <Button className="rounded-full" onClick={() => setConfirmOpen(true)}>
+                    <Send className="h-3.5 w-3.5" />
+                    Approve &amp; send
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dispatch confirmation — the deliberate second step */}
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent className="border-line/60 bg-surface">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Dispatch this letter?</AlertDialogTitle>
+            <AlertDialogDescription className="leading-relaxed">
+              <span className="block">
+                <strong className="font-medium text-ink">To:</strong> The District Magistrate,
+                New Delhi District
               </span>
-            </label>
-            <div className="max-h-[260px] overflow-y-auto rounded border border-line-warm bg-panel px-5 py-[18px] text-[13px] leading-[1.7] text-ink">
-              <p className="mb-3">Respected Sir/Madam,</p>
-              <p className="mb-3">
-                I am writing to bring to your attention a matter requiring urgent intervention in
-                the Karol Bagh and Rajinder Nagar assembly segments of the New Delhi Lok Sabha
-                Constituency. Over the past week, my office has received{" "}
-                <mark className="bg-highlight px-[3px]">71 verified citizen signals</mark>{" "}
-                concerning severe waterlogging on the arterial road network, representing a{" "}
-                <mark className="bg-highlight px-[3px]">340% week-on-week increase</mark> in
-                complaint volume.
-              </p>
-              <p className="mb-3">
-                Cross-referencing with DUSIB&rsquo;s public drain-maintenance register indicates
-                that <mark className="bg-highlight px-[3px]">Drain #4 (Karol Bagh main)</mark> was
-                last de-silted in September 2025, and the IMD forecast projects an additional 24mm
-                of rainfall in the next 48 hours. This confluence of factors poses a significant
-                public safety risk.
-              </p>
-              <p className="mb-3">
-                Under the MPLADS guidelines (as revised 2023), works pertaining to drainage and
-                de-silting of public arterial roads are permissible under the &ldquo;Urban
-                Development&rdquo; category. I hereby{" "}
-                <strong>recommend the sanction of ₹28.5 Lakh</strong> from my constituency
-                development fund for emergency de-silting of the affected drain network, to be
-                executed via the designated District Authority within a stipulated period of 14
-                days.
-              </p>
-              <p className="mb-3">
-                Detailed geo-tagged evidence, citizen signal metadata, and cross-referenced public
-                dataset extracts are enclosed with this recommendation as Annexure A.
-              </p>
-              <p>
-                I request your kind offices to expedite the sanction and issuance of the work order
-                at the earliest.
-              </p>
-              <p className="mt-3 text-body">
-                With regards,
-                <br />
-                Bansuri Swaraj
-                <br />
-                Member of Parliament, New Delhi Lok Sabha
-              </p>
-            </div>
-          </div>
-
-          {/* Annexures */}
-          <div className="mt-5 rounded border border-line-warm bg-chip px-4 py-3.5">
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-              Annexures · auto-attached
-            </div>
-            <div className="flex flex-wrap gap-2.5">
-              {[
-                { label: "Evidence bundle (71 signals)", checked: true },
-                { label: "Public data extracts (DUSIB, IMD, CPWD)", checked: true },
-                { label: "Geo-tagged photo evidence (12)", checked: true },
-                { label: "MPLADS compliance memo", checked: false },
-              ].map((a) => (
-                <label
-                  key={a.label}
-                  className="flex cursor-pointer items-center gap-1.5 text-xs text-ink"
-                >
-                  <input type="checkbox" defaultChecked={a.checked} className="accent-primary" />
-                  {a.label}
-                </label>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between border-t border-line-warm bg-panel px-7 py-4">
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <LockIcon />
-            Digitally signed with your MP DSC · dispatched via NIC secure channel
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={closeComposer}
-              className="cursor-pointer rounded border border-line-warm bg-transparent px-3.5 py-2 text-[13px] font-medium text-body hover:border-primary hover:text-primary"
-            >
-              Cancel
-            </button>
-            <button className="cursor-pointer rounded border border-primary bg-transparent px-3.5 py-2 text-[13px] font-medium text-primary hover:bg-chip">
-              Preview on letterhead
-            </button>
-            <button className="cursor-pointer rounded border border-primary bg-transparent px-3.5 py-2 text-[13px] font-medium text-primary hover:bg-chip">
-              Save draft
-            </button>
-            <button
-              onClick={sendLetter}
-              className="flex cursor-pointer items-center gap-1.5 rounded border-0 bg-primary px-4 py-2 text-[13px] font-semibold text-white hover:bg-primary-hover"
-            >
-              <SendIcon />
-              Approve &amp; send
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+              <span className="mt-1 block">
+                <strong className="font-medium text-ink">Ref:</strong>{" "}
+                <span className="font-mono text-[12px]">{refNo}</span>
+              </span>
+              <span className="mt-3 block">
+                It will be digitally signed with your MP DSC and dispatched via the NIC secure
+                channel. This is an official communication and cannot be recalled from Saarthi.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-full">Keep editing</AlertDialogCancel>
+            <AlertDialogAction className="rounded-full" onClick={onApprove}>
+              Approve &amp; dispatch
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

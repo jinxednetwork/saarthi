@@ -31,13 +31,13 @@ export function LiveFeed() {
 
   const actionItems =
     sourceFilter === "all"
-      ? dispatched.map((id) => ({
+      ? dispatched.map((d) => ({
           source: "action" as const,
           sourceName: "Action",
           timeMin: 0,
-          snippet: `Letter dispatched · Ref MP-NDL-MPLADS-2026-W44-${id.replace("cl_", "")} to District Magistrate, New Delhi District.`,
-          link: `action tracked · cluster #${id.replace("cl_", "")}`,
-          clusterId: id,
+          snippet: `Letter dispatched · Ref ${d.ref} to District Magistrate, New Delhi District.`,
+          link: `action tracked · cluster #${d.id.replace("cl_", "")}`,
+          clusterId: d.id,
           hi: false,
         }))
       : [];

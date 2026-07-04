@@ -65,12 +65,12 @@ export function AppHeader({
 
         {/* Scope pill */}
         <button className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-transparent px-3 py-[7px] text-[12.5px] text-ink hover:border-line-dark">
-          <span className="text-muted">
+          <span className="text-muted-foreground">
             <GlobeIcon />
           </span>
           <span className="font-medium">Constituency</span>
           <span className="text-faint">{MOCK_CONSTITUENCY.name}</span>
-          <span className="text-muted">
+          <span className="text-muted-foreground">
             <ChevronDown />
           </span>
         </button>
@@ -79,18 +79,18 @@ export function AppHeader({
         <button className="flex cursor-pointer items-center gap-2.5 rounded-full border-0 bg-transparent py-1 pl-1.5 pr-1 hover:bg-chip">
           <span
             className="flex h-[34px] w-[34px] items-center justify-center rounded-full text-[12.5px] font-semibold text-white"
-            style={{ background: "linear-gradient(135deg, #12325B, #054A91)" }}
+            style={{ background: "linear-gradient(135deg, hsl(var(--primary-brand)), hsl(var(--link)))" }}
           >
             BS
           </span>
-          <span className="text-muted">
+          <span className="text-muted-foreground">
             <ChevronDown size={12} />
           </span>
         </button>
       </div>
 
       {/* Sub-context strip */}
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-10 pb-3.5 text-xs text-muted">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-10 pb-3.5 text-xs text-muted-foreground">
         <div className="flex items-baseline gap-2">
           <span className="text-[22px] font-semibold tracking-tight text-ink">{title}</span>
           <span className="text-faint">·</span>

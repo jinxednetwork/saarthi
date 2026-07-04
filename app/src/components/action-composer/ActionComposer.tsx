@@ -31,7 +31,7 @@ export function ActionComposer() {
         {/* Header */}
         <div className="flex items-start justify-between border-b border-line-warm px-7 pb-[18px] pt-5">
           <div>
-            <div className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+            <div className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
               Action composer · MPLADS recommendation
             </div>
             <div className="text-xl font-bold tracking-tight text-ink">
@@ -51,7 +51,7 @@ export function ActionComposer() {
           </div>
           <button
             onClick={closeComposer}
-            className="cursor-pointer border-0 bg-transparent p-1 text-muted hover:text-ink"
+            className="cursor-pointer border-0 bg-transparent p-1 text-muted-foreground hover:text-ink"
           >
             <CloseIcon />
           </button>
@@ -61,18 +61,18 @@ export function ActionComposer() {
         <div className="flex-1 overflow-y-auto px-7 py-[22px]">
           <div className="mb-5 grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                 Recipient
               </label>
               <div className="rounded border border-line-warm bg-panel px-3 py-2.5 text-[13px] text-ink">
                 The District Magistrate, New Delhi District
-                <div className="mt-0.5 text-[11px] text-muted">
+                <div className="mt-0.5 text-[11px] text-muted-foreground">
                   Delhi Secretariat, IP Estate, New Delhi – 110002
                 </div>
               </div>
             </div>
             <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                 Reference no.
               </label>
               <div className="rounded border border-line-warm bg-panel px-3 py-2.5 font-mono text-[13px] text-ink">
@@ -80,7 +80,7 @@ export function ActionComposer() {
               </div>
             </div>
             <div className="col-span-2">
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                 Subject
               </label>
               <div className="rounded border border-line-warm bg-panel px-3 py-2.5 text-[13px] text-ink">
@@ -92,7 +92,7 @@ export function ActionComposer() {
 
           {/* Letter body */}
           <div>
-            <label className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">
+            <label className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
               <span>Letter body · AI-drafted, editable</span>
               <span className="inline-flex items-center gap-1 text-[11px] font-medium normal-case tracking-normal text-primary-link">
                 <CitationsIcon />
@@ -146,7 +146,7 @@ export function ActionComposer() {
 
           {/* Annexures */}
           <div className="mt-5 rounded border border-line-warm bg-chip px-4 py-3.5">
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
               Annexures · auto-attached
             </div>
             <div className="flex flex-wrap gap-2.5">
@@ -170,7 +170,7 @@ export function ActionComposer() {
 
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-line-warm bg-panel px-7 py-4">
-          <div className="flex items-center gap-1.5 text-[11px] text-muted">
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <LockIcon />
             Digitally signed with your MP DSC · dispatched via NIC secure channel
           </div>

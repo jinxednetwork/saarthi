@@ -207,11 +207,11 @@ export function CitationsIcon({ size = 10 }: { size?: number }) {
 /** The Saarthi brand mark — staggered signal bars. */
 export function BrandBars({ scale = 1 }: { scale?: number }) {
   const bars = [
-    { h: 9, c: "#12325B" },
-    { h: 16, c: "#12325B" },
-    { h: 13, c: "#12325B" },
-    { h: 20, c: "#C15A15" },
-    { h: 11, c: "#12325B" },
+    { h: 9, c: "hsl(var(--primary-brand))" },
+    { h: 16, c: "hsl(var(--primary-brand))" },
+    { h: 13, c: "hsl(var(--primary-brand))" },
+    { h: 20, c: "hsl(var(--saffron))" },
+    { h: 11, c: "hsl(var(--primary-brand))" },
   ];
   return (
     <div className="flex items-end" style={{ gap: 2 * scale, height: 22 * scale }}>

@@ -17,7 +17,7 @@ export function ThisWeekSection() {
           <div className="text-[22px] font-semibold tracking-tight text-ink">
             This week&rsquo;s priorities
           </div>
-          <div className="mt-1.5 max-w-[620px] text-[13.5px] leading-normal text-muted">
+          <div className="mt-1.5 max-w-[620px] text-[13.5px] leading-normal text-muted-foreground">
             Ranked by AI on cross-referenced evidence. Each ranking cites its sources.
           </div>
         </div>

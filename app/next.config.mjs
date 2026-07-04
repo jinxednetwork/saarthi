@@ -7,6 +7,11 @@ const nextConfig = {
     // Allow importing from outside app/ (the monorepo root) during dev.
     externalDir: true,
   },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+    ],
+  },
 };
 
 export default nextConfig;

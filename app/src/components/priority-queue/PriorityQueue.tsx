@@ -53,7 +53,7 @@ export function PriorityQueue() {
                       ? "font-medium text-primary"
                       : isCritical
                         ? "font-medium text-urgency-critical"
-                        : "text-muted"
+                        : "text-muted-foreground"
                   }`}
                 >
                   {trend}
@@ -62,15 +62,15 @@ export function PriorityQueue() {
               <div className="mb-[3px] text-[14.5px] font-medium leading-snug text-ink">
                 {c.title}
               </div>
-              <div className="mb-3 text-[12.5px] text-muted">{c.ui.wardLabel}</div>
+              <div className="mb-3 text-[12.5px] text-muted-foreground">{c.ui.wardLabel}</div>
               <div className="flex items-center gap-2">
                 <span
                   className="inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[11.5px] font-medium"
-                  style={{ color: p.color, borderColor: `${p.color}44` }}
+                  style={{ color: p.color, borderColor: p.border }}
                 >
                   {p.label}
                 </span>
-                <span className="text-xs leading-tight text-muted">
+                <span className="text-xs leading-tight text-muted-foreground">
                   {c.ui.queueSuggestion ?? c.suggested_action.title}
                 </span>
               </div>

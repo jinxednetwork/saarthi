@@ -18,18 +18,18 @@ export function WelcomeSplash() {
   if (done) return null;
 
   const bars = [
-    { h: 28, c: "#12325B", d: 0.05 },
-    { h: 52, c: "#12325B", d: 0.15 },
-    { h: 40, c: "#12325B", d: 0.25 },
-    { h: 68, c: "#C15A15", d: 0.35 },
-    { h: 34, c: "#12325B", d: 0.45 },
+    { h: 28, c: "hsl(var(--primary-brand))", d: 0.05 },
+    { h: 52, c: "hsl(var(--primary-brand))", d: 0.15 },
+    { h: 40, c: "hsl(var(--primary-brand))", d: 0.25 },
+    { h: 68, c: "hsl(var(--saffron))", d: 0.35 },
+    { h: 34, c: "hsl(var(--primary-brand))", d: 0.45 },
   ];
 
   return (
     <div
       className="fixed inset-0 z-[99999] flex items-center justify-center"
       style={{
-        background: "linear-gradient(180deg, #F1EBDD 0%, #EDE5D0 100%)",
+        background: "linear-gradient(180deg, hsl(var(--line-faint)) 0%, #EDE5D0 100%)",
         animation: "splashFadeOut 3.2s ease-out forwards",
       }}
     >
@@ -56,7 +56,7 @@ export function WelcomeSplash() {
           <div className="hi text-[22px] text-faint">सारथि</div>
         </div>
         <div
-          className="mb-2 text-[15px] text-muted"
+          className="mb-2 text-[15px] text-muted-foreground"
           style={{ animation: "splashRise 0.6s ease-out 0.95s both" }}
         >
           Welcome,
@@ -80,7 +80,7 @@ export function WelcomeSplash() {
           <div
             className="h-full w-full"
             style={{
-              background: "linear-gradient(90deg, #12325B, #C15A15)",
+              background: "linear-gradient(90deg, hsl(var(--primary-brand)), hsl(var(--saffron)))",
               transformOrigin: "left",
               animation: "splashProgress 1.6s ease-out 1.4s both",
             }}

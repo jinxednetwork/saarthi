@@ -13,7 +13,7 @@ export function AppFooter({
           <span>Saarthi v0.4 · Pilot programme, Government of India</span>
           <span className="text-[#DCD3BF]">·</span>
           {links.map((l) => (
-            <a key={l} href="#" className="text-muted no-underline hover:text-primary">
+            <a key={l} href="#" className="text-muted-foreground no-underline hover:text-primary">
               {l}
             </a>
           ))}

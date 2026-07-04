@@ -12,10 +12,10 @@ const ConstituencyMap = dynamic(
 );
 
 const LEGEND = [
-  { label: "Critical", color: "#A3311F" },
-  { label: "High", color: "#B77321" },
-  { label: "Medium", color: "#B39B32" },
-  { label: "Low", color: "#4A6A87" },
+  { label: "Critical", color: "hsl(var(--urgency-critical))" },
+  { label: "High", color: "hsl(var(--urgency-high))" },
+  { label: "Medium", color: "hsl(var(--urgency-medium))" },
+  { label: "Low", color: "hsl(var(--urgency-low))" },
 ];
 
 const RANGES: TimeRange[] = ["7d", "30d", "90d"];
@@ -35,7 +35,7 @@ export function MapSection() {
       : MOCK_CLUSTERS.filter((c) => groupOf(c.category) === activeFilter).length;
 
   const chips: { key: MapFilter; label: string; count: number; color: string }[] = [
-    { key: "all", label: "All categories", count: MOCK_CLUSTERS.length, color: "#7E8590" },
+    { key: "all", label: "All categories", count: MOCK_CLUSTERS.length, color: "hsl(var(--muted-fg))" },
     ...(Object.entries(CATEGORY_GROUPS) as [CategoryGroup, (typeof CATEGORY_GROUPS)[CategoryGroup]][]).map(
       ([key, g]) => ({
         key: key as MapFilter,
@@ -56,8 +56,8 @@ export function MapSection() {
         >
           <span>{filterLabel(activeFilter)}</span>
           <span className="text-faint">·</span>
-          <span className="text-muted">Past {timeRange.replace("d", " days")}</span>
-          <span className="text-muted">
+          <span className="text-muted-foreground">Past {timeRange.replace("d", " days")}</span>
+          <span className="text-muted-foreground">
             <ChevronDown />
           </span>
         </button>
@@ -121,7 +121,7 @@ export function MapSection() {
         {/* Visible count */}
         <div className="absolute bottom-3.5 right-3.5 z-[500] flex items-baseline gap-1.5 rounded-md border border-line bg-white/95 px-3 py-2 backdrop-blur-md">
           <span className="num text-lg font-medium text-ink">{visibleCount}</span>
-          <span className="text-[11.5px] text-muted">visible clusters</span>
+          <span className="text-[11.5px] text-muted-foreground">visible clusters</span>
         </div>
       </div>
     </section>

@@ -1,19 +1,57 @@
 import type { ActionPathway, Urgency } from "@saarthi/shared";
 
-/** Urgency → marker fill + label text colors (design `_urgencyStyles`). */
-export const URGENCY_UI: Record<Urgency, { dot: string; text: string; label: string }> = {
-  critical: { dot: "#A3311F", text: "#A3311F", label: "Critical" },
-  high: { dot: "#B77321", text: "#B77321", label: "High" },
-  medium: { dot: "#B39B32", text: "#8A7515", label: "Medium" },
-  low: { dot: "#4A6A87", text: "#7E8590", label: "Low" },
+/**
+ * Theme-aware colour strings for inline styles. Values are hsl(var()) refs so
+ * marks retheme instantly with the .dark class — never hardcode hex here.
+ * `dim` is the 27%-alpha variant used for pathway pill borders.
+ */
+const u = (name: string) => `hsl(var(--${name}))`;
+const uDim = (name: string, alpha: number) => `hsl(var(--${name}) / ${alpha})`;
+
+/** Urgency → marker fill + label text + pill border colours. */
+export const URGENCY_UI: Record<
+  Urgency,
+  { dot: string; text: string; border: string; label: string }
+> = {
+  critical: {
+    dot: u("urgency-critical"),
+    text: u("urgency-critical"),
+    border: uDim("urgency-critical", 0.35),
+    label: "Critical",
+  },
+  high: {
+    dot: u("urgency-high"),
+    text: u("urgency-high"),
+    border: uDim("urgency-high", 0.35),
+    label: "High",
+  },
+  medium: {
+    dot: u("urgency-medium"),
+    text: u("urgency-medium-text"),
+    border: uDim("urgency-medium", 0.35),
+    label: "Medium",
+  },
+  low: {
+    dot: u("urgency-low"),
+    text: u("urgency-low-text"),
+    border: uDim("urgency-low", 0.35),
+    label: "Low",
+  },
 };
 
-/** Pathway → pill color + sentence-case label (design `_actionPillStyle`). */
-export const PATHWAY_UI: Record<ActionPathway, { color: string; label: string }> = {
-  MPLADS: { color: "#12325B", label: "MPLADS" },
-  STATE: { color: "#8A5219", label: "State" },
-  CENTRAL: { color: "#1D6B3B", label: "Central" },
-  COORDINATION: { color: "#054A91", label: "Coordination" },
+/** Pathway → pill colour + sentence-case label. */
+export const PATHWAY_UI: Record<
+  ActionPathway,
+  { color: string; border: string; label: string }
+> = {
+  MPLADS: { color: u("pathway-mplads"), border: uDim("pathway-mplads", 0.35), label: "MPLADS" },
+  STATE: { color: u("pathway-state"), border: uDim("pathway-state", 0.35), label: "State" },
+  CENTRAL: { color: u("pathway-central"), border: uDim("pathway-central", 0.35), label: "Central" },
+  COORDINATION: {
+    color: u("pathway-coordination"),
+    border: uDim("pathway-coordination", 0.35),
+    label: "Coordination",
+  },
 };
 
 /** "↑ 340%" / "new" trend text from a cluster's trend block. */
@@ -26,4 +64,12 @@ export function trendLabel(trend: { previous_week: number; percent_change: numbe
 export function formatCr(rupees: number): string {
   const cr = (rupees / 10_000_000).toFixed(2).replace(/0$/, "");
   return `₹${cr}`;
+}
+
+/** Relative time for feed items. */
+export function minutesAgo(min: number): string {
+  if (min <= 0) return "just now";
+  if (min < 60) return `${min} min ago`;
+  const h = Math.floor(min / 60);
+  return h === 1 ? "1 hr ago" : `${h} hrs ago`;
 }

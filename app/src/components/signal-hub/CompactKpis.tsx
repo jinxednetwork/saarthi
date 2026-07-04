@@ -16,12 +16,12 @@ export function CompactKpis() {
     <div className="grid grid-cols-2 gap-x-11 gap-y-5">
       {/* MPLADS utilised */}
       <div>
-        <div className="mb-2.5 text-[12.5px] text-muted">MPLADS utilised</div>
+        <div className="mb-2.5 text-[12.5px] text-muted-foreground">MPLADS utilised</div>
         <div className="flex items-baseline gap-[5px]">
           <div className="num text-[30px] font-medium leading-none tracking-tight text-ink">
             {formatCr(m.utilization_ytd)}
           </div>
-          <div className="text-[15px] text-muted">Cr</div>
+          <div className="text-[15px] text-muted-foreground">Cr</div>
         </div>
         <div className="mt-3 h-[3px] overflow-hidden rounded-full bg-canvas">
           <div className="h-full rounded-full bg-primary" style={{ width: `${utilizationPct}%` }} />
@@ -33,7 +33,7 @@ export function CompactKpis() {
 
       {/* Open clusters */}
       <div>
-        <div className="mb-2.5 text-[12.5px] text-muted">Open clusters</div>
+        <div className="mb-2.5 text-[12.5px] text-muted-foreground">Open clusters</div>
         <div className="flex items-baseline gap-2.5">
           <div className="num text-[30px] font-medium leading-none tracking-tight text-ink">
             {DASHBOARD_META.openClusters}
@@ -49,14 +49,14 @@ export function CompactKpis() {
       {/* SC allocation */}
       <div>
         <div className="mb-2.5 flex items-center gap-1.5">
-          <div className="text-[12.5px] text-muted">SC allocation</div>
+          <div className="text-[12.5px] text-muted-foreground">SC allocation</div>
           <span className={`h-[5px] w-[5px] rounded-full ${scBelow ? "bg-urgency-high" : "bg-success"}`} />
         </div>
         <div className="flex items-baseline gap-1">
           <div className="num text-[30px] font-medium leading-none tracking-tight text-ink">
             {(m.sc_percent_ytd * 100).toFixed(1)}
           </div>
-          <div className="text-[15px] text-muted">%</div>
+          <div className="text-[15px] text-muted-foreground">%</div>
         </div>
         <div className="mt-2 text-[11.5px] text-faint">
           {scBelow ? (
@@ -73,14 +73,14 @@ export function CompactKpis() {
       {/* ST allocation */}
       <div>
         <div className="mb-2.5 flex items-center gap-1.5">
-          <div className="text-[12.5px] text-muted">ST allocation</div>
+          <div className="text-[12.5px] text-muted-foreground">ST allocation</div>
           <span className={`h-[5px] w-[5px] rounded-full ${stBelow ? "bg-urgency-high" : "bg-success"}`} />
         </div>
         <div className="flex items-baseline gap-1">
           <div className="num text-[30px] font-medium leading-none tracking-tight text-ink">
             {(m.st_percent_ytd * 100).toFixed(1)}
           </div>
-          <div className="text-[15px] text-muted">%</div>
+          <div className="text-[15px] text-muted-foreground">%</div>
         </div>
         <div className="mt-2 text-[11.5px] text-faint">
           {stBelow ? "below required" : DASHBOARD_META.stBufferCopy}

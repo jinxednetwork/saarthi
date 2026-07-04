@@ -53,7 +53,7 @@ export function InsightGrid() {
             <div className="text-[17px] font-semibold tracking-tight text-ink">
               Cross-references
             </div>
-            <div className="mt-1 text-[12.5px] text-muted">
+            <div className="mt-1 text-[12.5px] text-muted-foreground">
               Where citizen signals and public data collide
             </div>
           </div>
@@ -94,7 +94,7 @@ export function InsightGrid() {
                     <button className="cursor-pointer rounded-full border border-primary bg-transparent px-3.5 py-1.5 text-xs font-medium text-primary hover:bg-canvas">
                       {x.actionLabel}
                     </button>
-                    <a href="#" className="text-xs text-muted no-underline hover:text-ink">
+                    <a href="#" className="text-xs text-muted-foreground no-underline hover:text-ink">
                       Reasoning trail
                     </a>
                   </div>
@@ -109,7 +109,7 @@ export function InsightGrid() {
           <div>
             <div className="mb-[18px]">
               <div className="text-[17px] font-semibold tracking-tight text-ink">Anomalies</div>
-              <div className="mt-1 text-[12.5px] text-muted">
+              <div className="mt-1 text-[12.5px] text-muted-foreground">
                 Unusual signals worth your attention
               </div>
             </div>
@@ -144,7 +144,7 @@ export function InsightGrid() {
               <div className="text-[17px] font-semibold tracking-tight text-ink">
                 Comparative benchmark
               </div>
-              <div className="mt-1 text-[12.5px] text-muted">
+              <div className="mt-1 text-[12.5px] text-muted-foreground">
                 How your constituency compares to peers
               </div>
             </div>
@@ -172,7 +172,7 @@ export function InsightGrid() {
                             className="block h-full rounded-full"
                             style={{
                               width: `${(r.count / max) * 100}%`,
-                              background: r.highlight ? "#12325B" : "#CDC5B4",
+                              background: r.highlight ? "hsl(var(--primary-brand))" : "hsl(var(--line-dark))",
                             }}
                           />
                         </span>

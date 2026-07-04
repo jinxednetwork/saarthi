@@ -21,8 +21,8 @@ export function RadialHub() {
     <div className="relative w-full max-w-[500px]" style={{ aspectRatio: "500 / 420" }}>
       <svg viewBox="0 0 500 420" className="block h-full w-full overflow-visible">
         {/* Concentric guide rings */}
-        <circle cx={CX} cy={CY} r={RING_R} fill="none" stroke="#EDE7D7" strokeWidth={1} strokeDasharray="2 5" />
-        <circle cx={CX} cy={CY} r={90} fill="none" stroke="#F1EBDD" strokeWidth={1} strokeDasharray="1 4" />
+        <circle cx={CX} cy={CY} r={RING_R} fill="none" stroke="hsl(var(--line))" strokeWidth={1} strokeDasharray="2 5" />
+        <circle cx={CX} cy={CY} r={90} fill="none" stroke="hsl(var(--line-faint))" strokeWidth={1} strokeDasharray="1 4" />
 
         {RADIAL_CHANNELS.map((ch) => {
           const a = (ch.angle * Math.PI) / 180;
@@ -51,7 +51,7 @@ export function RadialHub() {
                 y1={ly1}
                 x2={x}
                 y2={y}
-                stroke={isHovered ? ch.color : "#CDC5B4"}
+                stroke={isHovered ? ch.color : "hsl(var(--line-dark))"}
                 strokeWidth={isHovered ? 1.5 : 1}
                 className="transition-[stroke] duration-200"
               />
@@ -68,7 +68,7 @@ export function RadialHub() {
                 x={labelX}
                 y={labelY}
                 textAnchor={anchor}
-                style={{ fontSize: 12.5, fontWeight: 500, fill: "#14192A" }}
+                style={{ fontSize: 12.5, fontWeight: 500, fill: "hsl(var(--ink))" }}
               >
                 {ch.name}
               </text>
@@ -78,7 +78,7 @@ export function RadialHub() {
                 dy={16}
                 textAnchor={anchor}
                 className="num"
-                style={{ fontSize: 11.5, fill: "#A69C86" }}
+                style={{ fontSize: 11.5, fill: "hsl(var(--faint))" }}
               >
                 {ch.count.toLocaleString("en-IN")}
               </text>
@@ -87,8 +87,8 @@ export function RadialHub() {
         })}
 
         {/* Centre hub */}
-        <circle cx={CX} cy={CY} r={72} fill="#FFFFFF" stroke="#EDE7D7" strokeWidth={1} />
-        <circle cx={CX} cy={CY} r={62} fill="none" stroke="#F1EBDD" strokeWidth={1} />
+        <circle cx={CX} cy={CY} r={72} fill="hsl(var(--surface))" stroke="hsl(var(--line))" strokeWidth={1} />
+        <circle cx={CX} cy={CY} r={62} fill="none" stroke="hsl(var(--line-faint))" strokeWidth={1} />
       </svg>
 
       {/* Centre overlay — summary or hovered channel detail */}

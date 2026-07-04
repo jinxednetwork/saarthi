@@ -5,81 +5,220 @@
 /* Leaflet base styles (map component). Bundled locally, no CDN. */
 @import "leaflet/dist/leaflet.css";
 
-html {
-  color-scheme: light;
+/* ============================================================================
+   Saarthi dual-theme tokens — HSL channels consumed by Tailwind as
+   hsl(var(--x) / <alpha-value>). Semantic names preserved from the parchment
+   era so existing classnames retheme for free. Light = Apple Maps daytime;
+   dark = command center (default). All body-size text ≥ 4.5:1 in both themes.
+   ========================================================================== */
+@layer base {
+  :root {
+    /* --- Saarthi surfaces (light) --- */
+    --canvas: 43 24% 94%; /*    #F4F2ED page */
+    --surface: 0 0% 100%; /*    #FFFFFF cards/panels */
+    --chip: 40 40% 94%; /*      #F6F2EA chips, quiet hovers */
+    --panel: 40 53% 97%; /*     #FBF8F2 form fields */
+    /* --- Text --- */
+    --ink: 226 36% 12%; /*      #14192A headings */
+    --body-text: 224 13% 33%; /* #4A5060 body 7.6:1 */
+    --muted-fg: 222 10% 40%; /*  #5C6270 labels 5.9:1 */
+    --faint: 41 8% 39%; /*       #6B665B quietest 4.6:1 (AA fixed) */
+    /* --- Borders --- */
+    --line: 44 22% 86%; /*       #E4E0D5 */
+    --line-warm: 40 30% 86%; /*  #E6DFD1 */
+    --line-dark: 41 20% 75%; /*  #CDC5B4 hover borders */
+    --line-faint: 43 24% 91%; /* row separators */
+    /* --- Brand --- */
+    --primary-brand: 214 67% 21%; /* #12325B Secretariat Navy */
+    --primary-hover: 215 73% 16%; /* #0B2447 */
+    --link: 210 93% 29%; /*         #054A91 Despatch Blue */
+    --saffron: 24 80% 42%; /*       #C15A15 Seal Saffron */
+    --success: 143 57% 27%; /*      #1D6B3B Sanction Green */
+    /* --- Urgency --- */
+    --urgency-critical: 8 68% 38%; /*   #A3311F */
+    --urgency-high: 33 69% 42%; /*      #B77321 */
+    --urgency-medium: 49 56% 45%; /*    #B39B32 dot */
+    --urgency-medium-text: 49 74% 31%; /* #8A7515 */
+    --urgency-low: 209 29% 41%; /*      #4A6A87 dot */
+    --urgency-low-text: 222 10% 40%; /* label grey */
+    /* --- Pathways --- */
+    --pathway-mplads: 214 67% 21%;
+    --pathway-state: 30 69% 32%; /*  #8A5219 */
+    --pathway-central: 143 57% 27%;
+    --pathway-coordination: 210 93% 29%;
+    /* --- Marks --- */
+    --highlight: 45 100% 90%; /* #FFF3CE citation highlight */
+    --map-canvas: 47 25% 86%; /* leaflet bg while tiles load */
+
+    /* --- shadcn vocabulary mapped onto Saarthi semantics --- */
+    --background: var(--canvas);
+    --foreground: var(--ink);
+    --card: var(--surface);
+    --card-foreground: var(--ink);
+    --popover: var(--surface);
+    --popover-foreground: var(--ink);
+    --primary: var(--primary-brand);
+    --primary-foreground: 0 0% 100%;
+    --secondary: var(--chip);
+    --secondary-foreground: var(--ink);
+    --muted: var(--chip);
+    --muted-foreground: var(--muted-fg);
+    --accent: var(--chip);
+    --accent-foreground: var(--ink);
+    --destructive: var(--urgency-critical);
+    --destructive-foreground: 0 0% 100%;
+    --border: var(--line);
+    --input: var(--line-warm);
+    --ring: var(--primary-brand);
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* --- Saarthi surfaces (dark command center) --- */
+    --canvas: 223 49% 8%; /*    #0B1120 */
+    --surface: 221 43% 13%; /*  #131C30 */
+    --chip: 221 41% 18%; /*     #1B2740 */
+    --panel: 219 40% 16%; /*    #182338 */
+    /* --- Text --- */
+    --ink: 220 40% 94%; /*      #EAEEF6 */
+    --body-text: 219 20% 72%; /* #AAB4C6 8.9:1 */
+    --muted-fg: 220 17% 65%; /*  #96A0B4 */
+    --faint: 221 13% 60%; /*     #8B93A5 */
+    /* --- Borders --- */
+    --line: 221 38% 23%; /*      #243250 */
+    --line-warm: 221 35% 24%;
+    --line-dark: 221 33% 34%; /* hover borders */
+    --line-faint: 221 38% 17%;
+    /* --- Brand (interactive blues brighten for contrast on dark) --- */
+    --primary-brand: 216 61% 69%; /* #7FA6E0 */
+    --primary-hover: 216 65% 76%;
+    --link: 213 70% 74%;
+    --saffron: 25 74% 54%; /*       #E07A33 */
+    --success: 146 43% 43%; /*      #3F9D68 */
+    /* --- Urgency (brightened) --- */
+    --urgency-critical: 9 71% 61%; /*  #E26A54 */
+    --urgency-high: 35 70% 59%; /*     #E0A24E */
+    --urgency-medium: 49 60% 60%; /*   #D6C05A */
+    --urgency-medium-text: 49 60% 60%;
+    --urgency-low: 210 41% 66%; /*     #84A8CB */
+    --urgency-low-text: 220 17% 65%;
+    /* --- Pathways (brightened) --- */
+    --pathway-mplads: 216 61% 69%;
+    --pathway-state: 33 62% 59%;
+    --pathway-central: 146 43% 43%;
+    --pathway-coordination: 213 70% 74%;
+    /* --- Marks --- */
+    --highlight: 45 65% 28%;
+    --map-canvas: 222 45% 11%;
+
+    /* shadcn mappings inherit the var() indirection above; only the ones with
+       literal values need dark overrides */
+    --primary-foreground: 223 49% 8%;
+    --destructive-foreground: 220 40% 94%;
+  }
 }
 
-body {
-  background: theme("colors.canvas");
-  color: theme("colors.ink");
-  font-feature-settings: "ss01", "cv11";
-  min-height: 100vh;
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background: hsl(var(--canvas));
+    color: hsl(var(--ink));
+    font-feature-settings: "ss01", "cv11";
+    min-height: 100vh;
+  }
+
+  /* Devanagari needs ~15% more vertical space (§10). */
+  :lang(hi),
+  .hi {
+    font-family: theme("fontFamily.devanagari");
+    line-height: 1.7;
+  }
+
+  ::selection {
+    background: hsl(var(--primary-brand) / 0.15);
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
 
-/* Devanagari needs ~15% more vertical space (§10). */
-:lang(hi),
-.hi {
-  font-family: theme("fontFamily.devanagari");
-  line-height: 1.7;
+@layer components {
+  /* Frosted glass panels — the Apple layer. Cap ~5 blurred surfaces per view;
+     never nest blurs. translateZ(0) promotes to its own layer over the map. */
+  .glass {
+    background: hsl(var(--surface) / 0.72);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid hsl(var(--line) / 0.6);
+    transform: translateZ(0);
+  }
+  .glass-strong {
+    background: hsl(var(--surface) / 0.85);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid hsl(var(--line) / 0.6);
+    transform: translateZ(0);
+  }
+
+  /* Tabular numerals for KPIs, counts, trends. */
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
 }
 
-/* Tabular numerals for KPIs, counts, trends. */
-.num {
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
-
-::selection {
-  background: #12325b22;
-}
-
-input[type="range"] {
-  accent-color: theme("colors.primary.DEFAULT");
-}
-
-/* ---- Leaflet theming (from Dashboard.dc.html) ---- */
+/* ---- Leaflet theming (both themes via vars) ---- */
 .leaflet-container {
-  background: #e8e2d0;
+  background: hsl(var(--map-canvas));
   font-family: inherit;
   outline: 0;
 }
 .leaflet-control-attribution {
   font-size: 10px;
-  background: rgba(255, 255, 255, 0.85);
-  color: theme("colors.body");
+  background: hsl(var(--surface) / 0.85);
+  color: hsl(var(--muted-fg));
   padding: 2px 6px;
 }
 .leaflet-control-zoom a {
-  background: #ffffff;
-  color: theme("colors.primary.DEFAULT");
-  border-color: theme("colors.line-dark") !important;
+  background: hsl(var(--surface));
+  color: hsl(var(--ink));
+  border-color: hsl(var(--line-dark)) !important;
   width: 26px;
   height: 26px;
   line-height: 24px;
   font-weight: 500;
 }
 .leaflet-control-zoom a:hover {
-  background: theme("colors.chip");
+  background: hsl(var(--chip));
 }
 .saarthi-marker {
   background: transparent !important;
   border: 0 !important;
 }
 .leaflet-tooltip.saarthi-tt {
-  background: theme("colors.ink");
-  color: #fff;
+  background: hsl(var(--ink));
+  color: hsl(var(--canvas));
   border: 0;
-  box-shadow: 0 6px 14px rgba(20, 25, 42, 0.18);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
   padding: 6px 10px;
   font-size: 12px;
   font-weight: 500;
-  border-radius: 3px;
+  border-radius: 6px;
 }
 .leaflet-tooltip.saarthi-tt::before {
-  border-top-color: theme("colors.ink");
+  border-top-color: hsl(var(--ink));
 }
 
-/* Marker halo pulse (critical clusters) — keyframes shared with tailwind config */
+/* Marker halo pulse (critical clusters) */
 @keyframes halo {
   0% {
     transform: scale(1);
@@ -92,9 +231,8 @@ input[type="range"] {
 }
 
 /* ---- Outlook chart draw-in (Intelligence) ----
-   The design file declares a drawIn keyframe it never wires up; this is that
-   moment, done properly. Hidden initial states live INSIDE the no-preference
-   block so reduced-motion users see the finished chart immediately. */
+   Hidden initial states live INSIDE the no-preference block so reduced-motion
+   users see the finished chart immediately. */
 @media (prefers-reduced-motion: no-preference) {
   .chart-draw {
     stroke-dasharray: 1;
@@ -126,12 +264,6 @@ input[type="range"] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-:focus-visible {
-  outline: 2px solid theme("colors.primary.DEFAULT");
-  outline-offset: 2px;
-  border-radius: 2px;
 }
 
 /* Splash animations (arbitrary delays are inline; keyframes live here) */

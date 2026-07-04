@@ -58,7 +58,7 @@ export function FullPriorityCard({ cluster }: { cluster: DemoCluster }) {
           >
             <CategoryIcon category={cluster.category} />
           </span>
-          <span className="text-[12.5px] text-muted">
+          <span className="text-[12.5px] text-muted-foreground">
             {groupLabel(cluster.category)} · #{cluster.id.replace("cl_", "")}
           </span>
         </div>
@@ -67,8 +67,8 @@ export function FullPriorityCard({ cluster }: { cluster: DemoCluster }) {
             className="inline-flex items-center gap-[5px] rounded-full border px-2.5 py-0.5 text-[11.5px] font-medium"
             style={
               isDispatched
-                ? { color: "#1D6B3B", borderColor: "#1D6B3B44" }
-                : { color: u.text, borderColor: `${u.text}44` }
+                ? { color: "hsl(var(--success))", borderColor: "hsl(var(--success) / 0.35)" }
+                : { color: u.text, borderColor: u.border }
             }
           >
             {isDispatched ? "In progress" : u.label}
@@ -83,14 +83,14 @@ export function FullPriorityCard({ cluster }: { cluster: DemoCluster }) {
           {cluster.title}
         </div>
         {cluster.title_hi !== cluster.title && (
-          <div className="hi mt-1.5 text-[15px] leading-snug text-muted">{cluster.title_hi}</div>
+          <div className="hi mt-1.5 text-[15px] leading-snug text-muted-foreground">{cluster.title_hi}</div>
         )}
-        <div className="mt-2 text-[13px] text-muted">{cluster.ui.wardLabel}</div>
+        <div className="mt-2 text-[13px] text-muted-foreground">{cluster.ui.wardLabel}</div>
       </div>
 
       {/* Evidence chips */}
       <div className="px-[22px] pt-[18px]">
-        <div className="mb-2 text-[12.5px] text-muted">
+        <div className="mb-2 text-[12.5px] text-muted-foreground">
           <span className="num font-medium text-ink">{cluster.submission_count}</span> signals ·{" "}
           {evidence.length} sources
         </div>
@@ -100,11 +100,11 @@ export function FullPriorityCard({ cluster }: { cluster: DemoCluster }) {
               key={e.source}
               className="inline-flex items-center gap-1.5 rounded bg-chip py-1 pl-[7px] pr-[9px] text-xs text-ink"
             >
-              <span className="flex h-3 w-3 items-center justify-center text-muted">
+              <span className="flex h-3 w-3 items-center justify-center text-muted-foreground">
                 <SourceIcon source={e.source} />
               </span>
               <span className="num font-medium">{e.count}</span>
-              <span className="text-muted">{e.label}</span>
+              <span className="text-muted-foreground">{e.label}</span>
             </span>
           ))}
         </div>
@@ -155,7 +155,7 @@ export function FullPriorityCard({ cluster }: { cluster: DemoCluster }) {
           <div className="mb-2 flex items-center gap-2">
             <span
               className="inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[11.5px] font-medium"
-              style={{ color: p.color, borderColor: `${p.color}44` }}
+              style={{ color: p.color, borderColor: p.border }}
             >
               {p.label}
             </span>
@@ -176,7 +176,7 @@ export function FullPriorityCard({ cluster }: { cluster: DemoCluster }) {
             <button className="flex-1 cursor-pointer rounded-full border border-success bg-transparent px-4 py-2.5 text-[13px] font-medium text-success hover:bg-[#F0F4EE]">
               View action
             </button>
-            <button className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-line bg-transparent text-muted hover:border-line-dark hover:text-ink">
+            <button className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-line bg-transparent text-muted-foreground hover:border-line-dark hover:text-ink">
               <MoreIcon />
             </button>
           </>
@@ -191,7 +191,7 @@ export function FullPriorityCard({ cluster }: { cluster: DemoCluster }) {
             </button>
             <button
               title="More actions"
-              className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-line bg-transparent text-muted hover:border-line-dark hover:text-ink"
+              className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-line bg-transparent text-muted-foreground hover:border-line-dark hover:text-ink"
             >
               <MoreIcon />
             </button>

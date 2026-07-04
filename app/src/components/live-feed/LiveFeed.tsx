@@ -54,7 +54,7 @@ export function LiveFeed() {
               <div
                 key={`${tick}-${i}-${item.snippet.slice(0, 16)}`}
                 className={`border-b border-line-faint px-5 py-4 ${i === 0 ? "animate-feedIn" : ""}`}
-                style={isAction ? { boxShadow: "inset 2px 0 0 #1D6B3B" } : undefined}
+                style={isAction ? { boxShadow: "inset 2px 0 0 hsl(var(--success))" } : undefined}
               >
                 <div className="flex items-start gap-3">
                   <span

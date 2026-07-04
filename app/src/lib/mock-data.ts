@@ -403,6 +403,8 @@ export interface FeedItem {
   link: string;
   /** Cluster this signal joined — click-through target. */
   clusterId?: string;
+  /** Attached citizen media (photos/videos) — drives the /live collage. */
+  media?: MediaAsset;
   linkNew?: boolean;
   hi?: boolean;
 }
@@ -413,9 +415,32 @@ export const FEED_ITEMS: FeedItem[] = [
   { source: "reddit", sourceName: "Reddit", category: "air_quality", timeMin: 7, snippet: "r/delhi · AQI 380 outside the embassy zone at 8am — third day above severe.", link: "joins cluster #03", clusterId: "cl_03" },
   { source: "portal", sourceName: "Portal", category: "infrastructure", timeMin: 12, snippet: "Widget submission · Streetlights on Pusa Road out for 4 nights now, unsafe for women commuters.", link: "joins cluster #04", clusterId: "cl_04" },
   { source: "news", sourceName: "News", category: "water", timeMin: 18, snippet: 'Local daily · "DUSIB sewer complaints spike in RK Puram; residents demand action."', link: "joins cluster #05", clusterId: "cl_05" },
-  { source: "twitter", sourceName: "X (post)", category: "air_quality", timeMin: 24, snippet: "Metro construction dust on the DND stretch — masks required through Nov.", link: "creates new cluster · #12", clusterId: "cl_12", linkNew: true },
+  { source: "twitter", sourceName: "X (post)", category: "air_quality", timeMin: 24, snippet: "Metro construction dust on the DND stretch — masks required through Nov.", link: "creates new cluster · #10", clusterId: "cl_10", linkNew: true },
   { source: "whatsapp", sourceName: "WhatsApp", category: "infrastructure", timeMin: 33, snippet: "Garbage not collected in Kasturba Nagar for three days. Attaching photo.", link: "joins cluster #06", clusterId: "cl_06" },
   { source: "twitter", sourceName: "X (post)", category: "water", timeMin: 41, snippet: "Malviya Nagar water tanker delayed again this morning, entire block affected.", link: "joins cluster #02", clusterId: "cl_02" },
+];
+
+/**
+ * /live collage feed — the dashboard's 8 base items enriched with media, plus
+ * the longer tail of the week's signals. Aspect variance drives the masonry.
+ */
+export const LIVE_FEED_ITEMS: FeedItem[] = [
+  { ...FEED_ITEMS[0]!, media: { type: "image", src: "https://images.unsplash.com/photo-1547683905-f686c993aae5?w=800&q=70&auto=format", aspect: "16/9", alt: "Flooded arterial road, Karol Bagh main market" } },
+  { ...FEED_ITEMS[1]!, media: { type: "video", src: "https://images.unsplash.com/photo-1428592953211-077101b2021b?w=800&q=70&auto=format", poster: "https://images.unsplash.com/photo-1428592953211-077101b2021b?w=800&q=70&auto=format", aspect: "3/4", alt: "Voice-note video — discoloured water, Kalkaji Ext.", duration: "0:14" } },
+  { ...FEED_ITEMS[2]!, media: { type: "image", src: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800&q=70&auto=format", aspect: "4/3", alt: "Haze over the India Gate corridor at dawn" } },
+  { ...FEED_ITEMS[3]!, media: { type: "image", src: "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=800&q=70&auto=format", aspect: "3/4", alt: "Unlit stretch of Pusa Road after dark" } },
+  { ...FEED_ITEMS[4]! },
+  { ...FEED_ITEMS[5]!, media: { type: "image", src: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=70&auto=format", aspect: "4/3", alt: "Uncovered construction on the DND stretch" } },
+  { ...FEED_ITEMS[6]!, media: { type: "image", src: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&q=70&auto=format", aspect: "1/1", alt: "Uncollected waste, Kasturba Nagar" } },
+  { ...FEED_ITEMS[7]! },
+  { source: "whatsapp", sourceName: "WhatsApp", category: "water", timeMin: 52, snippet: "टैंकर आज फिर नहीं आया। बच्चे स्कूल से पहले पानी भरने जाते हैं।", link: "voice note · Hindi · joins cluster #08", clusterId: "cl_08", hi: true },
+  { source: "portal", sourceName: "Portal", category: "infrastructure", timeMin: 58, snippet: "Widget submission · Footpath tiles caved in on the Delhi Cantt approach road — senior citizens at risk.", link: "joins cluster #09", clusterId: "cl_09", media: { type: "image", src: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=70&auto=format", aspect: "16/9", alt: "Damaged footpath near Green Park metro exit" } },
+  { source: "twitter", sourceName: "X (post)", category: "air_quality", timeMin: 64, snippet: "Morning walk cancelled again. You can taste the air near Sarai Kale Khan. @SaarthiNewDelhi when does the construction pause?", link: "joins cluster #10", clusterId: "cl_10", media: { type: "image", src: "https://images.unsplash.com/photo-1470723710355-95304d8aece4?w=800&q=70&auto=format", aspect: "16/9", alt: "Traffic haze at the Sarai Kale Khan corridor after dark" } },
+  { source: "reddit", sourceName: "Reddit", category: "infrastructure", timeMin: 71, snippet: "r/delhi · Anyone else notice the streetlights out on the entire Patel Nagar service lane? Third week now.", link: "joins cluster #04", clusterId: "cl_04" },
+  { source: "news", sourceName: "News", category: "health", timeMin: 83, snippet: 'The Hindu · "Stray dog census delayed; RWA complaints double in South Delhi wards."', link: "joins cluster #07", clusterId: "cl_07", media: { type: "image", src: "https://images.unsplash.com/photo-1597040663342-45b6af3d91a5?w=800&q=70&auto=format", aspect: "4/3", alt: "South Delhi neighbourhood park" } },
+  { source: "whatsapp", sourceName: "WhatsApp", category: "infrastructure", timeMin: 95, snippet: "Park ke jhoole toot gaye hain, koi repair nahi hua Diwali se pehle se.", link: "joins cluster #12", clusterId: "cl_12", hi: true },
+  { source: "portal", sourceName: "Portal", category: "water", timeMin: 104, snippet: "Widget submission · Sewer overflow smell reaching the school compound in Sector 4 by afternoon.", link: "joins cluster #05", clusterId: "cl_05", media: { type: "image", src: "https://images.unsplash.com/photo-1554672408-730436b60dde?w=800&q=70&auto=format", aspect: "3/4", alt: "Citizen reporting via the Saarthi web widget" } },
+  { source: "twitter", sourceName: "X (post)", category: "other", timeMin: 118, snippet: "Flag hoisting at the ward office this Sunday — and a reminder that civic pride starts with working drains. 🇮🇳", link: "general civic · unclustered", media: { type: "image", src: "https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=800&q=70&auto=format", aspect: "4/3", alt: "Indian tricolour against a clear sky" } },
 ];
 
 /** Footer data-source registry (design `_dataSources`). */

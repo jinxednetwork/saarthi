@@ -1,6 +1,7 @@
 import type { Category } from "@saarthi/shared";
 import { CATEGORY_GROUPS, type CategoryGroup, groupOf } from "./categories";
 import { MOCK_CLUSTERS, MOCK_CONSTITUENCY, type DemoCluster } from "./mock-data";
+import type { DemandDimension } from "./publicdata";
 
 /**
  * Shared analytics derivations — consumed by the Intelligence bento tiles AND
@@ -66,6 +67,62 @@ export function wardHotspots(limit = 6): WardHotspot[] {
     }
   }
   return [...byWard.values()].sort((a, b) => b.signals - a.signals).slice(0, limit);
+}
+
+/**
+ * Consolidated citizen feedback — signals rolled up per theme (category group)
+ * with the loudest ward and worst urgency, and the proposal dimension the theme
+ * maps to. This is the "make it easy to query and consolidate feedback" surface
+ * that feeds a one-click draft proposal.
+ */
+export interface CitizenTheme {
+  group: CategoryGroup;
+  label: string;
+  color: string;
+  signals: number;
+  clusters: number;
+  topWardId: string;
+  topWardName: string;
+  topWardScMajority: boolean;
+  worstUrgency: DemoCluster["urgency"];
+  dimension: DemandDimension;
+}
+
+const GROUP_DIMENSION: Record<CategoryGroup, DemandDimension> = {
+  water: "water",
+  health: "health",
+  infra: "infrastructure",
+};
+
+export function citizenThemes(): CitizenTheme[] {
+  return (Object.entries(CATEGORY_GROUPS) as [CategoryGroup, (typeof CATEGORY_GROUPS)[CategoryGroup]][])
+    .map(([group, g]) => {
+      const clusters = MOCK_CLUSTERS.filter((c) => groupOf(c.category) === group);
+      // Loudest ward within the theme.
+      const byWard = new Map<string, number>();
+      for (const c of clusters) {
+        byWard.set(c.geo.ward, (byWard.get(c.geo.ward) ?? 0) + c.submission_count);
+      }
+      const [topWardId] = [...byWard.entries()].sort((a, b) => b[1] - a[1])[0] ?? ["", 0];
+      const ward = MOCK_CONSTITUENCY.wards.find((w) => w.id === topWardId);
+      const worstUrgency = clusters.reduce<DemoCluster["urgency"]>(
+        (acc, c) => (URGENCY_ORDER[c.urgency] > URGENCY_ORDER[acc] ? c.urgency : acc),
+        "low",
+      );
+      return {
+        group,
+        label: g.label,
+        color: g.color,
+        signals: clusters.reduce((s, c) => s + c.submission_count, 0),
+        clusters: clusters.length,
+        topWardId,
+        topWardName: ward?.name ?? "—",
+        topWardScMajority: ward?.sc_majority ?? false,
+        worstUrgency,
+        dimension: GROUP_DIMENSION[group],
+      };
+    })
+    .sort((a, b) => b.signals - a.signals);
 }
 
 /** Clusters sorted by week-on-week movement (the "what changed" answer). */

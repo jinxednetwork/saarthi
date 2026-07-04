@@ -2,6 +2,7 @@ import "server-only";
 import { embedMany } from "ai";
 import type { AssistantCitation } from "@/lib/assistant-brain";
 import { DASHBOARD_META, MOCK_CLUSTERS, MOCK_CONSTITUENCY } from "@/lib/mock-data";
+import { SEED_PROPOSALS, costLabel, dimensionLabel, scoreProposal } from "@/lib/proposals";
 import { formatCr } from "@/lib/ui";
 import { embeddingModel } from "./gemini";
 
@@ -14,7 +15,7 @@ import { embeddingModel } from "./gemini";
  */
 export interface RetrievableChunk {
   id: string;
-  kind: "cluster" | "budget" | "document";
+  kind: "cluster" | "budget" | "proposal" | "document";
   text: string;
   citation: AssistantCitation;
 }
@@ -61,8 +62,30 @@ function budgetChunk(): RetrievableChunk {
   };
 }
 
+function proposalChunk(p: (typeof SEED_PROPOSALS)[number]): RetrievableChunk {
+  const s = scoreProposal(p);
+  const top = [...s.components]
+    .sort((a, b) => b.contribution - a.contribution)
+    .slice(0, 3)
+    .map((c) => c.label.toLowerCase())
+    .join(", ");
+  return {
+    id: `proposal:${p.id}`,
+    kind: "proposal",
+    text:
+      `Proposal: ${p.title}. Ward ${s.wardName}, need ${dimensionLabel(p.dimension)}, ` +
+      `cost ${costLabel(p.cost_lakhs)}, pathway ${p.pathway}. Evidence score ${s.total}/100, ` +
+      `driven by ${top}. ${p.summary}`,
+    citation: { label: p.title, href: "/proposals" },
+  };
+}
+
 function baseChunks(): RetrievableChunk[] {
-  return [...MOCK_CLUSTERS.map(clusterChunk), budgetChunk()];
+  return [
+    ...MOCK_CLUSTERS.map(clusterChunk),
+    budgetChunk(),
+    ...SEED_PROPOSALS.map(proposalChunk),
+  ];
 }
 
 let cache: Promise<EmbeddedChunk[]> | null = null;

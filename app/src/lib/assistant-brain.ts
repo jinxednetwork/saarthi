@@ -5,6 +5,7 @@ import { datasetUrl } from "./datasets";
 import { newThisWeek, signalsByCategory, wardHotspots, weekMovers } from "./insights";
 import { MOCK_ACTIONS } from "./actions-data";
 import { DASHBOARD_META, MOCK_CLUSTERS, MOCK_CONSTITUENCY, topClusters } from "./mock-data";
+import { SEED_PROPOSALS, costLabel, scoreProposal } from "./proposals";
 import { formatCr } from "./ui";
 
 /**
@@ -39,7 +40,7 @@ export interface AssistantMessage {
 export const SUGGESTED_CHIPS = [
   "Water issues in SC-majority wards",
   "What changed this week?",
-  "Which issues could I fund with MPLADS?",
+  "Which proposal should I prioritise?",
   "How is my budget tracking?",
 ];
 
@@ -100,6 +101,35 @@ const INTENTS: Intent[] = [
           { label: "DJB · quality register", href: datasetUrl("DJB") },
         ],
         chips: ["Which issues could I fund with MPLADS?", "Top 5 issues right now"],
+      };
+    },
+  },
+  {
+    // "Which proposal should I prioritise?" — ranks the MP's own works.
+    id: "proposals-rank",
+    test: (q) => /proposal|prioriti[sz]e|rank|best (scheme|work|project|option)|head.to.head|compare.*(proposal|work)/.test(q),
+    answer: () => {
+      const ranked = SEED_PROPOSALS.map((p) => ({ p, s: scoreProposal(p) }))
+        .sort((a, b) => b.s.total - a.s.total)
+        .slice(0, 4);
+      return {
+        text:
+          `Your proposals ranked by evidence score (citizen demand · public-data severity · MPLADS leverage · cost-effectiveness):\n\n` +
+          ranked
+            .map(
+              (r, i) =>
+                `${i + 1}. ${r.p.title} — ${r.s.total}/100 · ${r.s.wardName} · ${costLabel(r.p.cost_lakhs)}`,
+            )
+            .join("\n") +
+          `\n\nOpen Proposals to compare any two head-to-head and see which signals decide it.`,
+        citations: [
+          { label: "Proposals — ranked", href: "/proposals" },
+          ...ranked
+            .map((r) => r.s.components.find((c) => c.citation?.clusterId)?.citation)
+            .filter((c): c is AssistantCitation => c != null)
+            .slice(0, 2),
+        ],
+        chips: ["Which issues could I fund with MPLADS?", "How is my budget tracking?"],
       };
     },
   },

@@ -8,6 +8,7 @@ import { scoreProposal, type Proposal } from "@/lib/proposals";
 import { useProposalsStore } from "@/lib/proposals-store";
 import { cn } from "@/lib/utils";
 import { CompareDialog } from "./CompareDialog";
+import { FeedbackThemes } from "./FeedbackThemes";
 import { NewProposalDialog } from "./NewProposalDialog";
 import { ProposalCard } from "./ProposalCard";
 
@@ -43,6 +44,8 @@ export function ProposalsBoard() {
 
   return (
     <div className="flex flex-col gap-4">
+      <FeedbackThemes />
+
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Filter by need">

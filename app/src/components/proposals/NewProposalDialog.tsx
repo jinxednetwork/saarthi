@@ -30,14 +30,26 @@ const FIELD =
   "w-full rounded-lg border border-input bg-panel px-3 py-2 text-[12.5px] text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring";
 const LABEL = "mb-1 block text-[11px] font-medium text-muted-foreground";
 
-export function NewProposalDialog({ trigger }: { trigger: React.ReactNode }) {
+export interface ProposalPreset {
+  dimension?: DemandDimension;
+  wardId?: string;
+  title?: string;
+}
+
+export function NewProposalDialog({
+  trigger,
+  initial,
+}: {
+  trigger: React.ReactNode;
+  initial?: ProposalPreset;
+}) {
   const addProposal = useProposalsStore((s) => s.addProposal);
   const [open, setOpen] = useState(false);
 
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(initial?.title ?? "");
   const [summary, setSummary] = useState("");
-  const [dimension, setDimension] = useState<DemandDimension>("education");
-  const [wardId, setWardId] = useState(MOCK_CONSTITUENCY.wards[0]!.id);
+  const [dimension, setDimension] = useState<DemandDimension>(initial?.dimension ?? "education");
+  const [wardId, setWardId] = useState(initial?.wardId ?? MOCK_CONSTITUENCY.wards[0]!.id);
   const [pathway, setPathway] = useState<ProposalPathway>("MPLADS");
   const [cost, setCost] = useState("30");
   const [mpladsEligible, setMpladsEligible] = useState(true);
@@ -66,10 +78,10 @@ export function NewProposalDialog({ trigger }: { trigger: React.ReactNode }) {
   const previewScore = preview ? scoreProposal(preview).total : null;
 
   function reset() {
-    setTitle("");
+    setTitle(initial?.title ?? "");
     setSummary("");
-    setDimension("education");
-    setWardId(MOCK_CONSTITUENCY.wards[0]!.id);
+    setDimension(initial?.dimension ?? "education");
+    setWardId(initial?.wardId ?? MOCK_CONSTITUENCY.wards[0]!.id);
     setPathway("MPLADS");
     setCost("30");
     setMpladsEligible(true);

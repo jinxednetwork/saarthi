@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import type { SubmissionSource } from "@saarthi/shared";
-import { ask, SUGGESTED_CHIPS, type AssistantMessage } from "./assistant-brain";
+import { SUGGESTED_CHIPS, type AssistantCitation, type AssistantMessage } from "./assistant-brain";
 import type { CategoryGroup } from "./categories";
 
 /**
@@ -65,6 +65,23 @@ export type PanelId = "kpis" | "queue" | "radial" | "feed";
 
 const PANELS_KEY = "saarthi-panels";
 let msgSeq = 0;
+
+interface AssistantMeta {
+  citations: AssistantCitation[];
+  chips: string[];
+}
+
+/** Decode the base64/utf-8 meta header the assistant route sends alongside the streamed body. */
+function decodeAssistantMeta(raw: string | null): AssistantMeta {
+  if (!raw) return { citations: [], chips: SUGGESTED_CHIPS };
+  try {
+    const json = new TextDecoder().decode(Uint8Array.from(atob(raw), (c) => c.charCodeAt(0)));
+    const meta = JSON.parse(json) as Partial<AssistantMeta>;
+    return { citations: meta.citations ?? [], chips: meta.chips ?? [] };
+  } catch {
+    return { citations: [], chips: [] };
+  }
+}
 
 export const useDashboardStore = create<DashboardState>((set) => ({
   activeFilter: "all",
@@ -132,6 +149,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   askAssistant: (query) => {
     const q = query.trim();
     if (!q) return;
+    const aId = `a${++msgSeq}`;
     set((s) => ({
       assistantOpen: true,
       assistantThinking: true,
@@ -140,23 +158,72 @@ export const useDashboardStore = create<DashboardState>((set) => ({
         { id: `u${++msgSeq}`, role: "user", text: q },
       ],
     }));
-    // Scripted brain answers after a short "thinking" beat; Gemini replaces
-    // this call in Phase 4 with the same message contract.
-    setTimeout(() => {
-      const answer = ask(q);
-      set((s) => ({
-        assistantThinking: false,
-        assistantMessages: [
-          ...s.assistantMessages,
-          {
-            id: `a${++msgSeq}`,
-            role: "assistant",
-            text: answer.text,
-            citations: answer.citations,
-            chips: answer.chips,
-          },
-        ],
-      }));
-    }, 650);
+
+    // Grounded answer streams from /api/assistant (Gemini + RAG). Citations and
+    // chips arrive up-front in the header; the body streams into one assistant
+    // message. The route falls back to the scripted brain server-side, so this
+    // path is identical with or without a Gemini key.
+    void (async () => {
+      try {
+        const res = await fetch("/api/assistant", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ query: q }),
+        });
+        const meta = decodeAssistantMeta(res.headers.get("x-saarthi-meta"));
+
+        let text = "";
+        let started = false;
+        const render = (chunk: string) => {
+          text += chunk;
+          set((s) => {
+            if (!started) {
+              started = true;
+              return {
+                assistantThinking: false,
+                assistantMessages: [
+                  ...s.assistantMessages,
+                  { id: aId, role: "assistant", text, citations: meta.citations, chips: meta.chips },
+                ],
+              };
+            }
+            return {
+              assistantMessages: s.assistantMessages.map((m) =>
+                m.id === aId ? { ...m, text } : m,
+              ),
+            };
+          });
+        };
+
+        const body = res.body;
+        if (body && typeof body.getReader === "function") {
+          const reader = body.getReader();
+          const dec = new TextDecoder();
+          for (;;) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            if (value) render(dec.decode(value, { stream: true }));
+          }
+          render(dec.decode());
+        } else {
+          render(await res.text());
+        }
+        if (!started) render(""); // ensure a message exists even on an empty stream
+        set({ assistantThinking: false });
+      } catch {
+        set((s) => ({
+          assistantThinking: false,
+          assistantMessages: [
+            ...s.assistantMessages,
+            {
+              id: aId,
+              role: "assistant",
+              text: "I couldn't reach the assistant service just now. Please try again in a moment.",
+              chips: SUGGESTED_CHIPS,
+            },
+          ],
+        }));
+      }
+    })();
   },
 }));

@@ -18,6 +18,8 @@ export interface AssistantCitation {
   label: string;
   href?: string;
   clusterId?: string;
+  /** Resolves to an uploaded document (opens /documents). Wired in R3C5. */
+  documentId?: string;
 }
 
 export interface AssistantAnswer {

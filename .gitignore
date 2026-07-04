@@ -34,3 +34,4 @@ scratch/
 
 # Generated demo outputs (PDF/PPTX/DOCX)
 data/generated/
+.impeccable/

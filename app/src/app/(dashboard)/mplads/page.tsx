@@ -21,8 +21,8 @@ export default function MpladsPage() {
     <div className="h-full overflow-y-auto pt-16">
       <div className="mx-auto max-w-[1440px] px-6 pb-16 pt-6">
         <PageHeader
-          title="MPLADS"
-          subtitle="Constituency development fund · New Delhi · FY 2026-27"
+          titleKey="pageHeader.mplads.title"
+          subtitleKey="pageHeader.mplads.subtitle"
           right={
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <span className="h-[5px] w-[5px] animate-livePulse rounded-full bg-success" />

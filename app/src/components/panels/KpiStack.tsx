@@ -2,6 +2,7 @@
 
 import { MPLADS_RULES } from "@saarthi/shared";
 import { AlertTriangle } from "lucide-react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
 import { DASHBOARD_META, MOCK_CONSTITUENCY } from "@/lib/mock-data";
 import { formatCr } from "@/lib/ui";
@@ -12,6 +13,7 @@ import { formatCr } from "@/lib/ui";
  * keeps the Five-Blur budget intact for the assistant dock.
  */
 export function KpiStack() {
+  const { t } = useI18n();
   const m = MOCK_CONSTITUENCY.mplads;
   const utilizationPct = Math.round((m.utilization_ytd / m.allocation_annual) * 1000) / 10;
   const scBelow = m.sc_percent_ytd < MPLADS_RULES.scMinShare;
@@ -22,13 +24,13 @@ export function KpiStack() {
   return (
     <CollapsiblePanel
       id="kpis"
-      title="Constituency snapshot"
+      title={t("panel.snapshot")}
       headerRight={<span className="text-[11px] text-faint">{m.fiscal_year}</span>}
     >
       <div className="grid grid-cols-2 gap-2 p-3">
         {/* MPLADS utilised */}
         <div className={tile}>
-          <div className="mb-1 text-[11px] text-muted-foreground">MPLADS utilised</div>
+          <div className="mb-1 text-[11px] text-muted-foreground">{t("metrics.mpladsUtilised")}</div>
           <div className="flex items-baseline gap-1">
             <span className="num text-[20px] font-semibold leading-none tracking-tight text-ink">
               {formatCr(m.utilization_ytd)}
@@ -45,7 +47,7 @@ export function KpiStack() {
 
         {/* Open clusters */}
         <div className={tile}>
-          <div className="mb-1 text-[11px] text-muted-foreground">Open clusters</div>
+          <div className="mb-1 text-[11px] text-muted-foreground">{t("metrics.openClusters")}</div>
           <div className="flex items-baseline gap-2">
             <span className="num text-[20px] font-semibold leading-none tracking-tight text-ink">
               {DASHBOARD_META.openClusters}
@@ -62,7 +64,7 @@ export function KpiStack() {
         <div className={`${tile} col-span-2 flex items-center gap-4`}>
           <div className="flex-1">
             <div className="mb-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              SC allocation
+              {t("metrics.scAllocation")}
               {scBelow && <AlertTriangle className="h-3 w-3 text-urgency-high" strokeWidth={2} />}
             </div>
             <div className="flex items-baseline gap-0.5">
@@ -78,7 +80,7 @@ export function KpiStack() {
           <div className="h-9 w-px bg-line/60" />
           <div className="flex-1">
             <div className="mb-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              ST allocation
+              {t("metrics.stAllocation")}
               {stBelow ? (
                 <AlertTriangle className="h-3 w-3 text-urgency-high" strokeWidth={2} />
               ) : (

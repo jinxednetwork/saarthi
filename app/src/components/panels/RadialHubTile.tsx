@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
 import { useDashboardStore } from "@/lib/dashboard-store";
 import { DASHBOARD_META, RADIAL_CHANNELS } from "@/lib/mock-data";
@@ -17,6 +18,7 @@ const LABEL_R = RING_R + 24;
  * to clear. Hover/focus previews the channel in the hub centre.
  */
 export function RadialHubTile() {
+  const { t } = useI18n();
   const { sourceFilter, setSourceFilter } = useDashboardStore();
   const [hovered, setHovered] = useState<string | null>(null);
 
@@ -26,7 +28,7 @@ export function RadialHubTile() {
   return (
     <CollapsiblePanel
       id="radial"
-      title="Signal sources"
+      title={t("panel.signalSources")}
       headerRight={
         <span className="text-[11px] text-faint">
           {sourceFilter === "all" ? "this week" : "filtering feed"}

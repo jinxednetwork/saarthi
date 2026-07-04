@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { AssistantLauncher } from "@/components/assistant/AssistantLauncher";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { BrandBars } from "@/components/icons";
 import {
   Tooltip,
@@ -25,17 +26,16 @@ import { cn } from "@/lib/utils";
 
 interface NavItem {
   key: string;
-  label: string;
   href: string | null;
   icon: typeof LayoutDashboard;
 }
 
 const NAV: NavItem[] = [
-  { key: "dashboard", label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { key: "intelligence", label: "Intelligence", href: "/intelligence", icon: Sparkles },
-  { key: "live", label: "Live feed", href: "/live", icon: Radio },
-  { key: "mplads", label: "MPLADS", href: "/mplads", icon: IndianRupee },
-  { key: "actions", label: "Actions", href: "/actions", icon: Send },
+  { key: "dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { key: "intelligence", href: "/intelligence", icon: Sparkles },
+  { key: "live", href: "/live", icon: Radio },
+  { key: "mplads", href: "/mplads", icon: IndianRupee },
+  { key: "actions", href: "/actions", icon: Send },
 ];
 
 /**
@@ -44,6 +44,7 @@ const NAV: NavItem[] = [
  */
 export function Sidebar() {
   const pathname = usePathname();
+  const { t } = useI18n();
   const { sidebarCollapsed, setSidebarCollapsed, toggleSidebar } = useDashboardStore();
 
   useEffect(() => {
@@ -87,11 +88,11 @@ export function Sidebar() {
               <>
                 <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
                 {!sidebarCollapsed && (
-                  <span className="flex-1 truncate text-[13.5px]">{item.label}</span>
+                  <span className="flex-1 truncate text-[13.5px]">{t(`nav.${item.key}`)}</span>
                 )}
                 {!sidebarCollapsed && item.href == null && (
                   <span className="rounded-full border border-line px-1.5 py-px text-[10px] uppercase tracking-wide text-faint">
-                    Soon
+                    {t("nav.soon")}
                   </span>
                 )}
               </>
@@ -126,8 +127,8 @@ export function Sidebar() {
               <Tooltip key={item.key}>
                 <TooltipTrigger asChild>{node}</TooltipTrigger>
                 <TooltipContent side="right">
-                  {item.label}
-                  {item.href == null ? " · soon" : ""}
+                  {t(`nav.${item.key}`)}
+                  {item.href == null ? ` · ${t("nav.soon")}` : ""}
                 </TooltipContent>
               </Tooltip>
             ) : (
@@ -164,7 +165,7 @@ export function Sidebar() {
           )}
           <button
             onClick={toggleSidebar}
-            aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={sidebarCollapsed ? t("sidebar.expand") : t("sidebar.collapse")}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-chip hover:text-ink"
           >
             {sidebarCollapsed ? (

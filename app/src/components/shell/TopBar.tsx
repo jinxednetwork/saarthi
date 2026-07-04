@@ -16,8 +16,11 @@ import {
   Sparkles,
   UserRound,
 } from "lucide-react";
+import { useI18n } from "@/components/i18n/I18nProvider";
+import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { BrandBars } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { langMeta } from "@/lib/languages";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,14 +31,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { DASHBOARD_META, MOCK_CONSTITUENCY } from "@/lib/mock-data";
+import { MOCK_CONSTITUENCY } from "@/lib/mock-data";
 
 const MOBILE_NAV = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Intelligence", href: "/intelligence", icon: Sparkles },
-  { label: "Live feed", href: "/live", icon: Radio },
-  { label: "MPLADS", href: "/mplads", icon: IndianRupee },
-  { label: "Actions", href: "/actions", icon: Send },
+  { key: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { key: "nav.intelligence", href: "/intelligence", icon: Sparkles },
+  { key: "nav.live", href: "/live", icon: Radio },
+  { key: "nav.mplads", href: "/mplads", icon: IndianRupee },
+  { key: "nav.actions", href: "/actions", icon: Send },
 ] as const;
 
 /**
@@ -45,6 +48,7 @@ const MOBILE_NAV = [
  */
 export function TopBar() {
   const pathname = usePathname();
+  const { t, lang, translated } = useI18n();
 
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 flex h-16 items-center gap-3 px-4">
@@ -52,7 +56,7 @@ export function TopBar() {
       <div className="pointer-events-auto lg:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" aria-label="Open navigation" className="glass rounded-full border-0">
+            <Button variant="outline" size="icon" aria-label={t("topbar.openNav")} className="glass rounded-full border-0">
               <Menu className="h-4 w-4" />
             </Button>
           </SheetTrigger>
@@ -74,7 +78,7 @@ export function TopBar() {
                     }`}
                   >
                     <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
-                    {item.label}
+                    {t(item.key)}
                   </Link>
                 );
               })}
@@ -86,7 +90,7 @@ export function TopBar() {
       {/* Scope pill */}
       <button className="glass pointer-events-auto inline-flex h-9 cursor-pointer items-center gap-2 rounded-full px-3.5 text-[12.5px] text-ink hover:border-line-dark">
         <Globe className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.75} />
-        <span className="font-medium">Constituency</span>
+        <span className="font-medium">{t("topbar.constituency")}</span>
         <span className="hidden text-faint sm:inline">{MOCK_CONSTITUENCY.name}</span>
         <ChevronDown className="h-3 w-3 text-muted-foreground" />
       </button>
@@ -94,27 +98,35 @@ export function TopBar() {
       {/* Search stub */}
       <button
         className="glass pointer-events-auto hidden h-9 cursor-pointer items-center gap-2 rounded-full px-3.5 text-[12.5px] text-faint md:inline-flex"
-        aria-label="Search (coming soon)"
+        aria-label={t("topbar.search")}
       >
         <Search className="h-3.5 w-3.5" strokeWidth={1.75} />
-        <span>Search</span>
+        <span>{t("topbar.search")}</span>
       </button>
+
+      {/* Fallback notice — active language not yet fully translated */}
+      {!translated && (
+        <span className="glass pointer-events-auto hidden h-9 items-center rounded-full px-3 text-[11px] text-muted-foreground lg:inline-flex">
+          {t("lang.fallbackNotice", { language: langMeta(lang).english })}
+        </span>
+      )}
 
       <div className="flex-1" />
 
       {/* Sync status */}
       <span className="glass pointer-events-auto hidden h-9 items-center gap-1.5 rounded-full px-3.5 text-xs text-muted-foreground xl:inline-flex">
         <span className="h-[5px] w-[5px] animate-livePulse rounded-full bg-success" />
-        {DASHBOARD_META.syncedCopy}
+        {t("topbar.synced", { time: "12:47 PM", week: 44 })}
       </span>
 
       <div className="glass pointer-events-auto flex h-9 items-center gap-0.5 rounded-full px-1">
+        <LanguagePicker />
         <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               className="flex cursor-pointer items-center gap-1.5 rounded-full py-0.5 pl-0.5 pr-1.5"
-              aria-label="MP account menu"
+              aria-label={t("topbar.profile")}
             >
               <span
                 className="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-semibold text-white"
@@ -134,14 +146,14 @@ export function TopBar() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem disabled>
-              <UserRound className="h-4 w-4" /> Profile · soon
+              <UserRound className="h-4 w-4" /> {t("topbar.profile")} · {t("nav.soon")}
             </DropdownMenuItem>
             <DropdownMenuItem disabled>
-              <Settings className="h-4 w-4" /> Settings · soon
+              <Settings className="h-4 w-4" /> {t("topbar.settings")} · {t("nav.soon")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem disabled>
-              <LogOut className="h-4 w-4" /> Sign out · soon
+              <LogOut className="h-4 w-4" /> {t("topbar.signout")} · {t("nav.soon")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

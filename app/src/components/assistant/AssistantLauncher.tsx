@@ -1,6 +1,7 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import {
   Tooltip,
   TooltipContent,
@@ -15,12 +16,13 @@ import { cn } from "@/lib/utils";
  */
 export function AssistantLauncher({ collapsed }: { collapsed: boolean }) {
   const { assistantOpen, toggleAssistant } = useDashboardStore();
+  const { t } = useI18n();
 
   const button = (
     <button
       onClick={toggleAssistant}
       aria-pressed={assistantOpen}
-      aria-label={assistantOpen ? "Close Saarthi Assistant" : "Open Saarthi Assistant"}
+      aria-label={assistantOpen ? t("assistant.close") : t("sidebar.askSaarthi")}
       className={cn(
         "flex h-10 items-center gap-3 rounded-lg px-3 transition-colors",
         collapsed && "justify-center px-0",
@@ -30,7 +32,9 @@ export function AssistantLauncher({ collapsed }: { collapsed: boolean }) {
       )}
     >
       <Sparkles className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
-      {!collapsed && <span className="flex-1 truncate text-left text-[13.5px]">Ask Saarthi</span>}
+      {!collapsed && (
+        <span className="flex-1 truncate text-start text-[13.5px]">{t("sidebar.askSaarthi")}</span>
+      )}
       {!collapsed && (
         <span className="rounded-full border border-line px-1.5 py-px text-[10px] uppercase tracking-wide text-faint">
           AI
@@ -42,7 +46,7 @@ export function AssistantLauncher({ collapsed }: { collapsed: boolean }) {
   return collapsed ? (
     <Tooltip>
       <TooltipTrigger asChild>{button}</TooltipTrigger>
-      <TooltipContent side="right">Ask Saarthi · AI</TooltipContent>
+      <TooltipContent side="right">{t("sidebar.askSaarthi")} · AI</TooltipContent>
     </Tooltip>
   ) : (
     button

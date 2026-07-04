@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 import { SourceIcon } from "@/components/icons";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDashboardStore } from "@/lib/dashboard-store";
@@ -16,6 +17,7 @@ import { minutesAgo } from "@/lib/ui";
  * dispatched letters prepend an action entry.
  */
 export function LiveFeed() {
+  const { t } = useI18n();
   const { dispatched, sourceFilter, setSourceFilter, selectCluster } = useDashboardStore();
   const [tick, setTick] = useState(0);
 
@@ -48,7 +50,7 @@ export function LiveFeed() {
   return (
     <CollapsiblePanel
       id="feed"
-      title="Live signals"
+      title={t("panel.liveSignals")}
       fill
       headerRight={
         <span className="flex items-center gap-2">

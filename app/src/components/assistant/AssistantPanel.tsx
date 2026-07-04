@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUp, ExternalLink, Sparkles, X } from "lucide-react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { useStagedReveal } from "@/components/assistant/useStagedReveal";
 import type { AssistantCitation, AssistantMessage } from "@/lib/assistant-brain";
 import { useDashboardStore } from "@/lib/dashboard-store";
@@ -17,6 +18,7 @@ import { cn } from "@/lib/utils";
 export function AssistantPanel({ className }: { className?: string }) {
   const { assistantMessages, assistantThinking, askAssistant, closeAssistant, selectCluster } =
     useDashboardStore();
+  const { t } = useI18n();
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -48,14 +50,14 @@ export function AssistantPanel({ className }: { className?: string }) {
       <div className="flex h-11 shrink-0 items-center justify-between border-b border-line/50 px-4">
         <span className="flex items-center gap-2">
           <Sparkles className="h-3.5 w-3.5 text-saffron" />
-          <span className="text-[13px] font-semibold text-ink">Saarthi Assistant</span>
+          <span className="text-[13px] font-semibold text-ink">{t("assistant.title")}</span>
           <span className="rounded-full border border-line px-1.5 py-px text-[9.5px] uppercase tracking-wide text-faint">
-            demo brain
+            {t("assistant.demoBrain")}
           </span>
         </span>
         <button
           onClick={closeAssistant}
-          aria-label="Close assistant"
+          aria-label={t("assistant.close")}
           className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-chip hover:text-ink"
         >
           <X className="h-3.5 w-3.5" />
@@ -68,7 +70,7 @@ export function AssistantPanel({ className }: { className?: string }) {
           {assistantMessages.map((m, i) => (
             <MessageBubble
               key={m.id}
-              message={m}
+              message={m.id === "welcome" ? { ...m, text: t("assistant.welcome") } : m}
               animate={i === assistantMessages.length - 1 && m.role === "assistant" && m.id !== "welcome"}
               onCitation={(c) => {
                 if (c.clusterId) selectCluster(c.clusterId);
@@ -81,7 +83,7 @@ export function AssistantPanel({ className }: { className?: string }) {
               <span className="h-1.5 w-1.5 animate-livePulseFast rounded-full bg-current" />
               <span className="h-1.5 w-1.5 animate-livePulseFast rounded-full bg-current [animation-delay:150ms]" />
               <span className="h-1.5 w-1.5 animate-livePulseFast rounded-full bg-current [animation-delay:300ms]" />
-              <span className="ml-1 text-[11px]">consulting the file…</span>
+              <span className="ml-1 text-[11px]">{t("assistant.thinking")}</span>
             </div>
           )}
         </div>
@@ -99,14 +101,14 @@ export function AssistantPanel({ className }: { className?: string }) {
           ref={inputRef}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Ask about signals, budget, actions…"
-          aria-label="Ask Saarthi"
+          placeholder={t("assistant.placeholder")}
+          aria-label={t("sidebar.askSaarthi")}
           className="h-9 min-w-0 flex-1 rounded-full border border-input bg-surface/70 px-3.5 text-[12.5px] text-ink placeholder:text-faint focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
         />
         <button
           type="submit"
           disabled={!draft.trim() || assistantThinking}
-          aria-label="Send"
+          aria-label={t("assistant.send")}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-40"
         >
           <ArrowUp className="h-4 w-4" />
@@ -127,6 +129,7 @@ function MessageBubble({
   onCitation: (c: AssistantCitation) => void;
   onChip: (chip: string) => void;
 }) {
+  const { t } = useI18n();
   const text = useStagedReveal(message.text, animate);
   const revealed = text.length >= message.text.length;
 
@@ -146,7 +149,7 @@ function MessageBubble({
 
       {revealed && message.citations && message.citations.length > 0 && (
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-          <span className="text-[10px] uppercase tracking-wide text-faint">Cited</span>
+          <span className="text-[10px] uppercase tracking-wide text-faint">{t("assistant.cited")}</span>
           {message.citations.map((c, i) =>
             c.clusterId ? (
               <button

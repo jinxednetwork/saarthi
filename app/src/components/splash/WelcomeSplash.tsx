@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { DASHBOARD_META, MOCK_CONSTITUENCY } from "@/lib/mock-data";
 
 const SEEN_KEY = "saarthi-splash-seen";
@@ -10,6 +11,7 @@ const SEEN_KEY = "saarthi-splash-seen";
  * under prefers-reduced-motion. Never blocks input after dismissal.
  */
 export function WelcomeSplash() {
+  const { t } = useI18n();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -83,7 +85,7 @@ export function WelcomeSplash() {
           className="mb-2 text-[15px] text-muted-foreground"
           style={{ animation: "splashRise 0.5s ease-out 0.7s both" }}
         >
-          Welcome,
+          {t("splash.welcome")}
         </div>
         <h1
           className="mb-2.5 text-[32px] font-semibold leading-tight tracking-tight text-ink"
@@ -95,7 +97,7 @@ export function WelcomeSplash() {
           className="mb-9 text-sm text-faint"
           style={{ animation: "splashRise 0.5s ease-out 0.94s both" }}
         >
-          Member of Parliament · New Delhi Lok Sabha
+          {t("splash.role")}
         </div>
         <div
           className="mx-auto h-0.5 w-[200px] overflow-hidden rounded-full bg-line"
@@ -115,7 +117,7 @@ export function WelcomeSplash() {
           className="mt-3.5 text-[11.5px] tracking-wide text-faint"
           style={{ animation: "splashRise 0.4s ease-out 1.15s both" }}
         >
-          Preparing your dashboard · {DASHBOARD_META.weekLabel} · click to skip
+          {t("splash.preparing", { week: DASHBOARD_META.weekLabel })}
         </div>
       </div>
     </div>

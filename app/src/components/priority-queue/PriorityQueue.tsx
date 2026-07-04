@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDashboardStore } from "@/lib/dashboard-store";
@@ -12,13 +13,14 @@ import { PATHWAY_UI, URGENCY_UI, trendLabel } from "@/lib/ui";
  * real button opening the cluster detail drawer (keyboard included).
  */
 export function PriorityQueue() {
+  const { t } = useI18n();
   const { dispatched, selectCluster } = useDashboardStore();
   const cards = topClusters(5);
 
   return (
     <CollapsiblePanel
       id="queue"
-      title="Priority action queue"
+      title={t("panel.priorityQueue")}
       fill
       headerRight={
         <span className="text-[11px] text-faint">Top 5 of {DASHBOARD_META.openClusters} open</span>

@@ -2,6 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 import { AssistantPanel } from "@/components/assistant/AssistantPanel";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { useDashboardStore } from "@/lib/dashboard-store";
 
 /**
@@ -12,6 +13,7 @@ import { useDashboardStore } from "@/lib/dashboard-store";
  */
 export function AssistantDock() {
   const { assistantOpen, openAssistant } = useDashboardStore();
+  const { t } = useI18n();
 
   return (
     <div className="pointer-events-auto relative flex w-full flex-col items-center">
@@ -25,7 +27,7 @@ export function AssistantDock() {
         >
           <Sparkles className="h-4 w-4 shrink-0 text-saffron" />
           <span className="flex-1 truncate text-[12.5px] text-faint">
-            Ask Saarthi about your constituency…
+            {t("assistant.dockPrompt")}
           </span>
           <span className="rounded-full bg-chip px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
             AI

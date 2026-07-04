@@ -61,5 +61,9 @@ export type ActionPathway = (typeof ACTION_PATHWAYS)[number];
 export type LanguageCode = "en" | "hi" | "hi-en" | (string & {});
 
 /** Languages the dashboard UI is localised into (§10). */
-export const UI_LANGUAGES = ["en", "hi"] as const;
+/** The 22 scheduled languages of India + English (§2 — UI + intake). */
+export const UI_LANGUAGES = [
+  "en", "hi", "bn", "mr", "te", "ta", "gu", "ur", "kn", "or", "ml", "pa",
+  "as", "mai", "sat", "ks", "ne", "kok", "sd", "doi", "mni", "brx", "sa",
+] as const;
 export type UiLanguage = (typeof UI_LANGUAGES)[number];

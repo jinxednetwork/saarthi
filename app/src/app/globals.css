@@ -181,6 +181,8 @@
   background: hsl(var(--map-canvas));
   font-family: inherit;
   outline: 0;
+  /* Geography is not bidirectional — keep the map LTR under RTL languages. */
+  direction: ltr;
 }
 .leaflet-control-attribution {
   font-size: 10px;

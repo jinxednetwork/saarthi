@@ -25,7 +25,7 @@ export default function IntelligencePage() {
     <div className="h-full overflow-y-auto pt-16">
       <div className="mx-auto max-w-[1440px] px-6 pb-16 pt-6">
         <PageHeader
-          title="Intelligence"
+          titleKey="pageHeader.intelligence.title"
           subtitle={INTELLIGENCE_META.subtitle}
           right={
             <span className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex">

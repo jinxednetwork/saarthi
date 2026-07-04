@@ -23,13 +23,20 @@ import {
 import { useDashboardStore } from "@/lib/dashboard-store";
 import { cn } from "@/lib/utils";
 
-const NAV = [
+interface NavItem {
+  key: string;
+  label: string;
+  href: string | null;
+  icon: typeof LayoutDashboard;
+}
+
+const NAV: NavItem[] = [
   { key: "dashboard", label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { key: "intelligence", label: "Intelligence", href: "/intelligence", icon: Sparkles },
   { key: "live", label: "Live feed", href: "/live", icon: Radio },
-  { key: "mplads", label: "MPLADS", href: null, icon: IndianRupee },
-  { key: "actions", label: "Actions", href: null, icon: Send },
-] as const;
+  { key: "mplads", label: "MPLADS", href: "/mplads", icon: IndianRupee },
+  { key: "actions", label: "Actions", href: "/actions", icon: Send },
+];
 
 /**
  * Collapsible glass rail (232px ↔ 64px). Unbuilt destinations render disabled

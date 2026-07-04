@@ -34,6 +34,8 @@ const MOBILE_NAV = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Intelligence", href: "/intelligence", icon: Sparkles },
   { label: "Live feed", href: "/live", icon: Radio },
+  { label: "MPLADS", href: "/mplads", icon: IndianRupee },
+  { label: "Actions", href: "/actions", icon: Send },
 ] as const;
 
 /**

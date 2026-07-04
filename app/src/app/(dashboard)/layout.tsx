@@ -1,4 +1,5 @@
 import { ActionComposer } from "@/components/action-composer/ActionComposer";
+import { AssistantOverlay } from "@/components/assistant/AssistantOverlay";
 import { ClusterDrawer } from "@/components/cluster/ClusterDrawer";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
@@ -24,6 +25,7 @@ export default function DashboardShellLayout({
       </div>
       <ClusterDrawer />
       <ActionComposer />
+      <AssistantOverlay />
     </div>
   );
 }

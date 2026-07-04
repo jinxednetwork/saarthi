@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { AssistantDock } from "@/components/assistant/AssistantDock";
 import { ConstituencyMap } from "@/components/map/ConstituencyMap";
 import { MapToolbar } from "@/components/map/MapToolbar";
 import { LiveFeed } from "@/components/live-feed/LiveFeed";
@@ -48,8 +49,9 @@ export function MapStage() {
           <PriorityQueue />
         </div>
 
-        {/* Centre: map breathing room; toolbar pinned to the bottom */}
-        <div className="hidden min-h-0 flex-col justify-end lg:flex">
+        {/* Centre: map breathing room; assistant island + toolbar at the bottom */}
+        <div className="hidden min-h-0 flex-col items-center justify-end gap-2.5 lg:flex">
+          <AssistantDock />
           <MapToolbar />
         </div>
 

@@ -12,6 +12,7 @@ import {
   Send,
   Sparkles,
 } from "lucide-react";
+import { AssistantLauncher } from "@/components/assistant/AssistantLauncher";
 import { BrandBars } from "@/components/icons";
 import {
   Tooltip,
@@ -126,6 +127,10 @@ export function Sidebar() {
               node
             );
           })}
+
+          <div className="mt-auto">
+            <AssistantLauncher collapsed={sidebarCollapsed} />
+          </div>
         </nav>
 
         {/* MP identity + collapse */}

@@ -5,6 +5,7 @@
 
   "nav.dashboard": "डैशबोर्ड",
   "nav.intelligence": "इंटेलिजेंस",
+  "nav.proposals": "प्रस्ताव",
   "nav.live": "लाइव फ़ीड",
   "nav.mplads": "एमपीलैड्स",
   "nav.actions": "कार्रवाई",
@@ -41,6 +42,8 @@
   "assistant.welcome": "नमस्ते। मैं इस निर्वाचन क्षेत्र के लाइव संकेतों, बजट और कार्रवाइयों से उत्तर देता हूँ — हर दावा स्रोत सहित।",
 
   "pageHeader.intelligence.title": "इंटेलिजेंस",
+  "pageHeader.proposals.title": "प्रस्ताव",
+  "pageHeader.proposals.subtitle": "आपके कार्य, नागरिक माँग और सार्वजनिक डेटा पर आमने-सामने क्रमबद्ध",
   "pageHeader.mplads.title": "एमपीलैड्स",
   "pageHeader.mplads.subtitle": "सांसद निधि · नई दिल्ली · वित्त वर्ष 2026-27",
   "pageHeader.actions.title": "कार्रवाई",

@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import {
   IndianRupee,
   LayoutDashboard,
+  ListChecks,
   PanelLeftClose,
   PanelLeftOpen,
   Radio,
@@ -33,6 +34,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { key: "dashboard", href: "/dashboard", icon: LayoutDashboard },
   { key: "intelligence", href: "/intelligence", icon: Sparkles },
+  { key: "proposals", href: "/proposals", icon: ListChecks },
   { key: "live", href: "/live", icon: Radio },
   { key: "mplads", href: "/mplads", icon: IndianRupee },
   { key: "actions", href: "/actions", icon: Send },

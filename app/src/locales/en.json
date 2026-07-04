@@ -5,6 +5,7 @@
 
   "nav.dashboard": "Dashboard",
   "nav.intelligence": "Intelligence",
+  "nav.proposals": "Proposals",
   "nav.live": "Live feed",
   "nav.mplads": "MPLADS",
   "nav.actions": "Actions",
@@ -41,6 +42,8 @@
   "assistant.welcome": "Namaste. I answer from this constituency's live signals, budget, and actions — every claim cited.",
 
   "pageHeader.intelligence.title": "Intelligence",
+  "pageHeader.proposals.title": "Proposals",
+  "pageHeader.proposals.subtitle": "Your works, ranked head-to-head on citizen demand + public data",
   "pageHeader.mplads.title": "MPLADS",
   "pageHeader.mplads.subtitle": "Constituency development fund · New Delhi · FY 2026-27",
   "pageHeader.actions.title": "Actions",

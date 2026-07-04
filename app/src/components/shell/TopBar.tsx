@@ -7,6 +7,7 @@ import {
   Globe,
   IndianRupee,
   LayoutDashboard,
+  ListChecks,
   LogOut,
   Menu,
   Radio,
@@ -36,6 +37,7 @@ import { MOCK_CONSTITUENCY } from "@/lib/mock-data";
 const MOBILE_NAV = [
   { key: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
   { key: "nav.intelligence", href: "/intelligence", icon: Sparkles },
+  { key: "nav.proposals", href: "/proposals", icon: ListChecks },
   { key: "nav.live", href: "/live", icon: Radio },
   { key: "nav.mplads", href: "/mplads", icon: IndianRupee },
   { key: "nav.actions", href: "/actions", icon: Send },

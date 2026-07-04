@@ -138,10 +138,7 @@ export function OutlookChart() {
         {/* Chart footer */}
         <div className="mt-[18px] flex items-center justify-between border-t border-line-faint pt-4 text-xs text-muted-foreground">
           <div>
-            {C.footer.trainedOn} ·{" "}
-            <a href="#" className="text-primary no-underline">
-              Methodology
-            </a>
+            {C.footer.trainedOn} · <span className="text-faint">Methodology · soon</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span>Confidence {C.footer.confidence}% overall</span>

@@ -1,3 +1,4 @@
+import { datasetUrl } from "@/lib/datasets";
 import { BUDGET_HERO, FORECAST_HERO } from "@/lib/intelligence-data";
 
 function TrendUpIcon() {
@@ -84,17 +85,20 @@ export function HeroInsights() {
             <button className="cursor-pointer rounded-full border-0 bg-primary px-4 py-[9px] text-[12.5px] font-medium text-white hover:bg-primary-hover">
               {FORECAST_HERO.cta}
             </button>
-            <a href="#" className="text-[12.5px] text-primary no-underline">
-              Full reasoning trail →
-            </a>
+            <span className="text-[12.5px] text-faint">Full reasoning trail · soon</span>
           </div>
           <div className="mt-5 flex flex-wrap gap-x-3 gap-y-1 border-t border-line-faint pt-4 text-[11.5px]">
             <span className="text-faint">Cited:</span>
-            {FORECAST_HERO.citations.map((c) => (
-              <a key={c} href="#" className="text-primary no-underline">
-                {c}
-              </a>
-            ))}
+            {FORECAST_HERO.citations.map((c) => {
+              const url = datasetUrl(c);
+              return url ? (
+                <a key={c} href={url} target="_blank" rel="noreferrer" className="text-primary no-underline hover:underline">
+                  {c}
+                </a>
+              ) : (
+                <span key={c} className="text-body">{c}</span>
+              );
+            })}
           </div>
         </article>
 
@@ -157,9 +161,7 @@ export function HeroInsights() {
             <button className="cursor-pointer rounded-full border-0 bg-primary px-4 py-[9px] text-[12.5px] font-medium text-white hover:bg-primary-hover">
               {BUDGET_HERO.cta}
             </button>
-            <a href="#" className="text-[12.5px] text-primary no-underline">
-              See other options →
-            </a>
+            <span className="text-[12.5px] text-faint">Other options · soon</span>
           </div>
         </article>
       </div>

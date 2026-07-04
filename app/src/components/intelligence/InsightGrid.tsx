@@ -1,3 +1,4 @@
+import { datasetUrl } from "@/lib/datasets";
 import {
   ANOMALIES,
   BENCHMARK_ROWS,
@@ -84,19 +85,30 @@ export function InsightGrid() {
                   <div className="mb-2.5 text-[12.5px] leading-relaxed text-body">{x.detail}</div>
                   <div className="mb-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[11.5px]">
                     <span className="text-faint">Data:</span>
-                    {x.sources.map((s) => (
-                      <a key={s} href="#" className="text-primary no-underline">
-                        {s}
-                      </a>
-                    ))}
+                    {x.sources.map((s) => {
+                      const url = datasetUrl(s);
+                      return url ? (
+                        <a
+                          key={s}
+                          href={url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary no-underline hover:underline"
+                        >
+                          {s}
+                        </a>
+                      ) : (
+                        <span key={s} className="text-body">
+                          {s}
+                        </span>
+                      );
+                    })}
                   </div>
                   <div className="flex items-center gap-2.5 border-t border-line-faint pt-2.5">
                     <button className="cursor-pointer rounded-full border border-primary bg-transparent px-3.5 py-1.5 text-xs font-medium text-primary hover:bg-canvas">
                       {x.actionLabel}
                     </button>
-                    <a href="#" className="text-xs text-muted-foreground no-underline hover:text-ink">
-                      Reasoning trail
-                    </a>
+                    <span className="text-xs text-faint">Reasoning trail · soon</span>
                   </div>
                 </article>
               );

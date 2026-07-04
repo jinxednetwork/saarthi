@@ -8,6 +8,7 @@ import type {
   Urgency,
 } from "@saarthi/shared";
 import { CLUSTER_MEDIA, type MediaAsset } from "./media";
+import { datasetUrl } from "./datasets";
 
 /**
  * Deterministic demo data — content ported from the design session handoff
@@ -187,7 +188,7 @@ function mkCluster(s: ClusterSeed): DemoCluster {
       dataset: c.dataset,
       metric: c.metric,
       value: "",
-      citation_url: "#",
+      citation_url: datasetUrl(c.dataset) ?? "https://data.gov.in/",
     })),
     suggested_action: {
       type: s.actionType ?? "COORDINATION",

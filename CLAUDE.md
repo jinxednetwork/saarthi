@@ -83,9 +83,15 @@ generation · Saarthi Assistant Q&A · at least one brief format (PDF Daily Brie
 
 Design strategy and visual system live in `app/PRODUCT.md` (register: product;
 personality "Sober · Evidentiary · Assured"; four named anti-references) and
-`app/DESIGN.md` (North Star: **"The Morning File"** — Secretariat palette, named
-rules like The One Seal Rule and The Hairline Rule). Read both before any UI
-work; the impeccable skill reads them automatically.
+`app/DESIGN.md` (North Star: **"The Command Deck"** — dual-theme glass over the
+constituency map; Secretariat palette as HSL vars; named rules: One Seal,
+Meaning-Locked Colour, No-Hex, Tabular, Five-Blur, z-Ladder). Read both before
+any UI work; the impeccable skill reads them automatically. The redesign plan
+(user-approved) is `docs/REDESIGN_PLAN.md`.
+
+**Dev-server rule:** never run `next build` while `next dev` is serving the
+same `app/.next` — it corrupts the chunk map (HTTP 500s on `_next/static`).
+Stop dev, build, restart.
 
 ## Current state
 

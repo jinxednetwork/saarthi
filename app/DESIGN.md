@@ -1,319 +1,286 @@
 ---
 name: Saarthi
-description: Executive intelligence for India's MPs — the morning file, prepared.
+description: Executive intelligence for India's MPs — a glass command deck over the constituency map.
 colors:
+  canvas-light: "#F4F2ED"
+  canvas-dark: "#0B1120"
+  surface-light: "#FFFFFF"
+  surface-dark: "#131C30"
+  chip-light: "#F6F2EA"
+  chip-dark: "#1B2740"
+  ink-light: "#14192A"
+  ink-dark: "#EAEEF6"
+  body-light: "#4A5060"
+  body-dark: "#AAB4C6"
+  faint-light: "#6B665B"
+  faint-dark: "#8B93A5"
+  line-light: "#E4E0D5"
+  line-dark: "#243250"
   secretariat-navy: "#12325B"
-  navy-pressed: "#0B2447"
+  navy-on-dark: "#7FA6E0"
   despatch-blue: "#054A91"
   seal-saffron: "#C15A15"
-  file-parchment: "#F1EBDD"
-  white-sheet: "#FFFFFF"
-  folder-cream: "#F6F2EA"
-  form-cream: "#FBF8F2"
-  ledger-ink: "#14192A"
-  clerk-grey: "#545869"
-  margin-grey: "#7E8590"
-  pencil-khaki: "#A69C86"
-  rule-line: "#EDE7D7"
-  rule-warm: "#E6DFD1"
-  rule-dark: "#CDC5B4"
+  saffron-on-dark: "#E07A33"
   sanction-green: "#1D6B3B"
+  green-on-dark: "#3F9D68"
   urgency-critical: "#A3311F"
+  urgency-critical-dark: "#E26A54"
   urgency-high: "#B77321"
+  urgency-high-dark: "#E0A24E"
   urgency-medium: "#B39B32"
-  urgency-medium-text: "#8A7515"
+  urgency-medium-dark: "#D6C05A"
   urgency-low: "#4A6A87"
-  citation-highlight: "#FFF3CE"
+  urgency-low-dark: "#84A8CB"
 typography:
   display:
-    fontFamily: "Noto Sans, Segoe UI, system-ui, sans-serif"
-    fontSize: "30px"
-    fontWeight: 500
-    lineHeight: 1
-    letterSpacing: "-0.025em"
-    fontFeature: "tnum"
-  headline:
-    fontFamily: "Noto Sans, Segoe UI, system-ui, sans-serif"
+    fontFamily: "Noto Sans, system-ui, sans-serif"
     fontSize: "22px"
     fontWeight: 600
-    lineHeight: 1.25
-    letterSpacing: "-0.015em"
-  title:
-    fontFamily: "Noto Sans, Segoe UI, system-ui, sans-serif"
-    fontSize: "15px"
+    lineHeight: 1
+    letterSpacing: "-0.02em"
+    fontFeature: "tnum"
+  headline:
+    fontFamily: "Noto Sans, system-ui, sans-serif"
+    fontSize: "18px"
     fontWeight: 600
-    lineHeight: 1.4
-    letterSpacing: "-0.01em"
+    lineHeight: 1.3
+    letterSpacing: "-0.015em"
   body:
-    fontFamily: "Noto Sans, Segoe UI, system-ui, sans-serif"
-    fontSize: "13.5px"
+    fontFamily: "Noto Sans, system-ui, sans-serif"
+    fontSize: "13px"
     fontWeight: 400
     lineHeight: 1.6
   label:
-    fontFamily: "Noto Sans, Segoe UI, system-ui, sans-serif"
-    fontSize: "11.5px"
+    fontFamily: "Noto Sans, system-ui, sans-serif"
+    fontSize: "11px"
     fontWeight: 500
     lineHeight: 1.35
   devanagari:
     fontFamily: "Noto Sans Devanagari, Noto Sans, sans-serif"
-    fontSize: "13.5px"
+    fontSize: "13px"
     fontWeight: 400
     lineHeight: 1.7
   mono:
-    fontFamily: "IBM Plex Mono, ui-monospace, Menlo, monospace"
+    fontFamily: "IBM Plex Mono, ui-monospace, monospace"
     fontSize: "11px"
     fontWeight: 400
     lineHeight: 1.4
 rounded:
   sm: "4px"
-  md: "6px"
-  lg: "8px"
-  xl: "12px"
+  md: "8px"
+  lg: "12px"
+  xl: "16px"
   pill: "999px"
 spacing:
   xs: "6px"
   sm: "10px"
-  md: "14px"
-  lg: "22px"
+  md: "16px"
+  lg: "20px"
   xl: "40px"
 components:
   button-primary:
     backgroundColor: "{colors.secretariat-navy}"
-    textColor: "{colors.white-sheet}"
+    textColor: "#FFFFFF"
     rounded: "{rounded.pill}"
     padding: "10px 16px"
-  button-primary-hover:
-    backgroundColor: "{colors.navy-pressed}"
-    textColor: "{colors.white-sheet}"
-    rounded: "{rounded.pill}"
-    padding: "10px 16px"
-  button-ghost:
+  button-outline:
     backgroundColor: "transparent"
-    textColor: "{colors.secretariat-navy}"
+    textColor: "{colors.ink-light}"
     rounded: "{rounded.pill}"
-    padding: "6px 14px"
-  card:
-    backgroundColor: "{colors.white-sheet}"
+    padding: "8px 14px"
+  panel-glass:
+    backgroundColor: "{colors.surface-light}"
     rounded: "{rounded.lg}"
-    padding: "18px 20px"
-  card-featured:
-    backgroundColor: "{colors.white-sheet}"
-    rounded: "{rounded.xl}"
-    padding: "28px 32px"
+    padding: "16px"
   chip-evidence:
-    backgroundColor: "{colors.folder-cream}"
-    textColor: "{colors.ledger-ink}"
-    rounded: "{rounded.sm}"
-    padding: "4px 9px"
-  input-field:
-    backgroundColor: "{colors.form-cream}"
-    textColor: "{colors.ledger-ink}"
-    rounded: "{rounded.sm}"
-    padding: "10px 12px"
+    backgroundColor: "{colors.chip-light}"
+    textColor: "{colors.ink-light}"
+    rounded: "{rounded.md}"
+    padding: "4px 10px"
 ---
 
 # Design System: Saarthi
 
 ## 1. Overview
 
-**Creative North Star: "The Morning File"**
+**Creative North Star: "The Command Deck"**
 
-Saarthi is the dispatch file a trusted senior aide prepares before the MP's
-day begins: parchment stock, navy ink, a single saffron seal, everything cited
-and already in priority order. The interface is a civil-service instrument —
-sober, evidentiary, assured — not a startup dashboard. Warmth comes from the
-paper (File Parchment canvas, cream folders and forms), authority from the ink
-(Secretariat Navy on Ledger Ink text), and life from precise, small colour
-marks: urgency dots, pathway pills, one pulsing "live" point.
+The Morning File grew a windshield. Saarthi is now a glass command deck floating
+over the living constituency map: the map IS the page, and every instrument —
+KPIs, the priority queue, the signal feed, the sources hub — is a frosted panel
+suspended above it. The civil-service soul survives intact (navy authority,
+saffron restraint, tabular Indian numerals, evidence citations everywhere), but
+the material changed from paper to glass, as if Apple built an instrument for
+the Government of India.
 
-The system explicitly rejects the generic SaaS admin template, the flashy
-consumer app, the dated NIC-style government portal, and Bloomberg-terminal
-density. Its job is triage: the top five issues legible in five minutes by a
-non-technical reader, every claim traceable to its evidence.
+Dual-theme by design: **dark is the command center** (default — CARTO dark
+tiles, deep navy-black canvas, brightened status hues) and **light is Apple
+Maps daytime** (warm off-white, white glass). One token system, HSL variables,
+`.dark` class; components never hardcode a hex.
+
+The system still rejects the generic SaaS admin template, flashy consumer-app
+energy, the dated NIC portal, and Bloomberg-terminal density. Glass is not
+decoration here: panels float over a map that must remain visible and
+draggable between them — the blur earns its place by preserving context.
 
 **Key Characteristics:**
-- Warm paper surfaces carrying cool, authoritative ink
-- Numbers typographically privileged: tabular numerals, Indian notation (₹1,00,000)
-- Colour as annotation, never decoration — every hue has a fixed meaning
-- Hairline borders and tinted fills instead of shadows; flat at rest
-- Bilingual by construction: Devanagari set with its own vertical rhythm
+- The map is the page; UI floats as frosted glass panels (`.glass`, `.glass-strong`)
+- Meaning-locked colour: navy/blue = action, saffron = brand+forecast, green =
+  completed action, four urgency hues = urgency, channel colours = channels
+- Numbers privileged: tabular numerals, Indian notation (₹3.42 Cr · 1,842)
+- Evidence is UI: media strips, source chips, citations that genuinely resolve
+- Bilingual by construction: Devanagari at 1.7 line-height with `lang="hi"`
 
-## 2. Colors: The Secretariat Palette
+## 2. Colors: The Secretariat Palette, Dual-Theme
 
-Warm government paper annotated in navy, saffron, and small precise status marks.
+All colours live as HSL channel variables in `globals.css` (`:root` light /
+`.dark`); Tailwind maps semantic names to `hsl(var(--x))`. The frontmatter
+lists the resolved hex pairs.
 
 ### Primary
-- **Secretariat Navy** (#12325B): The ink of authority. Primary buttons, active
-  navigation, the MPLADS pathway pill, links in running text, KPI progress
-  bars. Pressed state darkens to **Navy Pressed** (#0B2447).
-- **Despatch Blue** (#054A91): The secondary blue for citation links, the
-  Portal channel, the Coordination pathway, and the water category line in
-  charts. Never used for buttons.
+- **Secretariat Navy** (#12325B light / **#7FA6E0** dark): buttons, active nav,
+  MPLADS pathway, links. Interactive blues brighten on dark or they'd drown.
+- **Despatch Blue** (#054A91 / #8FB8EC): citation links, Portal channel,
+  Coordination pathway.
 
 ### Secondary
-- **Seal Saffron** (#C15A15): The brand's single flame — the tallest bar in the
-  wordmark, the Forecast insight accent, the public-health line in charts, the
-  scroll ombre. Governed by The One Seal Rule below.
+- **Seal Saffron** (#C15A15 / #E07A33): the brand bar's tallest stroke, the
+  Forecast insight accent, one chart line. Still governed by the One Seal Rule.
 
 ### Tertiary
-- **Sanction Green** (#1D6B3B): Exclusively the colour of completed action —
-  dispatched letters, in-progress badges, confidence meters, the live sync dot.
-- **Urgency marks**: Critical (#A3311F), High (#B77321), Medium (#B39B32 dot /
-  #8A7515 text), Low (#4A6A87 dot / #7E8590 text). Used as 5–8px dots with a
-  small text label; never as fills or banners.
-- **Citation Highlight** (#FFF3CE): the soft mark behind AI-cited figures in
-  drafted letters — evidence made visible.
+- **Sanction Green** (#1D6B3B / #3F9D68): completed action only — dispatch
+  states, live dots, confidence meters.
+- **Urgency marks**: critical #A3311F/#E26A54 · high #B77321/#E0A24E · medium
+  #B39B32/#D6C05A · low #4A6A87/#84A8CB. Dots + labels, never fills.
 
 ### Neutral
-- **File Parchment** (#F1EBDD): the page canvas, and row-separator hairlines
-  inside white cards.
-- **White Sheet** (#FFFFFF): every card, the header, the modal — content sits
-  on white sheets laid over parchment.
-- **Folder Cream** (#F6F2EA) / **Form Cream** (#FBF8F2): evidence chips, quiet
-  hovers, and form fields respectively — one shade deeper than the sheet.
-- **Ledger Ink** (#14192A): headings and primary text. **Clerk Grey** (#545869)
-  body copy. **Margin Grey** (#7E8590) labels. **Pencil Khaki** (#A69C86) the
-  quietest annotations — timestamps, counts, hints.
-- **Rule Line** (#EDE7D7) default borders; **Rule Warm** (#E6DFD1) form/modal
-  borders; **Rule Dark** (#CDC5B4) hover borders.
+- **Canvas** (#F4F2ED / #0B1120), **Surface** (#FFF / #131C30) — glass panels
+  are Surface at 72–85% opacity with 16px backdrop blur.
+- **Ink** (#14192A / #EAEEF6), **Body** (#4A5060 / #AAB4C6), **Muted-fg**
+  (#5C6270 / #96A0B4), **Faint** (#6B665B / #8B93A5) — every step ≥4.5:1 on its
+  surfaces in both themes (the old #A69C86 failed AA; it is gone).
+- **Line** (#E4E0D5 / #243250) at 60% opacity on glass edges.
 
 ### Named Rules
-**The One Seal Rule.** Seal Saffron touches at most a few percent of any
-screen: the brand bar, one insight accent, one chart line. Its rarity is its
-authority. A screen washed in saffron is a broken screen.
+**The One Seal Rule.** Saffron touches at most a few percent of any screen.
 
 **The Meaning-Locked Colour Rule.** Every non-neutral colour has exactly one
-job (navy = action/navigation, saffron = brand/forecast, green = completed
-action, the four urgency hues = urgency). Never borrow a status colour for
-decoration.
+job. Channel brand colours (WhatsApp green, Reddit orange…) belong to channels
+alone.
+
+**The No-Hex Rule.** Components reference `hsl(var(--token))` or Tailwind
+semantic classes — a hardcoded hex in a component is a bug, because it cannot
+retheme.
 
 ## 3. Typography
 
-**Display Font:** Noto Sans (with Segoe UI, system-ui fallback)
-**Body Font:** Noto Sans — one family, weights 400–700 carry the hierarchy
-**Devanagari Font:** Noto Sans Devanagari (never substituted, never squeezed)
-**Mono Font:** IBM Plex Mono — reference numbers, rank indices, file refs
-
-**Character:** A single humanist sans wearing a civil-service uniform: weight
-and tabular numerals do the talking, letter-spacing tightens slightly as size
-grows. The mono face appears only where a clerk would use a rubber stamp —
-reference numbers like `MP-NDL-MPLADS-2026-W44-001`.
+**One family, two scripts, one stamp:** Noto Sans (400–700) carries everything;
+Noto Sans Devanagari renders Hindi as a first-class script (1.7 line-height,
+`lang="hi"`); IBM Plex Mono appears only where a clerk would use a rubber stamp
+— reference numbers (`MP-NDL-MPLADS-2026-W44-001`) and rank indices.
 
 ### Hierarchy
-- **Display** (500, 30–34px, lh 1, -0.025em, tabular): KPI numerals and the
-  radial hub centre. The number is the hero; its unit sits beside it at 15px
-  Margin Grey.
-- **Headline** (600, 22–24px, lh 1.25, -0.015em): section titles ("Attention
-  this week") and hero insight statements.
-- **Title** (600, 15–19px, -0.01em): card titles, cluster names.
-- **Body** (400, 13–14px, lh 1.55–1.65): evidence prose, cross-references.
-  Cap at 65–75ch.
-- **Label** (500, 11–12.5px): metadata, chips, pills. Uppercase + 0.06–0.08em
-  tracking is reserved for eyebrow labels on insight cards and form sections —
-  never on every section.
-- **Devanagari** (400–600, matching sizes, lh 1.7): ~15% more vertical room
-  than Latin. Test every layout with Hindi strings.
+- **Display** (600, 20–22px, tabular): KPI numerals and the hub centre — the
+  glass panels are compact, so display sizes tightened from the paper era.
+- **Headline** (600, 18–22px, -0.015em): page titles, insight statements.
+- **Title** (500–600, 13.5–15px): panel headers, card titles.
+- **Body** (400, 12.5–13px, lh 1.55–1.65): evidence prose. Cap 65–75ch.
+- **Label** (500, 10.5–11.5px): metadata, chips. Uppercase + tracking reserved
+  for section eyebrows inside drawers/forms — never on every section.
 
 ### Named Rules
-**The Tabular Rule.** Every number that could ever sit above another number is
-tabular (`font-variant-numeric: tabular-nums`) and formatted Indian-style:
-₹1,00,000, ₹3.42 Cr, 1,842.
+**The Tabular Rule.** Every number that could sit above another number is
+tabular and Indian-formatted: ₹1,00,000 · ₹3.42 Cr · 1,842.
 
 ## 4. Elevation
 
-Flat by default; depth is drawn, not cast. Surfaces separate by hairline Rule
-Line borders and one-step tint changes (Parchment → Sheet → Cream), not by
-shadows. Shadows exist only where something truly floats above the page.
+Two materials, two jobs. **Glass** (backdrop blur + translucent Surface +
+hairline Line/60 border) is for panels floating over the map and chrome
+(sidebar, top strip, toolbar). **Shadow** exists only for true overlays: the
+drawer/dialog layer (Radix defaults) and toasts. Resting content inside a
+panel still separates by hairline and tint, never by shadow.
 
-### Shadow Vocabulary
-- **Popover** (`box-shadow: 0 8px 24px rgba(20,25,42,0.08)`): map filter
-  popover and other transient panels.
-- **Modal** (`box-shadow: 0 24px 64px rgba(11,36,71,0.35)`): the Action
-  Composer, over a `rgba(11,36,71,0.55)` navy scrim.
-- **Tooltip** (`box-shadow: 0 6px 14px rgba(20,25,42,0.18)`): Ledger Ink map
-  tooltips.
+### Glass Vocabulary
+- **`.glass`** (`surface/0.72 + blur(16px) saturate(1.4) + line/0.6 border`):
+  chrome and small tiles.
+- **`.glass-strong`** (`surface/0.85`, same blur): text-dense panels (queue,
+  feed) where legibility outranks transparency.
 
 ### Named Rules
-**The Hairline Rule.** If a resting surface needs separation, it gets a 1px
-Rule Line border or a one-step tint — never a shadow. Shadows are reserved for
-the three floating roles above.
+**The Five-Blur Rule.** At most ~5 blurred surfaces per view, blur ≤16px,
+never nested — glass over a panning map is a GPU bill you pay in frames.
+
+**The z-Ladder.** map 0 → panels 10 → topbar 30 → sidebar 40 → sheet/dialog 50
+→ toast → splash 100. The map stage wrapper is `isolate` so Leaflet's internal
+z-1000 panes never escape.
 
 ## 5. Components
 
-Quiet precision: hairline borders, pill actions, colour only where it means
-something.
+shadcn/ui (new-york) primitives skinned by the token system; Radix supplies
+focus traps, Esc, and aria. Custom pieces stay quiet and precise.
 
 ### Buttons
-- **Shape:** full pill (999px radius).
-- **Primary:** Secretariat Navy fill, white text, 500 weight at 12.5–13px,
-  padding 9–10px × 16px. Hover → Navy Pressed.
-- **Ghost:** transparent with 1px border (navy border for standalone actions,
-  Rule Line border darkening to Rule Dark on hover for filters/scope pills).
-- **Focus:** 2px Secretariat Navy `:focus-visible` outline, 2px offset.
-- Rectangular 4px-radius buttons appear only inside the formal letter composer
-  — the one surface that imitates stationery.
+- **Primary:** navy pill (999px), white text, 13px/500. `Button` component.
+- **Outline / Ghost:** hairline pill; glass variants add `.glass` for chrome.
+- **Focus:** global 2px ring (`--ring`), 2px offset.
+
+### Panels (the signature container)
+- Glass tiles, 12px radius, internal `border-line/50` row separators,
+  panel headers at 13px/600 with a right-aligned quiet count.
 
 ### Chips
-- **Evidence chips:** Folder Cream fill, 4px radius, `4px 9px` padding; icon at
-  12px Margin Grey + tabular count + source label.
-- **Pathway pills:** border-only pills — 1px in the pathway's colour at 27%
-  alpha (hex +`44`), text in the full colour, sentence case. Navy MPLADS,
-  brown State, green Central, blue Coordination.
-- **Urgency marks:** 5–6px dot + 11.5px label in the urgency text colour.
+- **Evidence chips:** Chip-tint fill, 6px radius, icon + tabular count + label.
+- **Pathway pills:** border-only, pathway colour at 35% alpha border.
+- **Urgency marks:** 5–6px dot + 11px label; the pill variant only in badges.
 
-### Cards / Containers
-- **Corner Style:** 8px standard cards; 12px featured priority/insight cards.
-- **Background:** White Sheet on Parchment; internal row separators in
-  Parchment (#F1EBDD).
-- **Shadow Strategy:** none at rest (Hairline Rule).
-- **Border:** 1px Rule Line; dispatched cards swap to a green-tinted border
-  (#DBE9DE) with a `#F7F9F5` wash.
-- **Internal Padding:** 18–22px; featured cards 28px × 32px.
+### Cluster Drawer (Sheet)
+Right-side, 460px: header (category icon, mono id, urgency badge, trend,
+bilingual title, ward) → citizen media strip (snap-scroll, video posters carry
+a "preview" chip — no false playback claims) → evidence chips → cross-reference
+prose with **resolvable** dataset links → suggested action or dispatch progress
+→ sticky footer (Draft letter · View on map).
 
-### Inputs / Fields
-- **Style:** Form Cream fill, 1px Rule Warm border, 4px radius, 13px text,
-  10px × 12px padding. Section labels: 11px, 600, uppercase, 0.08em, Margin Grey.
-- **Focus:** the global 2px navy `:focus-visible` ring.
+### Action Composer (Dialog) + Dispatch Ceremony
+Editable letter textarea (seeded per cluster), citations popover that opens,
+annexure checklist. Approve & send → AlertDialog echoing recipient + ref +
+"cannot be recalled" → success state (check, mono ref, Done/Track) + toast.
+The highest-stakes act in the product earns a two-step and a receipt.
 
-### Navigation
-- 13.5px links: Clerk Grey at rest, Ledger Ink + 500 weight when active, with a
-  2px Secretariat Navy underline bar pinned to the header row's bottom edge.
-  Header is a White Sheet with a Rule Line bottom border; a quiet sub-strip
-  carries the page title (22px, 600) and a live status dot.
+### The Radial Hub Tile (signature, miniaturised)
+The five-channel radial, shrunk from hero to instrument (~240px tile). Spokes
+are real buttons (keyboard focusable, `aria-pressed`) that filter the live
+feed; the hub centre previews the hovered/active channel. Its "click to
+filter" caption is true.
 
-### The Radial Signal Hub (signature)
-Five intake channels as spokes on a dotted 140px ring around a white hub; each
-channel a 6.5px dot in its brand colour (WhatsApp green, X ink, Reddit orange,
-Portal blue, News brown) with a 14px halo when live. Hover dims siblings to
-32% and swaps the hub centre to that channel's count and trend. The hub centre
-is Display-tier tabular type. This is the one theatrical moment on the
-dashboard — everything else stays paper-quiet.
+### Media Cards (/live collage)
+CSS-columns masonry; media at natural aspect (16/9 · 4/3 · 3/4 · 1/1) →
+source badge + relative time → snippet (`lang="hi"` where Hindi) → cluster
+link that opens the dashboard drawer. Offline, media degrades to
+category-tinted tiles with an honest "media unavailable offline" note.
 
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** cite evidence inline: every stat, rank, and AI recommendation carries
-  its source links (Despatch Blue, 11.5px). If it can't be cited, don't show it.
-- **Do** use tabular numerals and Indian number formatting everywhere
-  (₹1,00,000 · ₹3.42 Cr · 1,842).
-- **Do** signal urgency with a 5–6px dot + small text label in the urgency
-  colours — quiet, precise, paired with words.
-- **Do** give Devanagari its 1.7 line-height and test every layout bilingually.
-- **Do** respect `prefers-reduced-motion` with a finished-state fallback for
-  every animation, including the chart draw-in and splash.
+- **Do** keep the map visible and draggable between panels — the overlay grid
+  is `pointer-events-none`; every panel opts back in.
+- **Do** make every citation resolve (dataset links go to the real department
+  portals; unresolvable sources render as plain text, not fake links).
+- **Do** use tabular numerals and Indian formatting everywhere.
+- **Do** give Devanagari `lang="hi"` and 1.7 line-height.
+- **Do** respect `prefers-reduced-motion`: splash skipped, chart pre-drawn,
+  transitions collapsed.
+- **Do** label unbuilt destinations honestly ("Soon", "· soon") — never a dead
+  `href="#"`.
 
 ### Don't:
-- **Don't** build the "generic SaaS admin template" — identical stat cards,
-  blue-purple gradients, rounded-everything (PRODUCT.md anti-reference #1).
-- **Don't** import "flashy consumer app" energy — no gradients-as-decoration,
-  mascots, or confetti (anti-reference #2).
-- **Don't** regress to the "dated NIC-style gov portal" — dense link walls,
-  beveled buttons, no hierarchy (anti-reference #3).
-- **Don't** drift into "Bloomberg-terminal density" — Saarthi triages; it never
-  shows everything at once (anti-reference #4).
-- **Don't** cast shadows on resting surfaces, use colored side-stripe borders
-  thicker than 1px, or gradient text — depth is drawn with hairlines and tints.
-- **Don't** put an uppercase tracked eyebrow above every section; eyebrows
-  belong only to insight cards and form sections.
-- **Don't** use saffron, green, or the urgency hues for anything other than
-  their locked meanings (The Meaning-Locked Colour Rule).
+- **Don't** build the generic SaaS admin template, flashy consumer-app energy,
+  the dated NIC-style portal, or Bloomberg-terminal density (PRODUCT.md
+  anti-references, all four still binding).
+- **Don't** hardcode a hex in a component (The No-Hex Rule) — it cannot retheme.
+- **Don't** exceed ~5 blurred surfaces or nest backdrop blurs.
+- **Don't** use colored side-stripes >1px, gradient text, or glass as
+  decoration on surfaces that don't float over the map.
+- **Don't** dispatch anything government-official in one click — the
+  AlertDialog ceremony is load-bearing UX, not friction.
+- **Don't** run `next build` while the dev server shares `.next` (corrupts the
+  chunk map; stop dev first).

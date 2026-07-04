@@ -37,16 +37,31 @@ export function CollapsiblePanel({
         fill && !collapsed ? "min-h-0 flex-1" : "shrink-0",
       )}
     >
-      <header className="flex h-11 shrink-0 items-center justify-between gap-2 px-4">
+      {/* The whole header toggles (role=button + keyboard). Interactive
+          headerRight controls stop propagation so they don't also collapse. */}
+      <header
+        role="button"
+        tabIndex={0}
+        aria-expanded={!collapsed}
+        aria-controls={bodyId}
+        aria-label={collapsed ? `Expand ${title}` : `Collapse ${title}`}
+        onClick={() => togglePanel(id)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            togglePanel(id);
+          }
+        }}
+        className="group flex h-11 shrink-0 cursor-pointer select-none items-center justify-between gap-2 px-4 transition-colors hover:bg-chip/40"
+      >
         <h2 className="text-[13px] font-semibold text-ink">{title}</h2>
         <div className="flex items-center gap-2">
-          {!collapsed && headerRight}
-          <button
-            onClick={() => togglePanel(id)}
-            aria-expanded={!collapsed}
-            aria-controls={bodyId}
-            aria-label={collapsed ? `Expand ${title}` : `Collapse ${title}`}
-            className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-chip hover:text-ink"
+          {!collapsed && headerRight && (
+            <span onClick={(e) => e.stopPropagation()}>{headerRight}</span>
+          )}
+          <span
+            aria-hidden
+            className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors group-hover:text-ink"
           >
             <ChevronDown
               className={cn(
@@ -54,7 +69,7 @@ export function CollapsiblePanel({
                 collapsed && "-rotate-90",
               )}
             />
-          </button>
+          </span>
         </div>
       </header>
 

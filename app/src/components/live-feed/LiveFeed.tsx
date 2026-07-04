@@ -7,6 +7,7 @@ import { SourceIcon } from "@/components/icons";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useCitizenStore } from "@/lib/citizen-store";
 import { useDashboardStore } from "@/lib/dashboard-store";
 import { FEED_ITEMS, RADIAL_CHANNELS } from "@/lib/mock-data";
 import { minutesAgo } from "@/lib/ui";
@@ -19,12 +20,32 @@ import { minutesAgo } from "@/lib/ui";
 export function LiveFeed() {
   const { t } = useI18n();
   const { dispatched, sourceFilter, setSourceFilter, selectCluster } = useDashboardStore();
+  const { tickets, hydrate } = useCitizenStore();
   const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
 
   useEffect(() => {
     const t = setInterval(() => setTick((n) => n + 1), 22_000);
     return () => clearInterval(t);
   }, []);
+
+  // Citizen-portal reports (same-origin) surface here as portal signals — the
+  // grievance loop closing back to the MP. Production: Gemini auto-clusters them.
+  const citizenItems =
+    sourceFilter === "all" || sourceFilter === "portal"
+      ? tickets.slice(0, 3).map((tk) => ({
+          source: "portal" as const,
+          sourceName: "Citizen portal",
+          timeMin: Math.max(0, Math.round((Date.now() - new Date(tk.createdAt).getTime()) / 60000)),
+          snippet: tk.description,
+          link: `citizen report · ${tk.id}`,
+          clusterId: undefined as string | undefined,
+          hi: false,
+        }))
+      : [];
 
   const filtered =
     sourceFilter === "all" ? FEED_ITEMS : FEED_ITEMS.filter((f) => f.source === sourceFilter);
@@ -44,7 +65,7 @@ export function LiveFeed() {
         }))
       : [];
 
-  const list = [...actionItems, ...rotated].slice(0, 8);
+  const list = [...citizenItems, ...actionItems, ...rotated].slice(0, 8);
   const filterName = RADIAL_CHANNELS.find((c) => c.key === sourceFilter)?.name;
 
   return (

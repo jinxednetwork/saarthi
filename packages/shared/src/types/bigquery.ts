@@ -7,6 +7,8 @@ export const BQ_TABLES = {
   census2011Wards: "census_2011_wards",
   cpcbAirQuality: "cpcb_air_quality",
   dusibWaterInfrastructure: "dusib_water_infrastructure",
+  udisePlusSchools: "udise_plus_schools",
+  healthFacilities: "health_facilities",
   mpladsUtilization: "mplads_utilization",
   mpladsPermittedWorks: "mplads_permitted_works",
   clusterHistory: "cluster_history",
@@ -45,6 +47,33 @@ export interface DusibWaterInfrastructureRow {
   status: "planned" | "in_progress" | "completed" | "none";
   coverage_pct: number;
   last_updated: string; // ISO date
+}
+
+/** `udise_plus_schools` — govt-school enrolment + capacity per ward (UDISE+). */
+export interface UdiseSchoolRow {
+  ward_id: string;
+  ward_name: string;
+  govt_schools: number;
+  total_enrolment: number;
+  /** Pupil-teacher ratio; RTE norm is 30:1 at primary. */
+  pupil_teacher_ratio: number;
+  schools_without_drinking_water: number;
+  schools_without_functional_toilet: number;
+  /** Schools flagged for infrastructure upgrade (classrooms, labs, boundary). */
+  schools_needing_upgrade: number;
+}
+
+/** `health_facilities` — public health infrastructure per ward. */
+export interface HealthFacilityRow {
+  ward_id: string;
+  ward_name: string;
+  /** Mohalla clinics + primary health centres. */
+  phc_count: number;
+  dispensaries: number;
+  govt_hospital_beds: number;
+  /** Public beds per 1,000 residents; national benchmark ~1.0 (WHO ~3.0). */
+  beds_per_1000: number;
+  avg_opd_wait_min: number;
 }
 
 /** `mplads_utilization` — spend ledger per constituency + fiscal year. */

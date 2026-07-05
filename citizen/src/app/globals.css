@@ -54,4 +54,38 @@
     outline-offset: 2px;
     border-radius: 2px;
   }
+
+  /* ---- Accessibility engine (data-a11y-* + --a11y-zoom on <html>) ---- */
+  :root {
+    --a11y-zoom: 1;
+  }
+  body {
+    zoom: var(--a11y-zoom, 1);
+  }
+  html[data-a11y-spacing="wide"] body {
+    letter-spacing: 0.055em;
+    word-spacing: 0.14em;
+  }
+  html[data-a11y-line="tall"] body,
+  html[data-a11y-line="tall"] p,
+  html[data-a11y-line="tall"] label {
+    line-height: 1.85 !important;
+  }
+  html[data-a11y-contrast="high"] {
+    --ink: 0 0% 0%;
+    --body-text: 0 0% 12%;
+    --muted-fg: 0 0% 20%;
+    --faint: 0 0% 24%;
+    --line: 0 0% 42%;
+    --line-dark: 0 0% 30%;
+  }
+  html[data-a11y-contrast="high"] :focus-visible {
+    outline-width: 3px;
+  }
+  html[data-a11y-cursor="big"],
+  html[data-a11y-cursor="big"] * {
+    cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='40'%20viewBox='0%200%2040%2040'%3E%3Cpath%20d='M6%204L6%2034L14%2026L19%2038L24%2036L19%2024L30%2024Z'%20fill='%23000'%20stroke='%23fff'%20stroke-width='2.5'%20stroke-linejoin='round'/%3E%3C/svg%3E")
+        4 4,
+      auto;
+  }
 }

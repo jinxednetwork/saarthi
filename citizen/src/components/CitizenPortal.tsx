@@ -20,6 +20,7 @@ import {
   TICKET_STATUS_STEPS,
   type CitizenTicket,
 } from "@saarthi/shared";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { findTicket, submitTicket } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,8 @@ type Mode = "report" | "track";
 type Step = "phone" | "otp" | "form" | "done";
 
 export function CitizenPortal() {
+  const { t, lang } = useI18n();
+
   const [mode, setMode] = useState<Mode>("report");
   const [step, setStep] = useState<Step>("phone");
 
@@ -41,7 +44,6 @@ export function CitizenPortal() {
   const [submitting, setSubmitting] = useState(false);
 
   const [category, setCategory] = useState<CitizenTicket["category"] | null>(null);
-  const [categoryLabel, setCategoryLabel] = useState("");
   const [wardId, setWardId] = useState(NEW_DELHI_WARDS[0]!.id);
   const [description, setDescription] = useState("");
   const [photoNames, setPhotoNames] = useState<string[]>([]);
@@ -52,20 +54,20 @@ export function CitizenPortal() {
 
   function sendOtp() {
     if (phone.replace(/\D/g, "").length < 10) {
-      toast.error("Enter a 10-digit mobile number.");
+      toast.error(t("toast.enterPhone"));
       return;
     }
     setSending(true);
     setTimeout(() => {
       setSending(false);
       setStep("otp");
-      toast.success("OTP sent (demo — enter any 6 digits).");
+      toast.success(t("toast.otpSent"));
     }, 700);
   }
 
   function verifyOtp() {
     if (otp.replace(/\D/g, "").length !== 6) {
-      toast.error("Enter the 6-digit code.");
+      toast.error(t("toast.enterCode"));
       return;
     }
     setStep("form");
@@ -78,30 +80,31 @@ export function CitizenPortal() {
 
   async function fileGrievance() {
     if (!category) {
-      toast.error("Pick a category.");
+      toast.error(t("toast.pickCategory"));
       return;
     }
     if (description.trim().length < 8) {
-      toast.error("Describe the issue in a line or two.");
+      toast.error(t("toast.describe"));
       return;
     }
     const ward = NEW_DELHI_WARDS.find((w) => w.id === wardId)!;
+    const cat = CITIZEN_CATEGORIES.find((c) => c.category === category)!;
     setSubmitting(true);
     try {
-      const t = await submitTicket({
+      const created = await submitTicket({
         phone,
         category,
-        categoryLabel,
+        categoryLabel: cat.label, // English canonical; the server re-derives it too
         wardId,
         wardName: ward.name,
         description: description.trim(),
         photoCount: photoNames.length,
         hasVoice,
       });
-      setTicket(t);
+      setTicket(created);
       setStep("done");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not submit. Please try again.");
+      toast.error(err instanceof Error ? err.message : t("toast.submitFail"));
     } finally {
       setSubmitting(false);
     }
@@ -112,7 +115,6 @@ export function CitizenPortal() {
     setPhone("");
     setOtp("");
     setCategory(null);
-    setCategoryLabel("");
     setWardId(NEW_DELHI_WARDS[0]!.id);
     setDescription("");
     setPhotoNames([]);
@@ -128,15 +130,12 @@ export function CitizenPortal() {
     <div>
       {step !== "done" && (
         <>
-          <h1 className="text-[22px] font-semibold leading-tight text-ink">Report a civic issue</h1>
-          <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">
-            File it with your MP&apos;s office and track it to resolution.
-          </p>
+          <h1 className="text-[22px] font-semibold leading-tight text-ink">{t("portal.title")}</h1>
+          <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">{t("portal.subtitle")}</p>
           <div className="mt-3 flex items-center gap-2 rounded-xl border border-line/60 bg-chip/50 px-3.5 py-2.5">
             <span className="text-[16px]">💬</span>
             <p className="text-[12px] leading-snug text-muted-foreground">
-              This is the web fallback for WhatsApp. Prefer WhatsApp? Message{" "}
-              <span className="font-medium text-ink">+91 98••• ••210</span>.
+              {t("portal.whatsapp", { number: "+91 98••• ••210" })}
             </p>
           </div>
           <button
@@ -144,16 +143,16 @@ export function CitizenPortal() {
             className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-primary hover:underline"
           >
             <Search className="h-3.5 w-3.5" />
-            Track an existing report
+            {t("portal.track")}
           </button>
         </>
       )}
 
       {step === "phone" && (
         <div className="mt-6 flex flex-col gap-3">
-          <StepBadge n={1} label="Verify your number" />
+          <StepBadge n={1} label={t("portal.verifyNumber")} t={t} />
           <label className="text-[13px] font-medium text-muted-foreground" htmlFor="cz-phone">
-            Mobile number
+            {t("portal.mobile")}
           </label>
           <div className="flex items-center gap-2">
             <span className="rounded-xl border border-input bg-panel px-3 py-3 text-[15px] text-muted-foreground">
@@ -170,19 +169,17 @@ export function CitizenPortal() {
           </div>
           <button className={cn(PRIMARY, "h-12")} onClick={sendOtp} disabled={sending}>
             {sending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Send OTP
+            {t("portal.sendOtp")}
           </button>
-          <p className="text-center text-[11.5px] text-faint">
-            Your number is masked on the report. We never show it publicly.
-          </p>
+          <p className="text-center text-[11.5px] text-faint">{t("portal.masked")}</p>
         </div>
       )}
 
       {step === "otp" && (
         <div className="mt-6 flex flex-col gap-3">
-          <StepBadge n={1} label="Enter the code" />
+          <StepBadge n={1} label={t("portal.enterCode")} t={t} />
           <p className="text-[13px] text-muted-foreground">
-            Sent to <span className="font-medium text-ink">+91 {phone}</span>.
+            {t("portal.sentTo")} <span className="font-medium text-ink">+91 {phone}</span>.
           </p>
           <input
             inputMode="numeric"
@@ -195,31 +192,28 @@ export function CitizenPortal() {
           />
           <button className={cn(PRIMARY, "h-12")} onClick={verifyOtp}>
             <ShieldCheck className="h-4 w-4" />
-            Verify &amp; continue
+            {t("portal.verify")}
           </button>
           <button
             onClick={() => setStep("phone")}
             className="inline-flex items-center justify-center gap-1 text-[12.5px] text-muted-foreground hover:text-ink"
           >
-            <ArrowLeft className="h-3 w-3" /> Change number
+            <ArrowLeft className="h-3 w-3" /> {t("portal.changeNumber")}
           </button>
         </div>
       )}
 
       {step === "form" && (
         <div className="mt-6 flex flex-col gap-5">
-          <StepBadge n={2} label="Describe the issue" />
+          <StepBadge n={2} label={t("portal.describe")} t={t} />
 
           <div>
-            <p className="mb-2 text-[13px] font-medium text-muted-foreground">What&apos;s it about?</p>
+            <p className="mb-2 text-[13px] font-medium text-muted-foreground">{t("portal.whatsAbout")}</p>
             <div className="flex flex-wrap gap-2">
               {CITIZEN_CATEGORIES.map((c) => (
                 <button
                   key={c.category}
-                  onClick={() => {
-                    setCategory(c.category);
-                    setCategoryLabel(c.label);
-                  }}
+                  onClick={() => setCategory(c.category)}
                   className={cn(
                     "rounded-full border px-3.5 py-2 text-[13px] font-medium transition-colors",
                     category === c.category
@@ -227,7 +221,7 @@ export function CitizenPortal() {
                       : "border-line text-body hover:border-line-dark",
                   )}
                 >
-                  {c.label}
+                  {lang === "hi" ? c.label_hi : c.label}
                 </button>
               ))}
             </div>
@@ -235,7 +229,7 @@ export function CitizenPortal() {
 
           <div>
             <label className="mb-2 block text-[13px] font-medium text-muted-foreground" htmlFor="cz-ward">
-              Your area
+              {t("portal.yourArea")}
             </label>
             <select id="cz-ward" className={FIELD} value={wardId} onChange={(e) => setWardId(e.target.value)}>
               {NEW_DELHI_WARDS.map((w) => (
@@ -248,14 +242,14 @@ export function CitizenPortal() {
 
           <div>
             <label className="mb-2 block text-[13px] font-medium text-muted-foreground" htmlFor="cz-desc">
-              What&apos;s happening?
+              {t("portal.whatHappening")}
             </label>
             <textarea
               id="cz-desc"
               className={cn(FIELD, "min-h-[110px] resize-y leading-relaxed")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. The main road drain has been overflowing for 3 days near the market."
+              placeholder={t("portal.descPlaceholder")}
             />
           </div>
 
@@ -275,7 +269,11 @@ export function CitizenPortal() {
                 className="flex items-center justify-center gap-2 rounded-xl border border-line bg-panel py-3 text-[13.5px] font-medium text-body hover:border-line-dark"
               >
                 <Camera className="h-4 w-4" />
-                {photoNames.length ? `${photoNames.length} photo${photoNames.length > 1 ? "s" : ""}` : "Add photo"}
+                {photoNames.length
+                  ? t(photoNames.length > 1 ? "portal.photoCountPlural" : "portal.photoCount", {
+                      n: photoNames.length,
+                    })
+                  : t("portal.addPhoto")}
               </button>
               <button
                 onClick={() => setHasVoice((v) => !v)}
@@ -287,7 +285,7 @@ export function CitizenPortal() {
                 )}
               >
                 <Mic className="h-4 w-4" />
-                {hasVoice ? "Voice note · 0:14" : "Add voice note"}
+                {hasVoice ? t("portal.voiceAdded") : t("portal.addVoice")}
               </button>
             </div>
             {photoNames.length > 0 && (
@@ -298,7 +296,7 @@ export function CitizenPortal() {
                     className="flex items-center gap-1 rounded-full bg-chip px-2.5 py-1 text-[11px] text-muted-foreground"
                   >
                     <span className="max-w-[120px] truncate">{n}</span>
-                    <button onClick={() => setPhotoNames((p) => p.filter((_, idx) => idx !== i))} aria-label={`Remove ${n}`}>
+                    <button onClick={() => setPhotoNames((p) => p.filter((_, idx) => idx !== i))} aria-label="remove">
                       <X className="h-3 w-3" />
                     </button>
                   </span>
@@ -309,7 +307,7 @@ export function CitizenPortal() {
 
           <button className={cn(PRIMARY, "h-12")} onClick={fileGrievance} disabled={submitting}>
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-            {submitting ? "Submitting…" : "Submit report"}
+            {submitting ? t("portal.submitting") : t("portal.submit")}
           </button>
         </div>
       )}
@@ -319,21 +317,19 @@ export function CitizenPortal() {
           <span className="flex h-16 w-16 items-center justify-center rounded-full bg-success/15 text-success">
             <CheckCircle2 className="h-8 w-8" strokeWidth={1.75} />
           </span>
-          <h1 className="mt-4 text-[20px] font-semibold text-ink">Report filed</h1>
-          <p className="mt-1 text-[13.5px] text-muted-foreground">
-            Your MP&apos;s office has received it. Save your ticket number.
-          </p>
+          <h1 className="mt-4 text-[20px] font-semibold text-ink">{t("portal.filed")}</h1>
+          <p className="mt-1 text-[13.5px] text-muted-foreground">{t("portal.filedSub")}</p>
           <div className="mt-5 w-full rounded-xl border border-line/60 bg-surface p-4 text-left">
             <div className="flex items-center gap-2 text-[12px] text-muted-foreground">
               <Ticket className="h-4 w-4" />
-              Ticket number
+              {t("portal.ticketNumber")}
             </div>
             <p className="mt-1 text-[22px] font-semibold tracking-tight text-ink">{ticket.id}</p>
             <p className="mt-1 text-[12.5px] text-muted-foreground">
               {ticket.categoryLabel} · {ticket.wardName}
             </p>
             <div className="mt-4 border-t border-line/60 pt-4">
-              <StatusTimeline status={ticket.status} />
+              <StatusTimeline status={ticket.status} t={t} />
             </div>
           </div>
           <div className="mt-5 flex w-full gap-2.5">
@@ -341,10 +337,10 @@ export function CitizenPortal() {
               className="h-11 flex-1 rounded-xl border border-line text-[14px] font-medium text-body hover:border-line-dark"
               onClick={() => setMode("track")}
             >
-              Track report
+              {t("portal.trackReport")}
             </button>
             <button className={cn(PRIMARY, "h-11 flex-1")} onClick={resetReport}>
-              File another
+              {t("portal.fileAnother")}
             </button>
           </div>
         </div>
@@ -353,18 +349,20 @@ export function CitizenPortal() {
   );
 }
 
-function StepBadge({ n, label }: { n: number; label: string }) {
+type TFn = (key: string, vars?: Record<string, string | number>) => string;
+
+function StepBadge({ n, label, t }: { n: number; label: string; t: TFn }) {
   return (
     <div className="flex items-center gap-2">
       <span className="flex h-6 items-center rounded-full bg-primary/10 px-2.5 text-[11px] font-medium text-primary">
-        Step {n} / 2
+        {t("portal.step", { n })}
       </span>
       <span className="text-[13px] font-medium text-ink">{label}</span>
     </div>
   );
 }
 
-function StatusTimeline({ status }: { status: CitizenTicket["status"] }) {
+function StatusTimeline({ status, t }: { status: CitizenTicket["status"]; t: TFn }) {
   const currentIdx = TICKET_STATUS_STEPS.findIndex((s) => s.key === status);
   return (
     <ol className="flex flex-col gap-2.5">
@@ -377,8 +375,12 @@ function StatusTimeline({ status }: { status: CitizenTicket["status"] }) {
             ) : (
               <Circle className="h-4 w-4 shrink-0 text-line-dark" />
             )}
-            <span className={cn("text-[13px]", done ? "font-medium text-ink" : "text-faint")}>{s.label}</span>
-            {i === currentIdx && <span className="ml-auto text-[11px] font-medium text-primary">Current</span>}
+            <span className={cn("text-[13px]", done ? "font-medium text-ink" : "text-faint")}>
+              {t(`status.${s.key}`)}
+            </span>
+            {i === currentIdx && (
+              <span className="ml-auto text-[11px] font-medium text-primary">{t("portal.current")}</span>
+            )}
           </li>
         );
       })}
@@ -387,6 +389,7 @@ function StatusTimeline({ status }: { status: CitizenTicket["status"] }) {
 }
 
 function TrackReport({ onBack }: { onBack: () => void }) {
+  const { t } = useI18n();
   const [id, setId] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<CitizenTicket | null | "notfound">(null);
@@ -395,10 +398,10 @@ function TrackReport({ onBack }: { onBack: () => void }) {
     if (!id.trim()) return;
     setBusy(true);
     try {
-      const t = await findTicket(id);
-      setResult(t ?? "notfound");
+      const found = await findTicket(id);
+      setResult(found ?? "notfound");
     } catch {
-      toast.error("Could not reach the server.");
+      toast.error(t("toast.serverFail"));
     } finally {
       setBusy(false);
     }
@@ -410,21 +413,21 @@ function TrackReport({ onBack }: { onBack: () => void }) {
         onClick={onBack}
         className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground hover:text-ink"
       >
-        <ArrowLeft className="h-3.5 w-3.5" /> Back
+        <ArrowLeft className="h-3.5 w-3.5" /> {t("portal.back")}
       </button>
-      <h1 className="mt-4 text-[22px] font-semibold text-ink">Track a report</h1>
-      <p className="mt-1 text-[13.5px] text-muted-foreground">Enter the ticket number you were given.</p>
+      <h1 className="mt-4 text-[22px] font-semibold text-ink">{t("portal.trackTitle")}</h1>
+      <p className="mt-1 text-[13.5px] text-muted-foreground">{t("portal.trackSub")}</p>
 
       <div className="mt-5 flex gap-2">
         <input className={FIELD} value={id} onChange={(e) => setId(e.target.value)} placeholder="NDL-2026-1234" />
         <button className={cn(PRIMARY, "px-5")} onClick={check} disabled={busy}>
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Check"}
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : t("portal.check")}
         </button>
       </div>
 
       {result === "notfound" && (
         <p className="mt-5 rounded-xl border border-dashed border-line px-4 py-6 text-center text-[13px] text-muted-foreground">
-          No report found with that number. Check the ticket and try again.
+          {t("portal.notFound")}
         </p>
       )}
 
@@ -436,7 +439,7 @@ function TrackReport({ onBack }: { onBack: () => void }) {
           </p>
           <p className="mt-2 text-[13px] leading-relaxed text-body">{result.description}</p>
           <div className="mt-4 border-t border-line/60 pt-4">
-            <StatusTimeline status={result.status} />
+            <StatusTimeline status={result.status} t={t} />
           </div>
         </div>
       )}

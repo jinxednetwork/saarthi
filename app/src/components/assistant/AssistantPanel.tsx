@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUp, ExternalLink, Sparkles, X } from "lucide-react";
+import { ArrowUp, ExternalLink, FileText, Sparkles, X } from "lucide-react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { useStagedReveal } from "@/components/assistant/useStagedReveal";
 import type { AssistantCitation, AssistantMessage } from "@/lib/assistant-brain";
@@ -159,6 +159,15 @@ function MessageBubble({
               >
                 {c.label}
               </button>
+            ) : c.documentId ? (
+              <Link
+                key={i}
+                href="/documents"
+                className="inline-flex items-center gap-1 rounded-full border border-line px-2 py-0.5 text-[10.5px] font-medium text-primary-link no-underline hover:bg-chip"
+              >
+                <FileText className="h-2.5 w-2.5" />
+                {c.label}
+              </Link>
             ) : c.href?.startsWith("/") ? (
               <Link
                 key={i}

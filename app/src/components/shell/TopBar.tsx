@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   ChevronDown,
   Globe,
+  FileText,
   IndianRupee,
   LayoutDashboard,
   ListChecks,
@@ -42,6 +43,7 @@ const MOBILE_NAV = [
   { key: "nav.live", href: "/live", icon: Radio },
   { key: "nav.mplads", href: "/mplads", icon: IndianRupee },
   { key: "nav.actions", href: "/actions", icon: Send },
+  { key: "nav.documents", href: "/documents", icon: FileText },
 ] as const;
 
 /**

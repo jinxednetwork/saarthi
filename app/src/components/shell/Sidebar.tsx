@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import {
+  FileText,
   IndianRupee,
   LayoutDashboard,
   ListChecks,
@@ -38,6 +39,7 @@ const NAV: NavItem[] = [
   { key: "live", href: "/live", icon: Radio },
   { key: "mplads", href: "/mplads", icon: IndianRupee },
   { key: "actions", href: "/actions", icon: Send },
+  { key: "documents", href: "/documents", icon: FileText },
 ];
 
 /**

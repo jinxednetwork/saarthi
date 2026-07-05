@@ -4,6 +4,7 @@ import { create } from "zustand";
 import type { SubmissionSource } from "@saarthi/shared";
 import { SUGGESTED_CHIPS, type AssistantCitation, type AssistantMessage } from "./assistant-brain";
 import type { CategoryGroup } from "./categories";
+import { useDocumentsStore } from "./documents-store";
 
 /**
  * Cross-component dashboard UI state (§3.3 — Zustand for map filters, selected
@@ -165,10 +166,13 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     // path is identical with or without a Gemini key.
     void (async () => {
       try {
+        // Attach the MP's uploaded-document chunks so the Assistant can answer
+        // over their own correspondence (R3C5). Empty until documents exist.
+        const docChunks = useDocumentsStore.getState().assistantChunks();
         const res = await fetch("/api/assistant", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ query: q }),
+          body: JSON.stringify({ query: q, docChunks }),
         });
         const meta = decodeAssistantMeta(res.headers.get("x-saarthi-meta"));
 

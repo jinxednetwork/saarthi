@@ -10,6 +10,7 @@ import {
   Mic,
   Search,
   ShieldCheck,
+  Square,
   Ticket,
   X,
 } from "lucide-react";
@@ -54,6 +55,8 @@ function downscaleImage(file: File, max = 1024): Promise<string> {
   });
 }
 
+const fmtSecs = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
 const FIELD =
   "w-full rounded-xl border border-input bg-panel px-4 py-3 text-[15px] text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring";
 const PRIMARY =
@@ -78,8 +81,13 @@ export function CitizenPortal() {
   const [description, setDescription] = useState("");
   const [photoNames, setPhotoNames] = useState<string[]>([]);
   const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>();
-  const [hasVoice, setHasVoice] = useState(false);
+  const [voiceDataUrl, setVoiceDataUrl] = useState<string | undefined>();
+  const [recording, setRecording] = useState(false);
+  const [recSecs, setRecSecs] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
+  const recRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [ticket, setTicket] = useState<CitizenTicket | null>(null);
 
@@ -114,6 +122,43 @@ export function CitizenPortal() {
     }
   }
 
+  async function startRec() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Prefer a format Gemini reads well; Chrome falls back to webm/opus.
+      const preferred = ["audio/mp4", "audio/ogg;codecs=opus", "audio/webm;codecs=opus", "audio/webm"];
+      const type = preferred.find((t) => MediaRecorder.isTypeSupported(t));
+      const rec = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => e.data.size && chunksRef.current.push(e.data);
+      rec.onstop = () => {
+        stream.getTracks().forEach((tr) => tr.stop());
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+        const reader = new FileReader();
+        reader.onloadend = () => setVoiceDataUrl(reader.result as string);
+        reader.readAsDataURL(blob);
+      };
+      recRef.current = rec;
+      rec.start();
+      setRecording(true);
+      setRecSecs(0);
+      timerRef.current = setInterval(() => setRecSecs((s) => s + 1), 1000);
+    } catch {
+      toast.error(t("toast.micDenied"));
+    }
+  }
+
+  function stopRec() {
+    recRef.current?.stop();
+    setRecording(false);
+    if (timerRef.current) clearInterval(timerRef.current);
+  }
+
+  function clearVoice() {
+    setVoiceDataUrl(undefined);
+    setRecSecs(0);
+  }
+
   async function fileGrievance() {
     if (!category) {
       toast.error(t("toast.pickCategory"));
@@ -135,8 +180,9 @@ export function CitizenPortal() {
         wardName: ward.name,
         description: description.trim(),
         photoCount: photoNames.length,
-        hasVoice,
+        hasVoice: Boolean(voiceDataUrl),
         photoDataUrl,
+        voiceDataUrl,
       });
       setTicket(created);
       setStep("done");
@@ -156,7 +202,9 @@ export function CitizenPortal() {
     setDescription("");
     setPhotoNames([]);
     setPhotoDataUrl(undefined);
-    setHasVoice(false);
+    setVoiceDataUrl(undefined);
+    setRecording(false);
+    setRecSecs(0);
     setTicket(null);
   }
 
@@ -314,16 +362,22 @@ export function CitizenPortal() {
                   : t("portal.addPhoto")}
               </button>
               <button
-                onClick={() => setHasVoice((v) => !v)}
+                onClick={recording ? stopRec : voiceDataUrl ? clearVoice : startRec}
                 className={cn(
                   "flex items-center justify-center gap-2 rounded-xl border py-3 text-[13.5px] font-medium transition-colors",
-                  hasVoice
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-line bg-panel text-body hover:border-line-dark",
+                  recording
+                    ? "border-urgency-critical bg-urgency-critical/10 text-urgency-critical"
+                    : voiceDataUrl
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-line bg-panel text-body hover:border-line-dark",
                 )}
               >
-                <Mic className="h-4 w-4" />
-                {hasVoice ? t("portal.voiceAdded") : t("portal.addVoice")}
+                {recording ? <Square className="h-3.5 w-3.5" /> : <Mic className="h-4 w-4" />}
+                {recording
+                  ? `${t("portal.recording")} · ${fmtSecs(recSecs)}`
+                  : voiceDataUrl
+                    ? `${t("portal.voiceAdded")} · ${fmtSecs(recSecs)}`
+                    : t("portal.addVoice")}
               </button>
             </div>
             {photoNames.length > 0 && (

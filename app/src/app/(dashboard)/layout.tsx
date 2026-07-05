@@ -1,6 +1,7 @@
 import { ActionComposer } from "@/components/action-composer/ActionComposer";
 import { AssistantOverlay } from "@/components/assistant/AssistantOverlay";
 import { ClusterDrawer } from "@/components/cluster/ClusterDrawer";
+import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
 import { WelcomeSplash } from "@/components/splash/WelcomeSplash";
@@ -17,6 +18,7 @@ export default function DashboardShellLayout({
 }) {
   return (
     <div className="flex h-screen overflow-hidden bg-canvas">
+      <OnboardingFlow />
       <WelcomeSplash />
       <Sidebar />
       <div className="relative min-w-0 flex-1">

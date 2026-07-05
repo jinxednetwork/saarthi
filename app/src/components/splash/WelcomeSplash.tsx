@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { DASHBOARD_META, MOCK_CONSTITUENCY } from "@/lib/mock-data";
+import { isOnboarded } from "@/lib/onboarding";
 
 const SEEN_KEY = "saarthi-splash-seen";
 
@@ -16,6 +17,8 @@ export function WelcomeSplash() {
 
   useEffect(() => {
     try {
+      // First-run onboarding is the welcome experience; the splash waits its turn.
+      if (!isOnboarded()) return;
       if (sessionStorage.getItem(SEEN_KEY)) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         sessionStorage.setItem(SEEN_KEY, "1");

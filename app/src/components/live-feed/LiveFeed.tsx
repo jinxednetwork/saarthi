@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronRight, X } from "lucide-react";
+import type { CitizenTicket } from "@saarthi/shared";
 import { SourceIcon } from "@/components/icons";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCitizenStore } from "@/lib/citizen-store";
 import { useDashboardStore } from "@/lib/dashboard-store";
 import { FEED_ITEMS, RADIAL_CHANNELS } from "@/lib/mock-data";
 import { minutesAgo } from "@/lib/ui";
@@ -20,20 +20,37 @@ import { minutesAgo } from "@/lib/ui";
 export function LiveFeed() {
   const { t } = useI18n();
   const { dispatched, sourceFilter, setSourceFilter, selectCluster } = useDashboardStore();
-  const { tickets, hydrate } = useCitizenStore();
+  const [tickets, setTickets] = useState<CitizenTicket[]>([]);
   const [tick, setTick] = useState(0);
 
+  // Poll the shared tickets API — the standalone Citizen Portal (a separate
+  // deployment) POSTs grievances there; this closes the loop back to the MP.
   useEffect(() => {
-    hydrate();
-  }, [hydrate]);
+    let alive = true;
+    const load = async () => {
+      try {
+        const res = await fetch("/api/citizen/tickets");
+        const data = await res.json();
+        if (alive && Array.isArray(data.tickets)) setTickets(data.tickets as CitizenTicket[]);
+      } catch {
+        /* offline / API unreachable — feed just shows the mock signals */
+      }
+    };
+    void load();
+    const id = setInterval(load, 20_000);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
+  }, []);
 
   useEffect(() => {
     const t = setInterval(() => setTick((n) => n + 1), 22_000);
     return () => clearInterval(t);
   }, []);
 
-  // Citizen-portal reports (same-origin) surface here as portal signals — the
-  // grievance loop closing back to the MP. Production: Gemini auto-clusters them.
+  // Citizen reports surface here as portal signals — the grievance loop closing
+  // back to the MP. Production: Gemini auto-clusters them into the signal graph.
   const citizenItems =
     sourceFilter === "all" || sourceFilter === "portal"
       ? tickets.slice(0, 3).map((tk) => ({

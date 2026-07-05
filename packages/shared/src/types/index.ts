@@ -8,5 +8,6 @@ export * from "./action";
 export * from "./constituency";
 export * from "./user";
 export * from "./bigquery";
+export * from "./citizen";
 export * from "./ranking";
 export * from "./mplads";

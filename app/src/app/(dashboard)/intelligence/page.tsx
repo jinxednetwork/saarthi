@@ -7,6 +7,7 @@ import { CrossRefsTile } from "@/components/intelligence/tiles/CrossRefsTile";
 import { ResponseBenchmark } from "@/components/intelligence/tiles/ResponseBenchmark";
 import { WardHotspots } from "@/components/intelligence/tiles/WardHotspots";
 import { WeeklyPulse } from "@/components/intelligence/tiles/WeeklyPulse";
+import { BriefingButton } from "@/components/pdf/BriefingButton";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { INTELLIGENCE_META } from "@/lib/intelligence-data";
 
@@ -28,10 +29,13 @@ export default function IntelligencePage() {
           titleKey="pageHeader.intelligence.title"
           subtitle={INTELLIGENCE_META.subtitle}
           right={
-            <span className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex">
-              <span className="h-[5px] w-[5px] animate-livePulse rounded-full bg-success" />
-              {INTELLIGENCE_META.modelLine}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="hidden items-center gap-1.5 text-xs text-muted-foreground lg:flex">
+                <span className="h-[5px] w-[5px] animate-livePulse rounded-full bg-success" />
+                {INTELLIGENCE_META.modelLine}
+              </span>
+              <BriefingButton />
+            </div>
           }
         />
 

@@ -35,3 +35,6 @@ scratch/
 # Generated demo outputs (PDF/PPTX/DOCX)
 data/generated/
 .impeccable/
+
+# Local PDF download test folder
+Testing/

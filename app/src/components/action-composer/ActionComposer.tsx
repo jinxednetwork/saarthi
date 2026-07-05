@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Globe, Lock, Send } from "lucide-react";
+import { CheckCircle2, Download, Globe, Loader2, Lock, Send } from "lucide-react";
 import { toast } from "sonner";
+import { downloadMpladsLetter } from "@/lib/pdf/generate";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,6 +56,7 @@ export function ActionComposer() {
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [body, setBody] = useState("");
+  const [pdfBusy, setPdfBusy] = useState(false);
 
   const isSent = cluster != null && dispatched.some((d) => d.id === cluster.id);
   const refNo = cluster ? letterRef(cluster.id) : "";
@@ -87,6 +89,44 @@ export function ActionComposer() {
     toast.success("Letter dispatched via NIC secure channel", {
       description: `Ref ${refNo} · District Magistrate, New Delhi District`,
     });
+  };
+
+  const onDownloadPdf = async () => {
+    if (!cluster) return;
+    setPdfBusy(true);
+    try {
+      // Everything below the closing goes to the signature block on letterhead.
+      const idx = body.indexOf("With regards");
+      const main = (idx >= 0 ? body.slice(0, idx) : body).trim();
+      const bodyParas = main
+        .split(/\n{2,}/)
+        .map((p) => p.replace(/\s*\n\s*/g, " ").trim())
+        .filter(Boolean);
+      await downloadMpladsLetter({
+        refNo,
+        dateStr: new Date().toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        recipientName: "The District Magistrate, New Delhi District",
+        recipientLines: ["Delhi Secretariat, IP Estate", "New Delhi – 110002"],
+        subject: `MPLADS Recommendation — ${cluster.title}`,
+        bodyParas,
+        mpName: "Bansuri Swaraj",
+        constituency: "New Delhi Lok Sabha",
+        annexures: [
+          `Evidence bundle (${cluster.submission_count} citizen signals)`,
+          "Public-data cross-reference extracts",
+          `Geo-tagged media (${cluster.ui.media?.length ?? 0})`,
+        ],
+      });
+      toast.success("Letter PDF downloaded", { description: refNo });
+    } catch {
+      toast.error("Could not generate the PDF.");
+    } finally {
+      setPdfBusy(false);
+    }
   };
 
   return (
@@ -235,9 +275,15 @@ export function ActionComposer() {
                   <Button
                     variant="outline"
                     className="rounded-full"
-                    onClick={() => toast("Draft saved", { description: refNo })}
+                    onClick={onDownloadPdf}
+                    disabled={pdfBusy}
                   >
-                    Save draft
+                    {pdfBusy ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Download className="h-3.5 w-3.5" />
+                    )}
+                    Download PDF
                   </Button>
                   <Button className="rounded-full" onClick={() => setConfirmOpen(true)}>
                     <Send className="h-3.5 w-3.5" />

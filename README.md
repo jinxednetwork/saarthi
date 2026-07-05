@@ -39,6 +39,32 @@ Claude Code: [`CLAUDE.md`](./CLAUDE.md).
 | `scripts` | `@saarthi/scripts` | Seed / demo-data generation. |
 | `data` | — | Constituency geo, MPLADS rules, public seed, schemas. |
 
+## What's built (dashboard)
+
+The `app` dashboard is a working demo of the full loop — it runs offline with mock
+AI and seed data, and lights up real Gemini when a key is present.
+
+- **Command deck** — dual-theme glass over a live constituency map; priority queue,
+  signal sources, live feed, KPI snapshot as collapsible panels.
+- **Saarthi Assistant** — retrieval-augmented Q&A grounded in the same data the panels
+  show; every claim carries a resolvable citation. Real Gemini via a server-only route,
+  with a scripted brain as an identical-contract fallback.
+- **Proposals + head-to-head ranking** — MPs author their own works and rank competing
+  ones on a transparent §8.3 score (citizen demand + public-data severity + MPLADS
+  leverage + cost-effectiveness), decided side-by-side.
+- **Public-data demand engine** — curated Census / UDISE+ / CPCB / DJB ward figures with
+  provenance, turned into cited demand severity per ward and need.
+- **Feedback consolidation** — citizen signals rolled into themes with one-click "draft a
+  proposal".
+- **Citizen Portal** (`/report`) — mobile-first grievance intake (mock OTP → photo/voice/
+  text → ticket + status), the WhatsApp fallback; reports surface in the MP's live feed.
+- **Documents** — scan/upload a letter → Gemini parses summary/entities/₹-values/chunks →
+  searchable library whose chunks feed the Assistant.
+- **Generated PDFs** — MPLADS recommendation letter on letterhead + Daily Briefing, both
+  real downloadable files.
+- **Inclusivity** — English + Hindi fully translated with a 22-scheduled-language picker
+  (honest fallback notice), a UX4G-style accessibility toolbar, and first-run onboarding.
+
 ## Getting started
 
 ### Prerequisites
@@ -61,6 +87,20 @@ pnpm dev:worker                   # pipeline worker
 pipeline and dashboard run locally with deterministic mock AI responses and seed data —
 no GCP project, no API keys.
 
+### Optional: real Gemini AI
+
+The dashboard runs fully without a key (scripted assistant, mock document parsing). To
+activate real Gemini for the Assistant and document parsing, add a key to
+`app/.env.local` (gitignored, server-only — never exposed to the client, per §14):
+
+```bash
+# app/.env.local  — free key at https://aistudio.google.com/apikey
+GOOGLE_GENERATIVE_AI_API_KEY=your_key_here
+```
+
+Restart the dev server; the Assistant's "Demo Brain" badge becomes live Gemini. PDF
+generation and everything else need no key.
+
 ### With Firebase emulators
 
 ```bash
@@ -77,5 +117,7 @@ pnpm test
 
 ## Status
 
-🚧 Early scaffold. See `CLAUDE.md` → "Current state" and `ENGINEERING_HANDOFF.md` §12
-for the phase plan and never-cut list.
+The `app` dashboard demo is feature-complete for Track 1 (see **What's built** above);
+it runs offline and activates real Gemini with a key. The `worker` / `functions` cloud
+pipeline is scaffolded against the shared data model. See `docs/FEATURES_ROUND3_PLAN.md`
+for the delivered plan and `ENGINEERING_HANDOFF.md` §12 for the never-cut list.

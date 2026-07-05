@@ -126,6 +126,77 @@
     color-scheme: dark;
   }
 
+  /* ==========================================================================
+     Accessibility engine — driven by data-a11y-* attributes + --a11y-zoom on
+     <html> (a11y-store + pre-hydration script). High contrast layers over the
+     active theme; text-size zooms the shell but not the map.
+     ========================================================================== */
+  :root {
+    --a11y-zoom: 1;
+  }
+
+  /* Text size: zoom the whole app, counter-zoom the map so its pixel geometry
+     is untouched (the codebase is px-heavy, so zoom is the honest lever). */
+  body {
+    zoom: var(--a11y-zoom, 1);
+  }
+  .leaflet-container {
+    zoom: calc(1 / var(--a11y-zoom, 1));
+    width: calc(var(--a11y-zoom, 1) * 100%);
+    height: calc(var(--a11y-zoom, 1) * 100%);
+  }
+
+  /* Text spacing */
+  html[data-a11y-spacing="wide"] body {
+    letter-spacing: 0.055em;
+    word-spacing: 0.14em;
+  }
+
+  /* Line height */
+  html[data-a11y-line="tall"] body {
+    line-height: 1.85;
+  }
+  html[data-a11y-line="tall"] p,
+  html[data-a11y-line="tall"] li,
+  html[data-a11y-line="tall"] label {
+    line-height: 1.85 !important;
+  }
+
+  /* High contrast — override ~6 token channels for both themes (no 3rd theme) */
+  html[data-a11y-contrast="high"] {
+    --ink: 0 0% 0%;
+    --body-text: 0 0% 12%;
+    --muted-fg: 0 0% 20%;
+    --faint: 0 0% 24%;
+    --line: 0 0% 42%;
+    --line-dark: 0 0% 30%;
+  }
+  html.dark[data-a11y-contrast="high"] {
+    --ink: 0 0% 100%;
+    --body-text: 0 0% 92%;
+    --muted-fg: 0 0% 84%;
+    --faint: 0 0% 78%;
+    --line: 0 0% 68%;
+    --line-dark: 0 0% 80%;
+  }
+  html[data-a11y-contrast="high"] :focus-visible {
+    outline-width: 3px;
+  }
+
+  /* Hide images — decorative + informational imagery off */
+  html[data-a11y-hide-images="true"] img,
+  html[data-a11y-hide-images="true"] .leaflet-tile {
+    visibility: hidden;
+  }
+
+  /* Big cursor — a scaled arrow (black fill, white outline: visible both themes) */
+  html[data-a11y-cursor="big"],
+  html[data-a11y-cursor="big"] * {
+    cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='40'%20viewBox='0%200%2040%2040'%3E%3Cpath%20d='M6%204L6%2034L14%2026L19%2038L24%2036L19%2024L30%2024Z'%20fill='%23000'%20stroke='%23fff'%20stroke-width='2.5'%20stroke-linejoin='round'/%3E%3C/svg%3E")
+        4 4,
+      auto;
+  }
+
   body {
     background: hsl(var(--canvas));
     color: hsl(var(--ink));

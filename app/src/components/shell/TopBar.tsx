@@ -17,6 +17,7 @@ import {
   Sparkles,
   UserRound,
 } from "lucide-react";
+import { AccessibilityToolbar } from "@/components/a11y/AccessibilityToolbar";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { BrandBars } from "@/components/icons";
@@ -122,6 +123,7 @@ export function TopBar() {
       </span>
 
       <div className="glass pointer-events-auto flex h-9 items-center gap-0.5 rounded-full px-1">
+        <AccessibilityToolbar />
         <LanguagePicker />
         <ThemeToggle />
         <DropdownMenu>

@@ -7,6 +7,7 @@ import { CrossRefsTile } from "@/components/intelligence/tiles/CrossRefsTile";
 import { ResponseBenchmark } from "@/components/intelligence/tiles/ResponseBenchmark";
 import { WardHotspots } from "@/components/intelligence/tiles/WardHotspots";
 import { WeeklyPulse } from "@/components/intelligence/tiles/WeeklyPulse";
+import { LiveIntake } from "@/components/intelligence/LiveIntake";
 import { BriefingButton } from "@/components/pdf/BriefingButton";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { INTELLIGENCE_META } from "@/lib/intelligence-data";
@@ -41,6 +42,7 @@ export default function IntelligencePage() {
 
         <div className="flex flex-col gap-4">
           <HeroInsights />
+          <LiveIntake />
           <OutlookChart />
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

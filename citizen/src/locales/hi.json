@@ -67,5 +67,7 @@
   "a11y.stopReading": "पढ़ना रोकें",
   "a11y.on": "चालू",
   "a11y.off": "बंद",
-  "a11y.close": "बंद करें"
+  "a11y.close": "बंद करें",
+  "lang.machine": "मशीन-अनुवादित",
+  "lang.machineNotice": "मशीन-सहायित अनुवाद ({language}) — सुधार आमंत्रित हैं"
 }

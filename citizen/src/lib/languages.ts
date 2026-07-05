@@ -9,15 +9,17 @@ export interface LanguageMeta {
   english: string;
   dir: "ltr" | "rtl";
   translated: boolean;
+  /** Machine-translated (Gemini), not hand-verified. */
+  machine?: boolean;
 }
 
 export const LANGUAGES: LanguageMeta[] = [
   { code: "en", endonym: "English", english: "English", dir: "ltr", translated: true },
   { code: "hi", endonym: "हिन्दी", english: "Hindi", dir: "ltr", translated: true },
-  { code: "bn", endonym: "বাংলা", english: "Bengali", dir: "ltr", translated: false },
+  { code: "bn", endonym: "বাংলা", english: "Bengali", dir: "ltr", translated: true, machine: true },
   { code: "mr", endonym: "मराठी", english: "Marathi", dir: "ltr", translated: false },
   { code: "te", endonym: "తెలుగు", english: "Telugu", dir: "ltr", translated: false },
-  { code: "ta", endonym: "தமிழ்", english: "Tamil", dir: "ltr", translated: false },
+  { code: "ta", endonym: "தமிழ்", english: "Tamil", dir: "ltr", translated: true, machine: true },
   { code: "gu", endonym: "ગુજરાતી", english: "Gujarati", dir: "ltr", translated: false },
   { code: "ur", endonym: "اردو", english: "Urdu", dir: "rtl", translated: false },
   { code: "kn", endonym: "ಕನ್ನಡ", english: "Kannada", dir: "ltr", translated: false },

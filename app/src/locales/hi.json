@@ -2,7 +2,6 @@
   "app.name": "सारथि",
   "app.name.hi": "सारथि",
   "app.tagline": "आपके निर्वाचन क्षेत्र के लिए कार्यकारी बुद्धिमत्ता",
-
   "nav.dashboard": "डैशबोर्ड",
   "nav.intelligence": "इंटेलिजेंस",
   "nav.proposals": "प्रस्ताव",
@@ -11,11 +10,9 @@
   "nav.actions": "कार्रवाई",
   "nav.documents": "दस्तावेज़",
   "nav.soon": "जल्द ही",
-
   "sidebar.askSaarthi": "सारथि से पूछें",
   "sidebar.expand": "साइडबार खोलें",
   "sidebar.collapse": "साइडबार बंद करें",
-
   "topbar.constituency": "निर्वाचन क्षेत्र",
   "topbar.search": "खोजें",
   "topbar.synced": "समन्वयित {time} · सप्ताह {week}",
@@ -24,7 +21,6 @@
   "topbar.settings": "सेटिंग्स",
   "topbar.signout": "साइन आउट",
   "topbar.openNav": "नेविगेशन खोलें",
-
   "lang.picker.title": "अपनी भाषा चुनें",
   "lang.picker.subtitle": "22 अनुसूचित भाषाएँ · अंग्रेज़ी और हिन्दी पूर्ण रूप से अनूदित",
   "lang.fallbackNotice": "इंटरफ़ेस अंग्रेज़ी में दिखाया गया — {language} अनुवाद प्रगति पर है",
@@ -57,7 +53,6 @@
   "onboarding.a11y.body": "जो आपको पढ़ने और काम करने में मदद करे उसे चालू करें। यहाँ कुछ भी स्थायी नहीं है।",
   "onboarding.a11y.largerText": "बड़ा पाठ",
   "onboarding.a11y.more": "पूरा सुगम्यता टूलबार शीर्ष पट्टी में है, हमेशा एक टैप दूर।",
-
   "assistant.title": "सारथि सहायक",
   "assistant.demoBrain": "डेमो ब्रेन",
   "assistant.live": "लाइव",
@@ -68,7 +63,6 @@
   "assistant.cited": "स्रोत",
   "assistant.dockPrompt": "अपने निर्वाचन क्षेत्र के बारे में सारथि से पूछें…",
   "assistant.welcome": "नमस्ते। मैं इस निर्वाचन क्षेत्र के लाइव संकेतों, बजट और कार्रवाइयों से उत्तर देता हूँ — हर दावा स्रोत सहित।",
-
   "pageHeader.intelligence.title": "इंटेलिजेंस",
   "pageHeader.proposals.title": "प्रस्ताव",
   "pageHeader.proposals.subtitle": "आपके कार्य, नागरिक माँग और सार्वजनिक डेटा पर आमने-सामने क्रमबद्ध",
@@ -79,18 +73,15 @@
   "pageHeader.live.title": "लाइव फ़ीड",
   "pageHeader.documents.title": "दस्तावेज़",
   "pageHeader.documents.subtitle": "पत्र और रिपोर्ट स्कैन करें · AI द्वारा विश्लेषित, सहायक द्वारा खोजने योग्य",
-
   "urgency.low": "कम",
   "urgency.medium": "मध्यम",
   "urgency.high": "उच्च",
   "urgency.critical": "गंभीर",
-
   "status.draft": "मसौदा",
   "status.sent": "भेजा गया",
   "status.responded": "उत्तर मिला",
   "status.completed": "पूर्ण",
   "status.inProgress": "प्रगति पर",
-
   "metrics.mpladsUtilised": "एमपीलैड्स उपयोग",
   "metrics.openClusters": "खुले क्लस्टर",
   "metrics.scAllocation": "अनुसूचित जाति आवंटन",
@@ -99,8 +90,9 @@
   "panel.priorityQueue": "प्राथमिकता क्रिया सूची",
   "panel.liveSignals": "लाइव संकेत",
   "panel.signalSources": "संकेत स्रोत",
-
   "splash.welcome": "स्वागत है,",
   "splash.role": "संसद सदस्य · नई दिल्ली लोक सभा",
-  "splash.preparing": "आपका डैशबोर्ड तैयार हो रहा है · {week} · छोड़ने के लिए क्लिक करें"
+  "splash.preparing": "आपका डैशबोर्ड तैयार हो रहा है · {week} · छोड़ने के लिए क्लिक करें",
+  "lang.machine": "मशीन-अनुवादित",
+  "lang.machineNotice": "मशीन-सहायित अनुवाद ({language}) — सुधार आमंत्रित हैं"
 }

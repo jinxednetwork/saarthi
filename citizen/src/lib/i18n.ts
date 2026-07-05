@@ -1,5 +1,7 @@
 import en from "@/locales/en.json";
 import hi from "@/locales/hi.json";
+import bn from "@/locales/bn.json";
+import ta from "@/locales/ta.json";
 import { DEFAULT_LANG } from "./languages";
 
 /**
@@ -9,7 +11,7 @@ import { DEFAULT_LANG } from "./languages";
  */
 export type Dictionary = Record<string, string>;
 
-const DICTIONARIES: Record<string, Dictionary> = { en, hi };
+const DICTIONARIES: Record<string, Dictionary> = { en, hi, bn, ta };
 
 export function translate(
   lang: string,

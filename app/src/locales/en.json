@@ -2,7 +2,6 @@
   "app.name": "Saarthi",
   "app.name.hi": "सारथि",
   "app.tagline": "Executive intelligence for your constituency",
-
   "nav.dashboard": "Dashboard",
   "nav.intelligence": "Intelligence",
   "nav.proposals": "Proposals",
@@ -11,11 +10,9 @@
   "nav.actions": "Actions",
   "nav.documents": "Documents",
   "nav.soon": "Soon",
-
   "sidebar.askSaarthi": "Ask Saarthi",
   "sidebar.expand": "Expand sidebar",
   "sidebar.collapse": "Collapse sidebar",
-
   "topbar.constituency": "Constituency",
   "topbar.search": "Search",
   "topbar.synced": "Synced {time} · Week {week}",
@@ -24,7 +21,6 @@
   "topbar.settings": "Settings",
   "topbar.signout": "Sign out",
   "topbar.openNav": "Open navigation",
-
   "lang.picker.title": "Choose your language",
   "lang.picker.subtitle": "22 scheduled languages · English & Hindi are fully translated",
   "lang.fallbackNotice": "Interface shown in English — {language} translation in progress",
@@ -57,7 +53,6 @@
   "onboarding.a11y.body": "Turn on what helps you read and work. Nothing here is permanent.",
   "onboarding.a11y.largerText": "Larger text",
   "onboarding.a11y.more": "The full accessibility toolbar lives in the top bar, always one tap away.",
-
   "assistant.title": "Saarthi Assistant",
   "assistant.demoBrain": "demo brain",
   "assistant.live": "live",
@@ -68,7 +63,6 @@
   "assistant.cited": "Cited",
   "assistant.dockPrompt": "Ask Saarthi about your constituency…",
   "assistant.welcome": "Namaste. I answer from this constituency's live signals, budget, and actions — every claim cited.",
-
   "pageHeader.intelligence.title": "Intelligence",
   "pageHeader.proposals.title": "Proposals",
   "pageHeader.proposals.subtitle": "Your works, ranked head-to-head on citizen demand + public data",
@@ -79,18 +73,15 @@
   "pageHeader.live.title": "Live feed",
   "pageHeader.documents.title": "Documents",
   "pageHeader.documents.subtitle": "Scan letters & reports · parsed by AI, queryable by the Assistant",
-
   "urgency.low": "Low",
   "urgency.medium": "Medium",
   "urgency.high": "High",
   "urgency.critical": "Critical",
-
   "status.draft": "Draft",
   "status.sent": "Sent",
   "status.responded": "Responded",
   "status.completed": "Completed",
   "status.inProgress": "In progress",
-
   "metrics.mpladsUtilised": "MPLADS utilised",
   "metrics.openClusters": "Open clusters",
   "metrics.scAllocation": "SC allocation",
@@ -99,8 +90,9 @@
   "panel.priorityQueue": "Priority action queue",
   "panel.liveSignals": "Live signals",
   "panel.signalSources": "Signal sources",
-
   "splash.welcome": "Welcome,",
   "splash.role": "Member of Parliament · New Delhi Lok Sabha",
-  "splash.preparing": "Preparing your dashboard · {week} · click to skip"
+  "splash.preparing": "Preparing your dashboard · {week} · click to skip",
+  "lang.machine": "Machine-assisted",
+  "lang.machineNotice": "Machine-assisted translation ({language}) — corrections welcome"
 }

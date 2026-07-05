@@ -6,7 +6,7 @@ import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { langMeta } from "@/lib/languages";
 
 export function PortalHeader() {
-  const { t, lang, translated } = useI18n();
+  const { t, lang, translated, machine } = useI18n();
 
   return (
     <>
@@ -23,9 +23,11 @@ export function PortalHeader() {
           </div>
         </div>
       </header>
-      {!translated && (
+      {(machine || !translated) && (
         <div className="border-b border-line/60 bg-chip/60 px-4 py-1.5 text-center text-[11px] text-muted-foreground">
-          {t("lang.fallbackNotice", { language: langMeta(lang).english })}
+          {machine
+            ? t("lang.machineNotice", { language: langMeta(lang).english })
+            : t("lang.fallbackNotice", { language: langMeta(lang).english })}
         </div>
       )}
     </>

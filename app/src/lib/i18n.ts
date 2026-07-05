@@ -1,5 +1,16 @@
 import en from "@/locales/en.json";
 import hi from "@/locales/hi.json";
+import bn from "@/locales/bn.json";
+import gu from "@/locales/gu.json";
+import kn from "@/locales/kn.json";
+import ks from "@/locales/ks.json";
+import mai from "@/locales/mai.json";
+import mr from "@/locales/mr.json";
+import or from "@/locales/or.json";
+import sat from "@/locales/sat.json";
+import ta from "@/locales/ta.json";
+import te from "@/locales/te.json";
+import ur from "@/locales/ur.json";
 import { DEFAULT_LANG, langMeta } from "./languages";
 
 /**
@@ -11,10 +22,7 @@ import { DEFAULT_LANG, langMeta } from "./languages";
 export type Dictionary = Record<string, string>;
 export type MessageKey = keyof typeof en;
 
-const DICTIONARIES: Record<string, Dictionary> = {
-  en,
-  hi,
-};
+const DICTIONARIES: Record<string, Dictionary> = { en, hi, bn, gu, kn, ks, mai, mr, or, sat, ta, te, ur };
 
 export { DEFAULT_LANG } from "./languages";
 

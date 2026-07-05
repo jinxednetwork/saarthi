@@ -10,6 +10,7 @@ interface I18nContextValue {
   lang: string;
   dir: "ltr" | "rtl";
   translated: boolean;
+  machine: boolean;
   setLang: (lang: string) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
 }
@@ -43,7 +44,16 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <Ctx.Provider value={{ lang, dir: langDir(lang), translated: langMeta(lang).translated, setLang, t }}>
+    <Ctx.Provider
+      value={{
+        lang,
+        dir: langDir(lang),
+        translated: langMeta(lang).translated,
+        machine: langMeta(lang).machine ?? false,
+        setLang,
+        t,
+      }}
+    >
       {children}
     </Ctx.Provider>
   );

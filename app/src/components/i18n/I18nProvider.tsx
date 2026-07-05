@@ -9,8 +9,10 @@ const STORAGE_KEY = "saarthi-lang";
 interface I18nContextValue {
   lang: string;
   dir: "ltr" | "rtl";
-  /** True when the active language has a hand-verified dictionary. */
+  /** True when the active language has a dictionary (hand-verified or machine). */
   translated: boolean;
+  /** True when the active dictionary is machine-translated (not hand-verified). */
+  machine: boolean;
   setLang: (lang: string) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
 }
@@ -50,7 +52,14 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <I18nContext.Provider
-      value={{ lang, dir: langDir(lang), translated: langMeta(lang).translated, setLang, t }}
+      value={{
+        lang,
+        dir: langDir(lang),
+        translated: langMeta(lang).translated,
+        machine: langMeta(lang).machine ?? false,
+        setLang,
+        t,
+      }}
     >
       {children}
     </I18nContext.Provider>

@@ -53,7 +53,7 @@ const MOBILE_NAV = [
  */
 export function TopBar() {
   const pathname = usePathname();
-  const { t, lang, translated } = useI18n();
+  const { t, lang, translated, machine } = useI18n();
 
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 flex h-16 items-center gap-3 px-4">
@@ -109,10 +109,12 @@ export function TopBar() {
         <span>{t("topbar.search")}</span>
       </button>
 
-      {/* Fallback notice — active language not yet fully translated */}
-      {!translated && (
+      {/* Language notice — machine-assisted, or English fallback when untranslated */}
+      {(machine || !translated) && (
         <span className="glass pointer-events-auto hidden h-9 items-center rounded-full px-3 text-[11px] text-muted-foreground lg:inline-flex">
-          {t("lang.fallbackNotice", { language: langMeta(lang).english })}
+          {machine
+            ? t("lang.machineNotice", { language: langMeta(lang).english })
+            : t("lang.fallbackNotice", { language: langMeta(lang).english })}
         </span>
       )}
 

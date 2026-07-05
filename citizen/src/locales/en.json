@@ -67,5 +67,7 @@
   "a11y.stopReading": "Stop reading",
   "a11y.on": "On",
   "a11y.off": "Off",
-  "a11y.close": "Close"
+  "a11y.close": "Close",
+  "lang.machine": "Machine-assisted",
+  "lang.machineNotice": "Machine-assisted translation ({language}) — corrections welcome"
 }

@@ -58,11 +58,15 @@ export function LanguagePicker() {
                   >
                     <span className="text-[14px] font-medium text-ink">{l.endonym}</span>
                     <span className="text-[11px] text-muted-foreground">{l.english}</span>
-                    {!l.translated && (
+                    {l.machine ? (
+                      <span className="mt-1 text-[9.5px] uppercase tracking-wide text-primary/70">
+                        {t("lang.machine")}
+                      </span>
+                    ) : !l.translated ? (
                       <span className="mt-1 text-[9.5px] uppercase tracking-wide text-faint">
                         {t("lang.inProgress")}
                       </span>
-                    )}
+                    ) : null}
                     {active && <Check className="absolute end-2 top-2 h-3.5 w-3.5 text-primary" />}
                   </button>
                 );

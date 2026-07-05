@@ -57,7 +57,10 @@ export function LiveFeed() {
           source: "portal" as const,
           sourceName: "Citizen portal",
           timeMin: Math.max(0, Math.round((Date.now() - new Date(tk.createdAt).getTime()) / 60000)),
-          snippet: tk.description,
+          snippet:
+            tk.description +
+            (tk.photoInsight ? ` · 📷 AI: ${tk.photoInsight}` : "") +
+            (tk.voiceTranscript ? ` · 🎙 “${tk.voiceTranscript}”` : ""),
           link: `citizen report · ${tk.id}`,
           clusterId: undefined as string | undefined,
           hi: false,

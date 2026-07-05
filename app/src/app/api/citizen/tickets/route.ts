@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { CITIZEN_CATEGORIES, NEW_DELHI_WARDS, type SubmitTicketInput } from "@saarthi/shared";
+import { describePhoto, transcribeAudio } from "@/lib/ai/media";
 import { createTicket, listTickets } from "@/lib/citizen-tickets-store";
 
 export const runtime = "nodejs";
@@ -45,16 +46,26 @@ export async function POST(request: Request) {
     );
   }
 
-  const ticket = await createTicket({
-    phone: body.phone ?? "",
-    category: cat.category,
-    categoryLabel: cat.label,
-    wardId: ward.id,
-    wardName: ward.name,
-    description,
-    photoCount: Math.max(0, Math.min(8, Number(body.photoCount) || 0)),
-    hasVoice: Boolean(body.hasVoice),
-  });
+  // Gemini enriches the attached media (R6b/R6c) — vision on the photo, audio
+  // transcription on the voice note. Non-fatal: the ticket saves regardless.
+  const [photoInsight, voiceTranscript] = await Promise.all([
+    body.photoDataUrl ? describePhoto(body.photoDataUrl).catch(() => undefined) : undefined,
+    body.voiceDataUrl ? transcribeAudio(body.voiceDataUrl).catch(() => undefined) : undefined,
+  ]);
+
+  const ticket = await createTicket(
+    {
+      phone: body.phone ?? "",
+      category: cat.category,
+      categoryLabel: cat.label,
+      wardId: ward.id,
+      wardName: ward.name,
+      description,
+      photoCount: Math.max(0, Math.min(8, Number(body.photoCount) || 0)),
+      hasVoice: Boolean(body.hasVoice),
+    },
+    { photoInsight, voiceTranscript },
+  );
 
   return NextResponse.json({ ticket }, { status: 201, headers: CORS });
 }

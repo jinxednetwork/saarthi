@@ -18,6 +18,10 @@ export interface CitizenTicket {
   description: string;
   photoCount: number;
   hasVoice: boolean;
+  /** Gemini Vision description of the first attached photo (R6c). */
+  photoInsight?: string;
+  /** Gemini transcription of the attached voice note (R6b). */
+  voiceTranscript?: string;
   status: TicketStatus;
   /** ISO timestamp. */
   createdAt: string;
@@ -32,6 +36,10 @@ export interface SubmitTicketInput {
   description: string;
   photoCount: number;
   hasVoice: boolean;
+  /** Data-URL of the first photo (downscaled client-side) for Gemini Vision. */
+  photoDataUrl?: string;
+  /** Data-URL of the recorded voice note for Gemini transcription. */
+  voiceDataUrl?: string;
 }
 
 export interface CitizenCategoryOption {

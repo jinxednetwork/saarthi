@@ -68,7 +68,10 @@ export async function listTickets(): Promise<CitizenTicket[]> {
   return [...all()].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-export async function createTicket(input: SubmitTicketInput): Promise<CitizenTicket> {
+export async function createTicket(
+  input: SubmitTicketInput,
+  ai?: { photoInsight?: string; voiceTranscript?: string },
+): Promise<CitizenTicket> {
   const ticket: CitizenTicket = {
     id: ticketId(),
     phoneMasked: maskPhone(input.phone),
@@ -79,6 +82,8 @@ export async function createTicket(input: SubmitTicketInput): Promise<CitizenTic
     description: input.description,
     photoCount: input.photoCount,
     hasVoice: input.hasVoice,
+    photoInsight: ai?.photoInsight,
+    voiceTranscript: ai?.voiceTranscript,
     status: "received",
     createdAt: new Date().toISOString(),
   };

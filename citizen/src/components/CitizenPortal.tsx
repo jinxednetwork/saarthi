@@ -24,6 +24,36 @@ import { useI18n } from "@/components/i18n/I18nProvider";
 import { findTicket, submitTicket } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
+/** Downscale a photo to a small JPEG data-URL so Gemini Vision gets it without a huge upload. */
+function downscaleImage(file: File, max = 1024): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        reject(new Error("no canvas"));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", 0.8));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("image load failed"));
+    };
+    img.src = url;
+  });
+}
+
 const FIELD =
   "w-full rounded-xl border border-input bg-panel px-4 py-3 text-[15px] text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring";
 const PRIMARY =
@@ -47,6 +77,7 @@ export function CitizenPortal() {
   const [wardId, setWardId] = useState(NEW_DELHI_WARDS[0]!.id);
   const [description, setDescription] = useState("");
   const [photoNames, setPhotoNames] = useState<string[]>([]);
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>();
   const [hasVoice, setHasVoice] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -74,8 +105,13 @@ export function CitizenPortal() {
   }
 
   function onPhotos(e: React.ChangeEvent<HTMLInputElement>) {
-    const names = Array.from(e.target.files ?? []).map((f) => f.name);
-    if (names.length) setPhotoNames((prev) => [...prev, ...names].slice(0, 4));
+    const files = Array.from(e.target.files ?? []);
+    if (files.length) setPhotoNames((prev) => [...prev, ...files.map((f) => f.name)].slice(0, 4));
+    // Capture + downscale the first photo for Gemini Vision.
+    const first = files.find((f) => f.type.startsWith("image/"));
+    if (first && !photoDataUrl) {
+      downscaleImage(first).then(setPhotoDataUrl).catch(() => setPhotoDataUrl(undefined));
+    }
   }
 
   async function fileGrievance() {
@@ -100,6 +136,7 @@ export function CitizenPortal() {
         description: description.trim(),
         photoCount: photoNames.length,
         hasVoice,
+        photoDataUrl,
       });
       setTicket(created);
       setStep("done");
@@ -118,6 +155,7 @@ export function CitizenPortal() {
     setWardId(NEW_DELHI_WARDS[0]!.id);
     setDescription("");
     setPhotoNames([]);
+    setPhotoDataUrl(undefined);
     setHasVoice(false);
     setTicket(null);
   }
@@ -328,6 +366,22 @@ export function CitizenPortal() {
             <p className="mt-1 text-[12.5px] text-muted-foreground">
               {ticket.categoryLabel} · {ticket.wardName}
             </p>
+            {(ticket.photoInsight || ticket.voiceTranscript) && (
+              <div className="mt-3 flex flex-col gap-1.5 rounded-lg border border-line/50 bg-chip/40 px-3 py-2 text-[11.5px] text-muted-foreground">
+                {ticket.photoInsight && (
+                  <p>
+                    <span className="font-medium text-ink">📷 AI read your photo: </span>
+                    {ticket.photoInsight}
+                  </p>
+                )}
+                {ticket.voiceTranscript && (
+                  <p>
+                    <span className="font-medium text-ink">🎙 Transcript: </span>
+                    {ticket.voiceTranscript}
+                  </p>
+                )}
+              </div>
+            )}
             <div className="mt-4 border-t border-line/60 pt-4">
               <StatusTimeline status={ticket.status} t={t} />
             </div>

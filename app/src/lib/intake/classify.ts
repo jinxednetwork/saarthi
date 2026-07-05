@@ -93,7 +93,15 @@ export async function enrich(posts: RawPost[]): Promise<EnrichedSignal[]> {
     });
     const items = object.items;
     const summaries = posts.map((p, i) => items[i]?.summary ?? p.title);
-    const { embeddings } = await embedMany({ model: embeddingModel(), values: summaries });
+
+    // Embeddings are for future clustering — a failure here must NOT discard the
+    // Gemini classification we just got.
+    let embeddings: number[][] = [];
+    try {
+      embeddings = (await embedMany({ model: embeddingModel(), values: summaries })).embeddings;
+    } catch (embedErr) {
+      console.error("[intake/classify] embedding failed (keeping classification):", embedErr);
+    }
 
     return posts.map((p, i) => {
       const it = items[i];

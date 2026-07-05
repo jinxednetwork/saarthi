@@ -38,3 +38,6 @@ data/generated/
 
 # Local PDF download test folder
 Testing/
+
+# Next.js generated types
+next-env.d.ts

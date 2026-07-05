@@ -33,7 +33,8 @@ Claude Code: [`CLAUDE.md`](./CLAUDE.md).
 | Package | Name | Role |
 | --- | --- | --- |
 | `packages/shared` | `@saarthi/shared` | Data model (Firestore + BigQuery types). Single source of truth. |
-| `app` | `@saarthi/app` | Next.js 14 dashboard (frontend + BFF `/api`). |
+| `app` | `@saarthi/app` | Next.js 14 dashboard (frontend + BFF `/api`, incl. the shared tickets API). |
+| `citizen` | `@saarthi/citizen` | Standalone citizen grievance portal (separate deployable). |
 | `worker` | `@saarthi/worker` | Cloud Run ML pipeline. |
 | `functions` | `@saarthi/functions` | Firebase Cloud Functions (intake webhooks). |
 | `scripts` | `@saarthi/scripts` | Seed / demo-data generation. |
@@ -56,8 +57,10 @@ AI and seed data, and lights up real Gemini when a key is present.
   provenance, turned into cited demand severity per ward and need.
 - **Feedback consolidation** — citizen signals rolled into themes with one-click "draft a
   proposal".
-- **Citizen Portal** (`/report`) — mobile-first grievance intake (mock OTP → photo/voice/
-  text → ticket + status), the WhatsApp fallback; reports surface in the MP's live feed.
+- **Citizen Portal** — a **separate, standalone app** (`citizen/`, its own deployable link):
+  mobile-first grievance intake (mock OTP → photo/voice/text → ticket + status), the WhatsApp
+  fallback. It POSTs to a shared tickets API (`app` `/api/citizen/tickets`, CORS-open,
+  Firestore-shaped store); reports surface live in the MP dashboard's feed.
 - **Documents** — scan/upload a letter → Gemini parses summary/entities/₹-values/chunks →
   searchable library whose chunks feed the Assistant.
 - **Generated PDFs** — MPLADS recommendation letter on letterhead + Daily Briefing, both
@@ -86,6 +89,21 @@ pnpm dev:worker                   # pipeline worker
 `SAARTHI_MODE=emulator` and `SAARTHI_MOCK_AI=true` (the defaults) make the entire
 pipeline and dashboard run locally with deterministic mock AI responses and seed data —
 no GCP project, no API keys.
+
+### Citizen Portal (separate app)
+
+The portal is a standalone app so it can be hosted on its own link; it talks to the
+dashboard's shared tickets API.
+
+```bash
+pnpm dev:app                      # dashboard + API on http://localhost:3000
+pnpm dev:citizen                  # citizen portal on http://localhost:3100
+```
+
+The portal reads `NEXT_PUBLIC_SAARTHI_API_URL` (default `http://localhost:3000`) to reach
+the API — set it to the dashboard/API origin in production. Submissions appear live in the
+MP dashboard's feed (in-memory Firestore-shaped store for the demo; swap to Firestore for
+persistence across instances).
 
 ### Optional: real Gemini AI
 

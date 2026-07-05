@@ -1,6 +1,7 @@
 packages:
   - "packages/*"
   - "app"
+  - "citizen"
   - "worker"
   - "functions"
   - "scripts"

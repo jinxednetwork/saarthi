@@ -22,7 +22,8 @@ function maskPhone(phone: string): string {
 
 const minsAgo = (n: number) => new Date(Date.now() - n * 60_000).toISOString();
 
-let tickets: CitizenTicket[] = [
+function seed(): CitizenTicket[] {
+  return [
   {
     id: "NDL-2026-4821",
     phoneMasked: "••••••4471",
@@ -49,10 +50,22 @@ let tickets: CitizenTicket[] = [
     status: "received",
     createdAt: minsAgo(34),
   },
-];
+  ];
+}
+
+// Persist on globalThis so the store survives dev/HMR module recompiles (which
+// would otherwise reset it to seeds between the portal's POST and the
+// dashboard's GET). Production single-instance keeps it until restart; Firestore
+// replaces this entirely.
+const g = globalThis as unknown as { __saarthiTickets?: CitizenTicket[] };
+g.__saarthiTickets ??= seed();
+
+function all(): CitizenTicket[] {
+  return (g.__saarthiTickets ??= seed());
+}
 
 export async function listTickets(): Promise<CitizenTicket[]> {
-  return [...tickets].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return [...all()].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export async function createTicket(input: SubmitTicketInput): Promise<CitizenTicket> {
@@ -69,11 +82,11 @@ export async function createTicket(input: SubmitTicketInput): Promise<CitizenTic
     status: "received",
     createdAt: new Date().toISOString(),
   };
-  tickets = [ticket, ...tickets].slice(0, 200);
+  g.__saarthiTickets = [ticket, ...all()].slice(0, 200);
   return ticket;
 }
 
 export async function findTicket(id: string): Promise<CitizenTicket | undefined> {
   const norm = id.trim().toUpperCase();
-  return tickets.find((t) => t.id.toUpperCase() === norm);
+  return all().find((t) => t.id.toUpperCase() === norm);
 }

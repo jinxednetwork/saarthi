@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Saarthi light palette (public portal — light only). Mirrors the dashboard's
+   :root tokens so the citizen surface is unmistakably the same product. */
+@layer base {
+  :root {
+    --canvas: 43 24% 94%;
+    --surface: 0 0% 100%;
+    --chip: 40 40% 94%;
+    --panel: 40 53% 97%;
+    --ink: 226 36% 12%;
+    --body-text: 224 13% 33%;
+    --muted-fg: 222 10% 40%;
+    --faint: 41 8% 39%;
+    --line: 44 22% 86%;
+    --line-warm: 40 30% 86%;
+    --line-dark: 41 20% 75%;
+    --primary-brand: 214 67% 21%;
+    --primary-hover: 215 73% 16%;
+    --primary-foreground: 0 0% 100%;
+    --link: 210 93% 29%;
+    --saffron: 24 80% 42%;
+    --success: 143 57% 27%;
+    --urgency-critical: 8 68% 38%;
+    --urgency-high: 33 69% 42%;
+    --urgency-medium-text: 49 74% 31%;
+    --urgency-low-text: 222 10% 40%;
+    --input: 40 30% 86%;
+    --ring: 214 67% 21%;
+    --radius: 0.75rem;
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    background: hsl(var(--canvas));
+    color: hsl(var(--ink));
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :lang(hi),
+  .hi {
+    font-family: theme("fontFamily.devanagari");
+    line-height: 1.7;
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}

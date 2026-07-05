@@ -16,9 +16,9 @@ export const maxDuration = 60;
  *   Gemini classify + embed → merge into the store. The dashboard live feed
  *   reads GET; a refresh control triggers POST.
  */
-export function GET() {
+export async function GET() {
   return NextResponse.json({
-    signals: listSignals(),
+    signals: await listSignals(),
     lastRefresh: lastRefresh(),
     sources: { gemini: hasGeminiKey(), apify: hasApifyToken(), reddit: hasRedditCreds() },
   });
@@ -35,10 +35,10 @@ export async function POST() {
 
     const enriched = await enrich(raw);
     const relevant = enriched.filter((s) => s.relevant);
-    const added = mergeSignals(relevant);
+    const added = await mergeSignals(relevant);
     return NextResponse.json({
       added,
-      total: listSignals().length,
+      total: (await listSignals()).length,
       fetched: raw.length,
       live,
       mode: enriched[0]?.mode ?? "keyword",

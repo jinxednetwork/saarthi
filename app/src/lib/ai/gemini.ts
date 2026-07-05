@@ -1,39 +1,80 @@
 import "server-only";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createVertex } from "@ai-sdk/google-vertex";
 import type { EmbeddingModel, LanguageModel } from "ai";
 
 /**
- * Gemini provider — server-only (§14: the key never reaches the client). Every
- * caller guards on `hasGeminiKey()` and falls back to the scripted brain when
- * the key is absent, so the app runs fully offline for judging without a key.
+ * Gemini provider — server-only (§14: no credential ever reaches the client).
+ *
+ * Two backends, chosen once at module load:
+ *
+ *  1. **Vertex AI via ADC** (preferred). Set `GOOGLE_VERTEX_PROJECT` (or
+ *     `GOOGLE_CLOUD_PROJECT`). No API key — it uses Application Default
+ *     Credentials: locally from `gcloud auth application-default login`, and in
+ *     production from the Cloud Run / App Hosting runtime service account
+ *     (which sets `GOOGLE_CLOUD_PROJECT` automatically). This is the
+ *     hackathon's recommended enterprise path and lifts the AI-Studio
+ *     free-tier daily quota.
+ *
+ *  2. **AI Studio key** (fallback). `GOOGLE_GENERATIVE_AI_API_KEY`. Zero-setup,
+ *     handy for a laptop without gcloud.
+ *
+ * If neither is configured, `hasGeminiKey()` returns false and every caller
+ * falls back to the scripted brain, so the app still runs fully offline.
  *
  * Models: gemini-2.5-flash (chat / RAG / parse), gemini-2.5-pro (briefs),
- * gemini-embedding-001 (the embedding model the current Gemini API exposes;
- * text-embedding-004 404s on the v1beta embedContent endpoint for these keys).
- * Corpus + query always embed with the same model, so dimensionality stays
- * consistent regardless of the exact value.
+ * gemini-embedding-001 (3072-dim). The same embedding model runs on BOTH
+ * backends, so corpus and query vectors always share dimensionality even if the
+ * backend differs between environments.
  */
+
+const VERTEX_PROJECT = process.env.GOOGLE_VERTEX_PROJECT || process.env.GOOGLE_CLOUD_PROJECT;
+const VERTEX_LOCATION = process.env.GOOGLE_VERTEX_LOCATION || "us-central1";
 const API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 
-export function hasGeminiKey(): boolean {
-  return typeof API_KEY === "string" && API_KEY.length > 0;
+type Backend = "vertex" | "studio";
+const backend: Backend | null = VERTEX_PROJECT ? "vertex" : API_KEY ? "studio" : null;
+
+/** Which backend is live (for logging / the assistant's `mode` field). */
+export function geminiBackend(): Backend | null {
+  return backend;
 }
 
-const provider = hasGeminiKey() ? createGoogleGenerativeAI({ apiKey: API_KEY }) : null;
+/** True when Gemini is reachable by either backend; guard every model call with it. */
+export function hasGeminiKey(): boolean {
+  return backend !== null;
+}
 
-function requireProvider() {
-  if (!provider) throw new Error("Gemini key missing — call hasGeminiKey() before using a model.");
+type Provider = {
+  chat(model: string): LanguageModel;
+  embedding(model: string): EmbeddingModel<string>;
+};
+
+const provider: Provider | null = (() => {
+  if (backend === "vertex") {
+    const vertex = createVertex({ project: VERTEX_PROJECT, location: VERTEX_LOCATION });
+    return { chat: (m) => vertex(m), embedding: (m) => vertex.textEmbeddingModel(m) };
+  }
+  if (backend === "studio") {
+    const google = createGoogleGenerativeAI({ apiKey: API_KEY });
+    return { chat: (m) => google(m), embedding: (m) => google.textEmbeddingModel(m) };
+  }
+  return null;
+})();
+
+function requireProvider(): Provider {
+  if (!provider) throw new Error("Gemini not configured — call hasGeminiKey() before using a model.");
   return provider;
 }
 
 export function chatModel(): LanguageModel {
-  return requireProvider()("gemini-2.5-flash");
+  return requireProvider().chat("gemini-2.5-flash");
 }
 
 export function proModel(): LanguageModel {
-  return requireProvider()("gemini-2.5-pro");
+  return requireProvider().chat("gemini-2.5-pro");
 }
 
 export function embeddingModel(): EmbeddingModel<string> {
-  return requireProvider().textEmbeddingModel("gemini-embedding-001");
+  return requireProvider().embedding("gemini-embedding-001");
 }

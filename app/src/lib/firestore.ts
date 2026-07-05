@@ -20,14 +20,12 @@ export function hasFirestore(): boolean {
   );
 }
 
-let cached: Firestore | null | undefined;
+// Resolve once per process, then reuse. Cache the PROMISE (not the value) so
+// concurrent first-callers share a single probe instead of racing.
+let probe: Promise<Firestore | null> | undefined;
 
-export async function getDb(): Promise<Firestore | null> {
-  if (cached !== undefined) return cached;
-  if (!hasFirestore()) {
-    cached = null;
-    return null;
-  }
+async function connect(): Promise<Firestore | null> {
+  if (!hasFirestore()) return null;
   try {
     const { getApps, initializeApp } = await import("firebase-admin/app");
     const { getFirestore } = await import("firebase-admin/firestore");
@@ -36,11 +34,20 @@ export async function getDb(): Promise<Firestore | null> {
         projectId: process.env.FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT,
       });
     }
-    cached = getFirestore();
-    return cached;
+    const db = getFirestore();
+    // Init never touches the network, so it "succeeds" even when the Firestore
+    // API is disabled or no database exists — the failure only surfaces on the
+    // first real call. Probe once here so a misconfigured project degrades to
+    // the in-memory store transparently instead of 500ing every route.
+    await db.collection("__reachability__").limit(1).get();
+    return db;
   } catch (err) {
-    console.error("[firestore] init failed — falling back to in-memory:", err);
-    cached = null;
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[firestore] unreachable — using in-memory store. (${msg.slice(0, 120)})`);
     return null;
   }
+}
+
+export async function getDb(): Promise<Firestore | null> {
+  return (probe ??= connect());
 }

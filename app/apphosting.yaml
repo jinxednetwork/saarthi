@@ -1,0 +1,42 @@
+# Firebase App Hosting — MP dashboard + shared API (@saarthi/app).
+# Create the backend with rootDir = "app".
+#
+# Gemini runs on **Vertex AI via ADC** — no key. App Hosting injects
+# GOOGLE_CLOUD_PROJECT, so the provider auto-selects Vertex; the runtime service
+# account just needs two IAM roles (grant them once — see DEPLOY.md):
+#   roles/aiplatform.user   (Vertex — Gemini + embeddings)
+#   roles/datastore.user    (Firestore — tickets + intake)
+# Firestore also activates automatically via the same ADC.
+runConfig:
+  minInstances: 0
+  maxInstances: 2
+  cpu: 1
+  memoryMiB: 1024
+  concurrency: 80
+
+env:
+  # Vertex region for Gemini. (Project comes from GOOGLE_CLOUD_PROJECT, injected.)
+  - variable: GOOGLE_VERTEX_LOCATION
+    value: us-central1
+    availability:
+      - RUNTIME
+
+  # Optional fallback: an AI Studio key, used only if GOOGLE_VERTEX_PROJECT and
+  # GOOGLE_CLOUD_PROJECT are both unset. Vertex is preferred, so this is normally
+  # unnecessary. To enable, create the secret and uncomment:
+  #   firebase apphosting:secrets:set gemini-api-key
+  #   firebase apphosting:secrets:grantaccess gemini-api-key --backend <app-backend>
+  # - variable: GOOGLE_GENERATIVE_AI_API_KEY
+  #   secret: gemini-api-key
+  #   availability: [RUNTIME]
+
+  # Optional real intake sources — create the secrets, then uncomment:
+  # - variable: REDDIT_CLIENT_ID
+  #   secret: reddit-client-id
+  #   availability: [RUNTIME]
+  # - variable: REDDIT_CLIENT_SECRET
+  #   secret: reddit-client-secret
+  #   availability: [RUNTIME]
+  # - variable: APIFY_TOKEN
+  #   secret: apify-token
+  #   availability: [RUNTIME]

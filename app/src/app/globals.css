@@ -140,7 +140,8 @@
   body {
     zoom: var(--a11y-zoom, 1);
   }
-  .leaflet-container {
+  .leaflet-container,
+  .saarthi-gmap {
     zoom: calc(1 / var(--a11y-zoom, 1));
     width: calc(var(--a11y-zoom, 1) * 100%);
     height: calc(var(--a11y-zoom, 1) * 100%);
@@ -248,12 +249,19 @@
 }
 
 /* ---- Leaflet theming (both themes via vars) ---- */
-.leaflet-container {
+.leaflet-container,
+.saarthi-gmap {
   background: hsl(var(--map-canvas));
   font-family: inherit;
   outline: 0;
   /* Geography is not bidirectional — keep the map LTR under RTL languages. */
   direction: ltr;
+}
+/* Google Maps overlay markers ride above the tiles; the pane itself is inert. */
+.saarthi-gmarker:focus-visible {
+  outline: 2px solid hsl(var(--ring, 210 90% 60%));
+  outline-offset: 3px;
+  border-radius: 50%;
 }
 .leaflet-control-attribution {
   font-size: 10px;

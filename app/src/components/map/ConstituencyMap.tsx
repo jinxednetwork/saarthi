@@ -1,35 +1,19 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import type * as Leaflet from "leaflet";
-import { useTheme } from "next-themes";
-import { groupOf } from "@/lib/categories";
+import { useEffect, useState } from "react";
 import type { MapFilter } from "@/lib/dashboard-store";
-import { MOCK_CLUSTERS } from "@/lib/mock-data";
-import { URGENCY_UI } from "@/lib/ui";
+import { GoogleConstituencyMap } from "./GoogleConstituencyMap";
+import { LeafletConstituencyMap } from "./LeafletConstituencyMap";
 
-const MARKER_SIZE = { critical: 22, high: 17, medium: 14, low: 14 } as const;
-const TILE_LIGHT = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-const TILE_DARK = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-
-/**
- * Global handle so the cluster drawer's "View on map" can pan without prop
- * drilling. Set while the map is mounted.
- */
-export const mapRegistry: { current: Leaflet.Map | null } = { current: null };
-
-export function flyToCluster(lat: number, lng: number) {
-  mapRegistry.current?.flyTo([lat, lng], 14, { duration: 0.8 });
-}
+// Re-exported so existing consumers (e.g. the cluster drawer's "View on map")
+// keep importing from ConstituencyMap regardless of the active engine.
+export { flyToCluster } from "./mapRegistry";
 
 /**
- * Full-bleed Leaflet stage (the dashboard's hero). Theme switches tiles via
- * setUrl — no re-init, markers keep their DOM. Markers are keyboard-focusable
- * (Leaflet keyboard: true on divIcon markers) and click through to the cluster
- * drawer via onSelect. Colours ride CSS vars so they retheme instantly.
- *
- * NOTE: §3.2 of the engineering handoff locks Google Maps Platform; Leaflet +
- * CARTO is the key-free stand-in. Swapping later only touches this file.
+ * Full-bleed constituency stage (the dashboard's hero). Picks the map engine at
+ * runtime: Google Maps Platform when a browser key is configured
+ * (GOOGLE_MAPS_API_KEY → /api/config), else the key-free Leaflet + CARTO
+ * fallback — so the map always renders, with or without a key.
  */
 export function ConstituencyMap({
   filter,
@@ -38,110 +22,32 @@ export function ConstituencyMap({
   filter: MapFilter;
   onSelect?: (clusterId: string) => void;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<Leaflet.Map | null>(null);
-  const tileRef = useRef<Leaflet.TileLayer | null>(null);
-  const layerRef = useRef<Leaflet.LayerGroup | null>(null);
-  const leafletRef = useRef<typeof Leaflet | null>(null);
-  const onSelectRef = useRef(onSelect);
-  onSelectRef.current = onSelect;
-  const { resolvedTheme } = useTheme();
+  const [cfg, setCfg] = useState<{ loaded: boolean; apiKey: string | null }>({
+    loaded: false,
+    apiKey: null,
+  });
 
-  // Init once
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const L = (await import("leaflet")).default;
-      if (cancelled || !containerRef.current || mapRef.current) return;
-      leafletRef.current = L;
-      const map = L.map(containerRef.current, {
-        center: [28.59, 77.19],
-        zoom: 13,
-        zoomControl: false,
-        scrollWheelZoom: true,
-        attributionControl: true,
-        preferCanvas: true,
-        keyboard: true,
+    let active = true;
+    fetch("/api/config")
+      .then((r) => (r.ok ? r.json() : { mapsApiKey: null }))
+      .then((d: { mapsApiKey: string | null }) => {
+        if (active) setCfg({ loaded: true, apiKey: d.mapsApiKey });
+      })
+      .catch(() => {
+        if (active) setCfg({ loaded: true, apiKey: null });
       });
-      L.control.zoom({ position: "bottomright" }).addTo(map);
-      const isDark = document.documentElement.classList.contains("dark");
-      tileRef.current = L.tileLayer(isDark ? TILE_DARK : TILE_LIGHT, {
-        attribution: "© OpenStreetMap contributors © CARTO",
-        subdomains: "abcd",
-        maxZoom: 19,
-      }).addTo(map);
-      mapRef.current = map;
-      mapRegistry.current = map;
-      renderMarkers(L, map, layerRef, filter, (id) => onSelectRef.current?.(id));
-    })();
     return () => {
-      cancelled = true;
-      mapRegistry.current = null;
-      mapRef.current?.remove();
-      mapRef.current = null;
+      active = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Theme → tile swap, no re-init
-  useEffect(() => {
-    tileRef.current?.setUrl(resolvedTheme === "dark" ? TILE_DARK : TILE_LIGHT);
-  }, [resolvedTheme]);
+  // Hold the map-canvas colour while we resolve which engine to mount.
+  if (!cfg.loaded) return <div className="h-full w-full bg-[hsl(var(--map-canvas))]" />;
 
-  // Filter → re-render markers
-  useEffect(() => {
-    const L = leafletRef.current;
-    const map = mapRef.current;
-    if (L && map) renderMarkers(L, map, layerRef, filter, (id) => onSelectRef.current?.(id));
-  }, [filter]);
-
-  return <div ref={containerRef} className="h-full w-full bg-[hsl(var(--map-canvas))]" />;
-}
-
-function renderMarkers(
-  L: typeof Leaflet,
-  map: Leaflet.Map,
-  layerRef: React.MutableRefObject<Leaflet.LayerGroup | null>,
-  filter: MapFilter,
-  onSelect: (clusterId: string) => void,
-) {
-  layerRef.current?.remove();
-  const layer = L.layerGroup().addTo(map);
-  layerRef.current = layer;
-
-  for (const c of MOCK_CLUSTERS) {
-    if (filter !== "all" && groupOf(c.category) !== filter) continue;
-    const size = MARKER_SIZE[c.urgency];
-    const u = URGENCY_UI[c.urgency];
-    const isCritical = c.urgency === "critical";
-    const html = `
-      <div style="position:relative;width:${size}px;height:${size}px;">
-        ${
-          isCritical
-            ? `<div style="position:absolute;inset:0;border-radius:50%;background:${u.dot};opacity:0.5;animation: halo 1.8s ease-out infinite;"></div>`
-            : ""
-        }
-        <div style="position:absolute;inset:0;border-radius:50%;background:${u.dot};border:2px solid hsl(var(--surface));box-shadow: 0 0 0 1px ${u.dot}, 0 2px 6px rgba(0,0,0,0.3);"></div>
-      </div>`;
-    const icon = L.divIcon({
-      className: "saarthi-marker",
-      html,
-      iconSize: [size, size],
-      iconAnchor: [size / 2, size / 2],
-    });
-    const marker = L.marker([c.geo.centroid.lat, c.geo.centroid.lng], {
-      icon,
-      keyboard: true,
-      alt: `${c.title} — ${c.ui.wardLabel}, ${u.label}`,
-    }).addTo(layer);
-    marker.bindTooltip(
-      `<div style="font-weight:600;margin-bottom:2px;">${c.title}</div>
-       <div style="opacity:0.7;font-size:11px;">${c.ui.wardLabel} · ${u.label} · click for detail</div>`,
-      { direction: "top", offset: [0, -size / 2], className: "saarthi-tt" },
-    );
-    marker.on("click", () => onSelect(c.id));
-    marker.on("keypress", (e) => {
-      if ((e.originalEvent as KeyboardEvent).key === "Enter") onSelect(c.id);
-    });
-  }
+  return cfg.apiKey ? (
+    <GoogleConstituencyMap apiKey={cfg.apiKey} filter={filter} onSelect={onSelect} />
+  ) : (
+    <LeafletConstituencyMap filter={filter} onSelect={onSelect} />
+  );
 }

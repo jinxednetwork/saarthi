@@ -1,0 +1,15 @@
+# Builds the Citizen Portal image, baking in the MP-dashboard API origin.
+# (Cloud Run's --source deploy can't pass --build-arg, so citizen builds here.)
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=APP=citizen
+      - --build-arg=NEXT_PUBLIC_SAARTHI_API_URL=${_API_URL}
+      - -t
+      - ${_IMAGE}
+      - .
+images:
+  - ${_IMAGE}
+options:
+  logging: CLOUD_LOGGING_ONLY

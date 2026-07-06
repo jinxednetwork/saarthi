@@ -14,6 +14,10 @@ WORKDIR /repo
 # layer caches until a package.json or the lockfile changes.
 FROM base AS build
 ARG APP=app
+# citizen bakes the MP-dashboard API origin at build time (NEXT_PUBLIC_* is
+# inlined by `next build`). Harmless/empty for the app image.
+ARG NEXT_PUBLIC_SAARTHI_API_URL=""
+ENV NEXT_PUBLIC_SAARTHI_API_URL=${NEXT_PUBLIC_SAARTHI_API_URL}
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.base.json ./
 COPY packages/shared/package.json packages/shared/
 COPY app/package.json app/

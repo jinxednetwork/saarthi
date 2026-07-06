@@ -1,157 +1,102 @@
 # Deploying Saarthi to Google Cloud
 
-Two Next.js apps ship to **Firebase App Hosting** (Google's Git-native Next.js
-hosting), backed by **Firestore**, with **Gemini running on Vertex AI**. No API
-keys in production — everything authenticates through the runtime service
-account (ADC). This is the recommended path; a **Cloud Run** fallback is at the
-bottom.
+Both Next.js apps run on **Cloud Run** (built from the root `Dockerfile`), with
+**Gemini on Vertex AI** and **Firestore** — all authenticated by the runtime
+service account (ADC), no API keys in production.
 
 - `app` (`@saarthi/app`) — MP dashboard **+ the shared `/api` (tickets, intake, assistant, docs)**
-- `citizen` (`@saarthi/citizen`) — standalone Citizen Portal; talks to the app's API
+- `citizen` (`@saarthi/citizen`) — standalone Citizen Portal; posts to the app's API
 
-The repo is a **pnpm monorepo**; both apps consume `@saarthi/shared` as source.
+**Live now:**
+| Service | URL |
+| --- | --- |
+| MP dashboard + API | https://saarthi-app-353201937460.asia-south1.run.app |
+| Citizen portal | https://saarthi-citizen-353201937460.asia-south1.run.app |
+
+> **Why Cloud Run, not Firebase App Hosting?** App Hosting's buildpack only
+> supports Nx/Turborepo monorepos — it can't build a plain pnpm workspace
+> (`Missing dependency lock file at path '/workspace/app'`). Cloud Run builds
+> from our `Dockerfile`, which installs the whole workspace and emits the Next
+> standalone server. (Firebase is still used for Firestore.)
 
 > **How the AI backend is chosen** (`app/src/lib/ai/gemini.ts`): if
-> `GOOGLE_VERTEX_PROJECT` or `GOOGLE_CLOUD_PROJECT` is set → **Vertex AI via
-> ADC** (no key). Else if `GOOGLE_GENERATIVE_AI_API_KEY` is set → AI Studio key.
-> Else → the offline scripted brain. App Hosting and Cloud Run both inject
-> `GOOGLE_CLOUD_PROJECT`, so **Vertex activates automatically in production.**
+> `GOOGLE_VERTEX_PROJECT` / `GOOGLE_CLOUD_PROJECT` is set → **Vertex AI via ADC**
+> (no key). Else `GOOGLE_GENERATIVE_AI_API_KEY` → AI Studio key. Else → the
+> offline scripted brain. The deploy scripts set `GOOGLE_VERTEX_PROJECT`, so
+> Vertex is always used in production.
 
 ---
 
-## 0. One-time project setup (you run these — interactive)
-
-Project already in use for local dev: **`saarthi-501522`** (account
-`ianalmeida2000@gmail.com`). Reuse it or pick another with billing enabled
-(App Hosting + Firestore + Vertex need the Blaze plan; free tiers are generous).
+## 0. One-time project setup (already done for saarthi-501522)
 
 ```bash
-npm i -g firebase-tools
-firebase login                                   # opens a browser
-firebase use saarthi-501522
+# gcloud + ADC
+gcloud auth login
+gcloud auth application-default login
+gcloud config set project saarthi-501522
 
-# Enable the three APIs the app calls at runtime:
+# Firebase on the GCP project (needed for Firestore management)
+firebase login
+firebase projects:addfirebase saarthi-501522
+
+# APIs
 gcloud services enable \
-  aiplatform.googleapis.com \
-  firestore.googleapis.com \
+  aiplatform.googleapis.com firestore.googleapis.com \
+  run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com \
   --project saarthi-501522
-```
 
-Create the Firestore database once (Native mode, **Mumbai** for an India app):
-
-```bash
+# Firestore database (Native, Mumbai) + locked-down rules
 gcloud firestore databases create --location=asia-south1 --project saarthi-501522
+firebase deploy --only firestore:rules --project saarthi-501522
 ```
 
-> Local dev tip: the same two APIs + database make `SAARTHI` hit **real** Vertex
-> and Firestore from your laptop (ADC from `gcloud auth application-default
-> login`). Until they're enabled, the app degrades cleanly to the in-memory
-> stores and still uses Vertex for AI once `aiplatform` is on.
-
----
-
-## 1. Grant the runtime service account access (Vertex + Firestore)
-
-> **Run this AFTER step 2**, not before. App Hosting's runtime service account
-> is created together with the first backend — it does not exist until then.
-> (Grant it once; both backends share it.)
-
-App Hosting runs each backend as a Google-managed service account. Discover its
-exact email, then grant the two roles the app needs:
+### IAM (two service accounts)
 
 ```bash
 PROJECT=saarthi-501522
-SA=$(gcloud iam service-accounts list --project $PROJECT \
-  --filter="email~apphosting OR email~app-hosting" --format="value(email)" | head -1)
-echo "App Hosting SA: $SA"          # e.g. firebase-app-hosting-compute@saarthi-501522.iam.gserviceaccount.com
 
-gcloud projects add-iam-policy-binding $PROJECT \
-  --member="serviceAccount:${SA}" --role="roles/aiplatform.user"
-gcloud projects add-iam-policy-binding $PROJECT \
-  --member="serviceAccount:${SA}" --role="roles/datastore.user"
+# Runtime SA (Cloud Run) — Vertex + Firestore
+RUN_SA="firebase-app-hosting-compute@${PROJECT}.iam.gserviceaccount.com"
+gcloud projects add-iam-policy-binding $PROJECT --member="serviceAccount:${RUN_SA}" --role="roles/aiplatform.user"
+gcloud projects add-iam-policy-binding $PROJECT --member="serviceAccount:${RUN_SA}" --role="roles/datastore.user"
+
+# Build SA (Cloud Build runs as the Compute Engine default SA on new projects)
+BUILD_SA="$(gcloud projects describe $PROJECT --format='value(projectNumber)')-compute@developer.gserviceaccount.com"
+gcloud projects add-iam-policy-binding $PROJECT --member="serviceAccount:${BUILD_SA}" --role="roles/cloudbuild.builds.builder"
 ```
 
-That's the whole "secret" story — there is no Gemini key to manage. (An AI
-Studio key remains an optional fallback: create a `gemini-api-key` secret and
-uncomment the block in `app/apphosting.yaml`.)
+(`grant-build-perms.sh` does that last one.)
 
 ---
 
-## 2. Deploy the MP dashboard + API backend
-
-App Hosting connects to **this GitHub repo** and auto-builds on push.
+## 1. Deploy — two scripts from the repo root
 
 ```bash
-firebase apphosting:backends:create --project saarthi-501522
-# When prompted:
-#   • connect GitHub → jinxednetwork/saarthi
-#   • live branch    → main
-#   • root directory → app
-#   • backend id     → saarthi-app
+bash deploy-app.sh        # MP dashboard + API → Cloud Run (uses --source + Dockerfile)
+bash deploy-citizen.sh    # Citizen portal → Cloud Run (bakes the app URL in at build)
 ```
 
-`app/apphosting.yaml` sets `GOOGLE_VERTEX_LOCATION=us-central1`; the project id
-arrives via the injected `GOOGLE_CLOUD_PROJECT`, so Gemini runs on Vertex and
-Firestore activates — both via ADC, no key. Run the step-1 IAM grants now that
-the SA exists. It builds and gives you a URL like
-`https://saarthi-app--saarthi-501522.web.app`. **Copy that URL.**
+- **`deploy-app.sh`** runs `gcloud run deploy saarthi-app --source .`; the root
+  `Dockerfile` (APP defaults to `app`) builds and deploys. Sets
+  `GOOGLE_VERTEX_PROJECT`, `GOOGLE_VERTEX_LOCATION`, `FIREBASE_PROJECT_ID`.
+- **`deploy-citizen.sh`** builds via `cloudbuild-citizen.yaml` (passing
+  `--build-arg NEXT_PUBLIC_SAARTHI_API_URL=<app url>`, which `next build`
+  inlines) then deploys the image. Edit `API_URL` in the script if the app URL
+  changes.
+
+**CORS:** the tickets API returns `Access-Control-Allow-Origin: *`, so the
+separately-hosted portal posts to it cross-origin.
 
 ---
 
-## 3. Deploy the Citizen Portal backend
+## 2. Redeploys
 
-Put the app URL from step 2 into `citizen/apphosting.yaml`
-(`NEXT_PUBLIC_SAARTHI_API_URL`), commit, push. Then:
+Re-run the relevant script — `bash deploy-app.sh` / `bash deploy-citizen.sh`.
+(No Git-push auto-deploy; Cloud Run builds from your local working tree via
+`--source` / `builds submit`.)
 
-```bash
-firebase apphosting:backends:create --project saarthi-501522
-#   • root directory → citizen
-#   • backend id     → saarthi-citizen
-```
-
-You now have two live links — the MP dashboard and the citizen portal — sharing
-one Firestore.
-
-**CORS:** the tickets API already returns `Access-Control-Allow-Origin: *`, so the
-separately-hosted portal can post to it cross-origin.
-
----
-
-## 4. Redeploys
-
-Just `git push` to `main` — App Hosting rebuilds both backends automatically.
-
----
-
-## Cloud Run fallback (if the App Hosting monorepo build gives trouble)
-
-Both apps have a `Dockerfile` that builds the whole workspace and runs the
-Next.js standalone server. Cloud Run also injects `GOOGLE_CLOUD_PROJECT`, so
-Vertex + Firestore work via ADC — grant the same two roles to the Cloud Run
-service account.
-
-```bash
-gcloud config set project saarthi-501522
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com
-
-# MP dashboard + API  (build from repo root; the Dockerfile copies the workspace)
-gcloud run deploy saarthi-app --source . --region asia-south1 \
-  --allow-unauthenticated \
-  --set-env-vars GOOGLE_VERTEX_LOCATION=us-central1
-
-# Citizen portal
-gcloud run deploy saarthi-citizen --source . --region asia-south1 \
-  --allow-unauthenticated \
-  --set-env-vars NEXT_PUBLIC_SAARTHI_API_URL=<app-run-url>
-```
-
-Grant the Cloud Run runtime SA `roles/aiplatform.user` + `roles/datastore.user`
-(the default compute SA is `PROJECT_NUMBER-compute@developer.gserviceaccount.com`).
-
-> The `Dockerfile` builds a specific app with `--build-arg APP=app|citizen`. With
-> `--source .` Cloud Run uses the root `Dockerfile`; set `APP` per service via a
-> `cloudbuild.yaml` or build the images directly with
-> `docker build --build-arg APP=citizen`.
+To wire continuous deployment later, add a Cloud Build trigger on the GitHub
+repo that runs the same Docker builds and `gcloud run deploy --image` on push.
 
 ---
 
@@ -159,8 +104,8 @@ Grant the Cloud Run runtime SA `roles/aiplatform.user` + `roles/datastore.user`
 
 | Service | Google product | Notes |
 | --- | --- | --- |
-| `app`, `citizen` | Firebase App Hosting (or Cloud Run) | Next.js SSR, standalone output |
-| tickets / intake / signals | Firestore | auto via ADC (`roles/datastore.user`) |
-| Gemini (assistant, intake, media, translate) | **Vertex AI** | auto via ADC (`roles/aiplatform.user`), no key |
+| `app`, `citizen` | Cloud Run | Next.js standalone in Docker (root `Dockerfile`, `--build-arg APP=`) |
+| tickets / intake / signals | Firestore (asia-south1) | auto via ADC (`roles/datastore.user`) |
+| Gemini (assistant, intake, media) | Vertex AI | auto via ADC (`roles/aiplatform.user`), no key |
+| container builds | Cloud Build + Artifact Registry | `roles/cloudbuild.builds.builder` on the compute SA |
 | public datasets | BigQuery | future (curated seed today) |
-| intake pipeline | Cloud Run | the `worker` package |

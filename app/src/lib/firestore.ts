@@ -39,7 +39,8 @@ async function connect(): Promise<Firestore | null> {
     // API is disabled or no database exists — the failure only surfaces on the
     // first real call. Probe once here so a misconfigured project degrades to
     // the in-memory store transparently instead of 500ing every route.
-    await db.collection("__reachability__").limit(1).get();
+    // (Collection id must not match /__.*__/ — that pattern is reserved.)
+    await db.collection("_reachability_probe").limit(1).get();
     return db;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

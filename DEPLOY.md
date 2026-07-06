@@ -52,13 +52,18 @@ gcloud firestore databases create --location=asia-south1 --project saarthi-50152
 
 ## 1. Grant the runtime service account access (Vertex + Firestore)
 
-App Hosting runs each backend as a Google-managed service account. Give it the
-two roles the app needs. After the backend exists (step 2) its SA is
-`firebase-app-hosting-compute@saarthi-501522.iam.gserviceaccount.com`; grant:
+> **Run this AFTER step 2**, not before. App Hosting's runtime service account
+> is created together with the first backend — it does not exist until then.
+> (Grant it once; both backends share it.)
+
+App Hosting runs each backend as a Google-managed service account. Discover its
+exact email, then grant the two roles the app needs:
 
 ```bash
 PROJECT=saarthi-501522
-SA="firebase-app-hosting-compute@${PROJECT}.iam.gserviceaccount.com"
+SA=$(gcloud iam service-accounts list --project $PROJECT \
+  --filter="email~apphosting OR email~app-hosting" --format="value(email)" | head -1)
+echo "App Hosting SA: $SA"          # e.g. firebase-app-hosting-compute@saarthi-501522.iam.gserviceaccount.com
 
 gcloud projects add-iam-policy-binding $PROJECT \
   --member="serviceAccount:${SA}" --role="roles/aiplatform.user"

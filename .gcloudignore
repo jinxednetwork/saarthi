@@ -1,0 +1,12 @@
+# Controls what `gcloud ... --source` / `builds submit` uploads to Cloud Build.
+# (When this file exists, gcloud ignores .gitignore, so mirror the exclusions.)
+# The Docker build reinstalls deps and rebuilds, so ship only source.
+.git
+**/node_modules
+**/.next
+# Never upload local secrets.
+**/.env.local
+**/.env*.local
+# User's local download folder — not part of the build.
+Testing
+**/*.log

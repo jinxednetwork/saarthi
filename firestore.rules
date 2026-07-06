@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Saarthi reaches Firestore ONLY server-side, through the Firebase Admin SDK
+    // (ADC on Cloud Run / App Hosting). Admin access bypasses these rules, so no
+    // client uses the Firestore client SDK. Deny all direct client access.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

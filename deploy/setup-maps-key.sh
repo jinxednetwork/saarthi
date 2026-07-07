@@ -2,7 +2,7 @@
 # One-time: enable the Maps JavaScript API and mint a browser-restricted API key
 # for the dashboard map. The key is safe to expose in the browser (that's how
 # Maps JS works); it's locked to the Maps JS API and to our two origins.
-# Run from the repo root:  bash setup-maps-key.sh
+# Run from the repo root:  bash deploy/setup-maps-key.sh
 set -euo pipefail
 
 GCLOUD="$HOME/google-cloud-sdk/bin/gcloud"

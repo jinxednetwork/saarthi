@@ -25,7 +25,7 @@ Intake (WhatsApp · X · Reddit · Widget · News RSS · Documents)
            + Saarthi Assistant (RAG)  + Brief generation (PDF/PPTX/DOCX)
 ```
 
-Full spec: [`ENGINEERING_HANDOFF.md`](./ENGINEERING_HANDOFF.md). Session context for
+Full spec: [`ENGINEERING_HANDOFF.md`](./docs/ENGINEERING_HANDOFF.md). Session context for
 Claude Code: [`CLAUDE.md`](./CLAUDE.md).
 
 ## Monorepo layout
@@ -46,7 +46,16 @@ The `app` dashboard is a working demo of the full loop — it runs offline with 
 AI and seed data, and lights up real Gemini when a key is present.
 
 - **Command deck** — dual-theme glass over a live constituency map; priority queue,
-  signal sources, live feed, KPI snapshot as collapsible panels.
+  signal sources, live feed, KPI snapshot as collapsible panels. Issues can be closed /
+  reopened on the map.
+- **Live social + news intake** — real posts from **X** (official API v2), **Reddit** (via an
+  Apify scraper, since Reddit's 2025-26 Responsible Builder Policy gates new API apps), and
+  **Delhi news + PIB RSS**, each classified by Gemini (category · urgency · sentiment · ward)
+  on the Intelligence page. Runs on labelled samples until credentials land (see `.env.example`).
+- **Promote signals → issue** — select live signals and, with one button, Gemini synthesises
+  them into a tracked issue (cluster): it appears on the map, tops the priority queue, pops up
+  in the live feed, and opens in the drawer with the **source images + links** carried from the
+  origin posts — then drives the existing MPLADS-letter / brief actions.
 - **Saarthi Assistant** — retrieval-augmented Q&A grounded in the same data the panels
   show; every claim carries a resolvable citation. Real Gemini via a server-only route,
   with a scripted brain as an identical-contract fallback.

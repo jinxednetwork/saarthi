@@ -65,21 +65,21 @@ BUILD_SA="$(gcloud projects describe $PROJECT --format='value(projectNumber)')-c
 gcloud projects add-iam-policy-binding $PROJECT --member="serviceAccount:${BUILD_SA}" --role="roles/cloudbuild.builds.builder"
 ```
 
-(`grant-build-perms.sh` does that last one.)
+(`deploy/grant-build-perms.sh` does that last one.)
 
 ---
 
 ## 1. Deploy — two scripts from the repo root
 
 ```bash
-bash deploy-app.sh        # MP dashboard + API → Cloud Run (uses --source + Dockerfile)
-bash deploy-citizen.sh    # Citizen portal → Cloud Run (bakes the app URL in at build)
+bash deploy/deploy-app.sh        # MP dashboard + API → Cloud Run (uses --source + Dockerfile)
+bash deploy/deploy-citizen.sh    # Citizen portal → Cloud Run (bakes the app URL in at build)
 ```
 
-- **`deploy-app.sh`** runs `gcloud run deploy saarthi-app --source .`; the root
+- **`deploy/deploy-app.sh`** runs `gcloud run deploy saarthi-app --source .`; the root
   `Dockerfile` (APP defaults to `app`) builds and deploys. Sets
   `GOOGLE_VERTEX_PROJECT`, `GOOGLE_VERTEX_LOCATION`, `FIREBASE_PROJECT_ID`.
-- **`deploy-citizen.sh`** builds via `cloudbuild-citizen.yaml` (passing
+- **`deploy/deploy-citizen.sh`** builds via `deploy/cloudbuild-citizen.yaml` (passing
   `--build-arg NEXT_PUBLIC_SAARTHI_API_URL=<app url>`, which `next build`
   inlines) then deploys the image. Edit `API_URL` in the script if the app URL
   changes.
@@ -91,7 +91,7 @@ separately-hosted portal posts to it cross-origin.
 
 ## 2. Redeploys
 
-Re-run the relevant script — `bash deploy-app.sh` / `bash deploy-citizen.sh`.
+Re-run the relevant script — `bash deploy/deploy-app.sh` / `bash deploy/deploy-citizen.sh`.
 (No Git-push auto-deploy; Cloud Run builds from your local working tree via
 `--source` / `builds submit`.)
 

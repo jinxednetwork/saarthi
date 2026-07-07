@@ -1,7 +1,7 @@
 # CLAUDE.md — Saarthi (सारथि)
 
 Persistent context for Claude Code sessions. Read this first. The full spec is
-`ENGINEERING_HANDOFF.md` — this file is the distilled version; that file wins on
+`docs/ENGINEERING_HANDOFF.md` — this file is the distilled version; that file wins on
 any conflict.
 
 ## What this is
@@ -95,6 +95,22 @@ Stop dev, build, restart.
 
 ## Current state
 
-Greenfield scaffold in progress. `Dashboard.pdf` holds the design intent (sibling docs
-`DESIGN_HANDOFF.md` / `SITEMAP.md` referenced in the handoff do NOT yet exist on disk).
-`vaishu user flow map disha.pdf` is the roadmap flow (§16) — pitch, not v1.
+Working demo of the full loop — offline-capable (mock AI + seed data), and lights up real
+Gemini + Firestore when configured. Live social/news intake is wired and real.
+
+**Intake lives in the Next.js app, NOT the worker/Functions/Pub/Sub path the handoff
+diagrams** (that remains aspirational). The real path:
+- `app/src/lib/intake/*` + `POST /api/intake` — fetch **X** (official API v2, `x.ts`),
+  **Reddit** (Apify `trudax/reddit-scraper-lite`, because the Responsible Builder Policy
+  gates new Reddit API apps — OAuth is a fallback if approved), **news RSS incl. PIB**
+  (`news.ts`) → Gemini enrich (`classify.ts`) → store (`store.ts`).
+- Store is **Firestore-backed via ADC** when a Gemini/Vertex project is set (dedups by id,
+  so re-fetching the same post won't backfill new fields; `ignoreUndefinedProperties` is on).
+- **Promote signals → issue**: `POST /api/intake/promote` Gemini-synthesises selected signals
+  into a session `DemoCluster` (`promote.ts`, stored in `dashboard-store` like `dispatched`),
+  surfaced on map/queue/drawer/composer + live feed. Design:
+  `docs/superpowers/specs/2026-07-08-promote-signals-to-issue-design.md`.
+- Source credentials + which actor/tier: see `app/.env.example`.
+
+`docs/design/Dashboard.pdf` holds design intent; `docs/design/user-flow-map.pdf` is the roadmap flow
+(§16) — pitch, not v1.

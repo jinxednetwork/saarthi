@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Deploy the Saarthi MP dashboard + API to Cloud Run (from the Dockerfile).
-# Run from the repo root:  bash deploy-app.sh
+# Run from the repo root:  bash deploy/deploy-app.sh
 set -euo pipefail
 
 GCLOUD="$HOME/google-cloud-sdk/bin/gcloud"
@@ -19,6 +19,20 @@ if [ -n "${MAPS_KEY:-}" ]; then
   echo "Maps key found — deploying with Google Maps enabled."
 else
   echo "No Maps key in app/.env.local — deploying with the Leaflet fallback."
+fi
+
+# WhatsApp Business Cloud API: same gitignored-local-file pattern as the Maps
+# key above, so the four secrets never land in the (public) repo.
+for VAR in WHATSAPP_VERIFY_TOKEN WHATSAPP_ACCESS_TOKEN WHATSAPP_PHONE_NUMBER_ID WHATSAPP_APP_SECRET; do
+  VAL="$(grep -E "^${VAR}=" app/.env.local 2>/dev/null | head -1 | cut -d= -f2- || true)"
+  if [ -n "${VAL:-}" ]; then
+    ENV_VARS="${ENV_VARS},${VAR}=${VAL}"
+  fi
+done
+if grep -qE '^WHATSAPP_ACCESS_TOKEN=.+' app/.env.local 2>/dev/null; then
+  echo "WhatsApp credentials found — deploying with the /api/ingest/whatsapp webhook enabled."
+else
+  echo "No WhatsApp credentials in app/.env.local — webhook will reject Meta's verification handshake."
 fi
 
 "$GCLOUD" run deploy saarthi-app \

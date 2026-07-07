@@ -10,3 +10,9 @@
 # User's local download folder — not part of the build.
 Testing
 **/*.log
+# Docs, design assets, deploy scripts — not needed by the Docker build.
+docs
+deploy
+**/*.pdf
+Awaaz Design Session Handoff
+Awaaz Design Session Handoff.zip

@@ -36,8 +36,19 @@ scratch/
 data/generated/
 .impeccable/
 
+# Editor / local tooling
+.claude/
+
+# Obsolete "Awaaz" design export — kept on disk, not tracked
+Awaaz Design Session Handoff/
+Awaaz Design Session Handoff.zip
+*.zip
+
 # Local PDF download test folder
 Testing/
+
+# Pitch prep — internal, not part of the product
+pitch/
 
 # Next.js generated types
 next-env.d.ts

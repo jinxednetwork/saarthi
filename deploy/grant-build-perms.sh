@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # One-time: let Cloud Build (running as the Compute Engine default service
 # account on new projects) read the source bucket and push images.
-# Run from the repo root:  bash grant-build-perms.sh
+# Run from the repo root:  bash deploy/grant-build-perms.sh
 set -euo pipefail
 
 GCLOUD="$HOME/google-cloud-sdk/bin/gcloud"

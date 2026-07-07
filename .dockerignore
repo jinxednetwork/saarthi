@@ -6,3 +6,7 @@ Testing
 .git
 .github
 **/*.log
+docs
+deploy
+**/*.pdf
+Awaaz Design Session Handoff

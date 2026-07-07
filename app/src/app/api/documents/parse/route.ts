@@ -74,6 +74,12 @@ function mockParse(filename: string): ParseResponse {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // Reject oversize bodies up front, before formData() buffers the whole upload
+  // into memory (margin over MAX_BYTES covers multipart framing overhead).
+  const declaredLen = Number(request.headers.get("content-length"));
+  if (Number.isFinite(declaredLen) && declaredLen > MAX_BYTES + 1_000_000) {
+    return Response.json({ error: "File too large (max 10 MB)." }, { status: 413 });
+  }
   let file: File | null = null;
   try {
     const form = await request.formData();

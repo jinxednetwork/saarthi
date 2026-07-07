@@ -60,6 +60,11 @@ export function findMatchingCluster(
         cluster.geo.centroid,
       );
       if (distanceKm > CLUSTER_THRESHOLDS.maxDistanceKm) continue;
+    } else if (submission.geo.ward !== cluster.geo.ward) {
+      // No coordinates: fall back to ward equality as the proximity proxy so the
+      // distance rule isn't silently skipped — a locationless post can't merge
+      // into a cluster in a different ward.
+      continue;
     }
 
     if (!best || similarity > best.similarity) {

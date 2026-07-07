@@ -2,6 +2,7 @@ import type {
   Cluster,
   Submission,
   SubmissionSource,
+  Urgency,
 } from "@saarthi/shared";
 import type { AiClient } from "./lib/ai-client";
 import { ts } from "./lib/time";
@@ -71,6 +72,10 @@ export interface AssignmentResult {
  * Cluster assignment step 10 (§7.7 / §8.1): attach to the best existing cluster or
  * spawn a new one. Mutates the matched cluster's membership + centroid in place.
  */
+const URGENCY_ORDER: Urgency[] = ["low", "medium", "high", "critical"];
+const higherUrgency = (a: Urgency, b: Urgency): Urgency =>
+  URGENCY_ORDER.indexOf(b) > URGENCY_ORDER.indexOf(a) ? b : a;
+
 export function assignToCluster(
   submission: Submission,
   clusters: Cluster[],
@@ -83,11 +88,30 @@ export function assignToCluster(
     c.submission_ids.push(submission.id);
     c.submission_count += 1;
     c.source_breakdown[submission.source] += 1;
+    const prior = c.submission_count - 1; // members before this one
     c.centroid_embedding = updateCentroid(
       c.centroid_embedding,
-      c.submission_count - 1,
+      prior,
       submission.embedding,
     );
+    // Escalate urgency so a later critical report lifts the cluster's rank
+    // (previously frozen at the first submission's urgency).
+    c.urgency = higherUrgency(c.urgency, submission.urgency);
+    // Roll the geographic centroid + bounding box forward too, not just the
+    // embedding — otherwise proximity matching stays anchored to the seed point.
+    if (submission.geo.lat != null && submission.geo.lng != null) {
+      c.geo.centroid = {
+        lat: (c.geo.centroid.lat * prior + submission.geo.lat) / (prior + 1),
+        lng: (c.geo.centroid.lng * prior + submission.geo.lng) / (prior + 1),
+      };
+      const [minLng, minLat, maxLng, maxLat] = c.geo.bounding_box;
+      c.geo.bounding_box = [
+        Math.min(minLng, submission.geo.lng),
+        Math.min(minLat, submission.geo.lat),
+        Math.max(maxLng, submission.geo.lng),
+        Math.max(maxLat, submission.geo.lat),
+      ];
+    }
     c.updated_at = submission.created_at;
     submission.cluster_id = c.id;
     return { submission, clusterId: c.id, created: false };

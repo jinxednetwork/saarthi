@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { CITIZEN_CATEGORIES, NEW_DELHI_WARDS, type SubmitTicketInput } from "@saarthi/shared";
 import { describePhoto, transcribeAudio } from "@/lib/ai/media";
-import { createTicket, listTickets } from "@/lib/citizen-tickets-store";
+import { createTicket, findTicket, listTickets } from "@/lib/citizen-tickets-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,7 +22,15 @@ export function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Single-ticket lookup for the portal's "track your report" — returns just the
+  // caller's own ticket instead of shipping every citizen's grievance + GPS.
+  const id = new URL(request.url).searchParams.get("id");
+  if (id) {
+    const ticket = await findTicket(id);
+    if (!ticket) return NextResponse.json({ error: "Not found." }, { status: 404, headers: CORS });
+    return NextResponse.json({ ticket }, { headers: CORS });
+  }
   const tickets = await listTickets();
   return NextResponse.json({ tickets }, { headers: CORS });
 }
@@ -63,6 +71,8 @@ export async function POST(request: Request) {
       description,
       photoCount: Math.max(0, Math.min(8, Number(body.photoCount) || 0)),
       hasVoice: Boolean(body.hasVoice),
+      lat: typeof body.lat === "number" ? body.lat : undefined,
+      lng: typeof body.lng === "number" ? body.lng : undefined,
     },
     { photoInsight, voiceTranscript },
   );

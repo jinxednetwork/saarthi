@@ -49,7 +49,7 @@ function generate(count: number): SeedSubmission[] {
   const base = Date.parse("2026-06-03T00:00:00Z"); // fixed 30-day window before demo
   const out: SeedSubmission[] = [];
   for (let i = 0; i < count; i++) {
-    const category = CATEGORIES[Math.floor(rand() * (CATEGORIES.length - 1))] ?? "water";
+    const category = CATEGORIES[Math.floor(rand() * CATEGORIES.length)] ?? "water";
     const source = SUBMISSION_SOURCES[Math.floor(rand() * SUBMISSION_SOURCES.length)] ?? "whatsapp";
     const ward = WARDS[Math.floor(rand() * WARDS.length)] ?? "chandrapur";
     const tmpls = TEMPLATES[category];

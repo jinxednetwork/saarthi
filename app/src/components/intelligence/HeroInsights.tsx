@@ -46,12 +46,12 @@ export function HeroInsights() {
         <article className="glass-strong relative overflow-hidden rounded-xl px-7 py-6">
           <div
             className="pointer-events-none absolute right-0 top-0 h-[220px] w-[220px]"
-            style={{ background: "radial-gradient(circle at top right, hsl(var(--saffron))12, transparent 70%)" }}
+            style={{ background: "radial-gradient(circle at top right, hsl(var(--saffron) / 0.12), transparent 70%)" }}
           />
           <div className="mb-[18px] flex items-center gap-2.5">
             <span
               className="flex h-8 w-8 items-center justify-center rounded-lg"
-              style={{ background: "hsl(var(--saffron))18", color: "hsl(var(--saffron))" }}
+              style={{ background: "hsl(var(--saffron) / 0.18)", color: "hsl(var(--saffron))" }}
             >
               <TrendUpIcon />
             </span>
@@ -99,12 +99,12 @@ export function HeroInsights() {
         <article className="glass-strong relative overflow-hidden rounded-xl px-7 py-6">
           <div
             className="pointer-events-none absolute right-0 top-0 h-[220px] w-[220px]"
-            style={{ background: "radial-gradient(circle at top right, hsl(var(--primary-brand))12, transparent 70%)" }}
+            style={{ background: "radial-gradient(circle at top right, hsl(var(--primary-brand) / 0.12), transparent 70%)" }}
           />
           <div className="mb-[18px] flex items-center gap-2.5">
             <span
               className="flex h-8 w-8 items-center justify-center rounded-lg"
-              style={{ background: "hsl(var(--primary-brand))18", color: "hsl(var(--primary-brand))" }}
+              style={{ background: "hsl(var(--primary-brand) / 0.18)", color: "hsl(var(--primary-brand))" }}
             >
               <RupeeIcon />
             </span>

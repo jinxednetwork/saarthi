@@ -3,7 +3,6 @@
 import { ChevronRight } from "lucide-react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDashboardStore } from "@/lib/dashboard-store";
 import { DASHBOARD_META, topClusters } from "@/lib/mock-data";
 import { PATHWAY_UI, URGENCY_UI, trendLabel } from "@/lib/ui";
@@ -14,8 +13,10 @@ import { PATHWAY_UI, URGENCY_UI, trendLabel } from "@/lib/ui";
  */
 export function PriorityQueue() {
   const { t } = useI18n();
-  const { dispatched, selectCluster } = useDashboardStore();
-  const cards = topClusters(5);
+  const { dispatched, selectCluster, promotedClusters } = useDashboardStore();
+  // Freshly promoted issues bubble to the top of the queue, capped at 5 to match
+  // the "Top 5" header (otherwise the list grew to 6+ rows after any promotion).
+  const cards = [...promotedClusters, ...topClusters(5)].slice(0, 5);
 
   return (
     <CollapsiblePanel
@@ -26,7 +27,10 @@ export function PriorityQueue() {
         <span className="text-[11px] text-faint">Top 5 of {DASHBOARD_META.openClusters} open</span>
       }
     >
-      <ScrollArea className="min-h-0 flex-1">
+      {/* Native scroll, not Radix ScrollArea — its table-display viewport lets a
+          long promoted-issue title inflate the width and clip (same trap as the
+          cluster drawer). */}
+      <div className="min-h-0 flex-1 overflow-y-auto">
         <div>
           {cards.map((c, i) => {
             const u = URGENCY_UI[c.urgency];
@@ -66,7 +70,7 @@ export function PriorityQueue() {
                     {trend}
                   </span>
                 </span>
-                <span className="mb-0.5 block text-[13.5px] font-medium leading-snug text-ink">
+                <span className="mb-0.5 line-clamp-2 block break-words text-[13.5px] font-medium leading-snug text-ink">
                   {c.title}
                 </span>
                 <span className="mb-2 block text-[11.5px] text-muted-foreground">
@@ -79,7 +83,7 @@ export function PriorityQueue() {
                   >
                     {p.label}
                   </span>
-                  <span className="flex-1 truncate text-[11px] text-muted-foreground">
+                  <span className="min-w-0 flex-1 truncate text-[11px] text-muted-foreground">
                     {c.ui.queueSuggestion ?? c.suggested_action.title}
                   </span>
                   <ChevronRight className="h-3 w-3 shrink-0 text-faint" />
@@ -88,7 +92,7 @@ export function PriorityQueue() {
             );
           })}
         </div>
-      </ScrollArea>
+      </div>
     </CollapsiblePanel>
   );
 }

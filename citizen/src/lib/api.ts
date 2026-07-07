@@ -19,8 +19,12 @@ export async function submitTicket(input: SubmitTicketInput): Promise<CitizenTic
 }
 
 export async function findTicket(id: string): Promise<CitizenTicket | undefined> {
-  const res = await fetch(`${BASE}/api/citizen/tickets`, { cache: "no-store" });
+  // Look up the single ticket by id (server normalises casing/whitespace) rather
+  // than downloading the whole list — no other citizen's data crosses the wire.
+  const res = await fetch(`${BASE}/api/citizen/tickets?id=${encodeURIComponent(id.trim())}`, {
+    cache: "no-store",
+  });
+  if (res.status === 404) return undefined;
   const data = await res.json();
-  const norm = id.trim().toUpperCase();
-  return (data.tickets as CitizenTicket[] | undefined)?.find((t) => t.id.toUpperCase() === norm);
+  return data.ticket as CitizenTicket | undefined;
 }

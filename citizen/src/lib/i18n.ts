@@ -22,7 +22,7 @@ export function translate(
   let value = dict[key] ?? (en as Dictionary)[key] ?? key;
   if (vars) {
     for (const [k, v] of Object.entries(vars)) {
-      value = value.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
+      value = value.replaceAll(`{${k}}`, String(v));
     }
   }
   return value;

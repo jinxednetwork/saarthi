@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   Camera,
@@ -56,6 +56,28 @@ function downscaleImage(file: File, max = 1024): Promise<string> {
 }
 
 const fmtSecs = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+/** Best-effort device location at submit time. Never rejects — denial/timeout/unsupported just means no coordinates. */
+function getLocation(timeoutMs = 4000): Promise<{ lat: number; lng: number } | undefined> {
+  return new Promise((resolve) => {
+    if (!("geolocation" in navigator)) {
+      resolve(undefined);
+      return;
+    }
+    const timer = setTimeout(() => resolve(undefined), timeoutMs);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        clearTimeout(timer);
+        resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      () => {
+        clearTimeout(timer);
+        resolve(undefined);
+      },
+      { timeout: timeoutMs, maximumAge: 60_000 },
+    );
+  });
+}
 
 const FIELD =
   "w-full rounded-xl border border-input bg-panel px-4 py-3 text-[15px] text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring";
@@ -149,10 +171,24 @@ export function CitizenPortal() {
   }
 
   function stopRec() {
-    recRef.current?.stop();
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    // Guard: stop() on an already-inactive recorder throws. onstop releases the mic tracks.
+    if (recRef.current && recRef.current.state !== "inactive") recRef.current.stop();
     setRecording(false);
-    if (timerRef.current) clearInterval(timerRef.current);
   }
+
+  // Release the mic + timer if the portal unmounts mid-recording (the component
+  // stays mounted on report/track mode switches, so those stop the mic explicitly).
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (recRef.current && recRef.current.state !== "inactive") recRef.current.stop();
+    },
+    [],
+  );
 
   function clearVoice() {
     setVoiceDataUrl(undefined);
@@ -172,6 +208,7 @@ export function CitizenPortal() {
     const cat = CITIZEN_CATEGORIES.find((c) => c.category === category)!;
     setSubmitting(true);
     try {
+      const loc = await getLocation();
       const created = await submitTicket({
         phone,
         category,
@@ -183,6 +220,8 @@ export function CitizenPortal() {
         hasVoice: Boolean(voiceDataUrl),
         photoDataUrl,
         voiceDataUrl,
+        lat: loc?.lat,
+        lng: loc?.lng,
       });
       setTicket(created);
       setStep("done");
@@ -225,7 +264,10 @@ export function CitizenPortal() {
             </p>
           </div>
           <button
-            onClick={() => setMode("track")}
+            onClick={() => {
+              stopRec();
+              setMode("track");
+            }}
             className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-primary hover:underline"
           >
             <Search className="h-3.5 w-3.5" />
@@ -388,7 +430,16 @@ export function CitizenPortal() {
                     className="flex items-center gap-1 rounded-full bg-chip px-2.5 py-1 text-[11px] text-muted-foreground"
                   >
                     <span className="max-w-[120px] truncate">{n}</span>
-                    <button onClick={() => setPhotoNames((p) => p.filter((_, idx) => idx !== i))} aria-label="remove">
+                    <button
+                      onClick={() => {
+                        const next = photoNames.filter((_, idx) => idx !== i);
+                        setPhotoNames(next);
+                        // Drop the captured vision data-URL once no photo remains, so a
+                        // removed (or later re-added) photo isn't sent for AI vision.
+                        if (next.length === 0) setPhotoDataUrl(undefined);
+                      }}
+                      aria-label="remove"
+                    >
                       <X className="h-3 w-3" />
                     </button>
                   </span>

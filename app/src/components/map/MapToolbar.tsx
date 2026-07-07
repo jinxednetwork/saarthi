@@ -1,17 +1,19 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import type { Urgency } from "@saarthi/shared";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CATEGORY_GROUPS, type CategoryGroup, groupOf } from "@/lib/categories";
 import { type MapFilter, type TimeRange, useDashboardStore } from "@/lib/dashboard-store";
 import { MOCK_CLUSTERS } from "@/lib/mock-data";
+import { cn } from "@/lib/utils";
 
-const LEGEND = [
-  { label: "Critical", varName: "--urgency-critical" },
-  { label: "High", varName: "--urgency-high" },
-  { label: "Medium", varName: "--urgency-medium" },
-  { label: "Low", varName: "--urgency-low" },
+const LEGEND: { key: Urgency; label: string; varName: string }[] = [
+  { key: "critical", label: "Critical", varName: "--urgency-critical" },
+  { key: "high", label: "High", varName: "--urgency-high" },
+  { key: "medium", label: "Medium", varName: "--urgency-medium" },
+  { key: "low", label: "Low", varName: "--urgency-low" },
 ];
 
 const RANGES: TimeRange[] = ["7d", "30d", "90d"];
@@ -22,15 +24,18 @@ function filterLabel(filter: MapFilter): string {
 
 /**
  * Floating glass bar at the map's bottom edge: category filter (Radix Popover —
- * Esc/focus handled), time range, urgency legend, visible-cluster count.
+ * Esc/focus handled), time range, clickable urgency legend (emphasises that
+ * urgency on the map — dims the rest), and the radar / AI-overwatch toggle.
  */
 export function MapToolbar() {
-  const { activeFilter, timeRange, setFilter, setTimeRange } = useDashboardStore();
-
-  const visibleCount =
-    activeFilter === "all"
-      ? MOCK_CLUSTERS.length
-      : MOCK_CLUSTERS.filter((c) => groupOf(c.category) === activeFilter).length;
+  const {
+    activeFilter,
+    timeRange,
+    setFilter,
+    setTimeRange,
+    urgencyEmphasis,
+    toggleUrgency,
+  } = useDashboardStore();
 
   const chips: { key: MapFilter; label: string; count: number; color?: string }[] = [
     { key: "all", label: "All categories", count: MOCK_CLUSTERS.length },
@@ -98,20 +103,28 @@ export function MapToolbar() {
         </PopoverContent>
       </Popover>
 
-      {/* Legend */}
-      <div className="glass flex h-8 items-center gap-3 rounded-full px-3">
-        {LEGEND.map((l) => (
-          <span key={l.label} className="flex items-center gap-1.5 text-[10.5px] text-ink">
-            <span className="h-2 w-2 rounded-full" style={{ background: `hsl(var(${l.varName}))` }} />
-            {l.label}
-          </span>
-        ))}
-      </div>
-
-      {/* Visible count */}
-      <div className="glass flex h-8 items-baseline gap-1.5 rounded-full px-3">
-        <span className="num text-[13px] font-semibold text-ink">{visibleCount}</span>
-        <span className="text-[10.5px] text-muted-foreground">visible clusters</span>
+      {/* Urgency legend — click to emphasise that level on the map */}
+      <div className="glass flex h-8 items-center gap-0.5 rounded-full px-1">
+        {LEGEND.map((l) => {
+          const active = urgencyEmphasis.includes(l.key);
+          const anyActive = urgencyEmphasis.length > 0;
+          return (
+            <button
+              key={l.key}
+              onClick={() => toggleUrgency(l.key)}
+              aria-pressed={active}
+              title={`Emphasise ${l.label} on the map`}
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-1.5 py-1 text-[10.5px] transition-colors",
+                active ? "bg-chip font-medium text-ink" : "text-ink hover:bg-chip/60",
+                anyActive && !active && "opacity-45",
+              )}
+            >
+              <span className="h-2 w-2 rounded-full" style={{ background: `hsl(var(${l.varName}))` }} />
+              {l.label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

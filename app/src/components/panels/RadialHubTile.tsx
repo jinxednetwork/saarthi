@@ -1,10 +1,17 @@
 "use client";
 
+import { Radar, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { SourceIcon } from "@/components/icons";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { CollapsiblePanel } from "@/components/panels/CollapsiblePanel";
 import { useDashboardStore } from "@/lib/dashboard-store";
 import { DASHBOARD_META, RADIAL_CHANNELS } from "@/lib/mock-data";
+import { minutesAgo } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+const PULLABLE = ["twitter", "reddit", "news"];
 
 const CX = 180;
 const CY = 120;
@@ -19,8 +26,14 @@ const LABEL_R = RING_R + 24;
  */
 export function RadialHubTile() {
   const { t } = useI18n();
-  const { sourceFilter, setSourceFilter } = useDashboardStore();
+  const { sourceFilter, setSourceFilter, radarOn, toggleRadar, disabledSources, toggleSource, refreshIntake, intakeRefreshing, lastIntakeRefresh } =
+    useDashboardStore();
   const [hovered, setHovered] = useState<string | null>(null);
+
+  async function onRefresh() {
+    const n = await refreshIntake();
+    toast(n >= 0 ? `Pulled ${n} new signal${n === 1 ? "" : "s"}` : "Refresh failed — try again.");
+  }
 
   const previewKey = hovered ?? (sourceFilter !== "all" ? sourceFilter : null);
   const preview = RADIAL_CHANNELS.find((c) => c.key === previewKey) ?? null;
@@ -30,9 +43,29 @@ export function RadialHubTile() {
       id="radial"
       title={t("panel.signalSources")}
       headerRight={
-        <span className="text-[11px] text-faint">
-          {sourceFilter === "all" ? "this week" : "filtering feed"}
-        </span>
+        <button
+          onClick={toggleRadar}
+          role="switch"
+          aria-checked={radarOn}
+          title="AI overwatch — auto-scans for new events and re-centres on them"
+          className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-ink"
+        >
+          <Radar className={cn("h-3.5 w-3.5", radarOn ? "text-saffron" : "text-muted-foreground")} />
+          Radar
+          <span
+            className={cn(
+              "relative inline-flex h-4 w-7 shrink-0 items-center rounded-full px-0.5 transition-colors",
+              radarOn ? "bg-saffron" : "bg-line",
+            )}
+          >
+            <span
+              className={cn(
+                "h-3 w-3 rounded-full bg-surface shadow-sm transition-transform",
+                radarOn ? "translate-x-3" : "translate-x-0",
+              )}
+            />
+          </span>
+        </button>
       }
     >
       <div className="px-4 pb-1 pt-1">
@@ -113,6 +146,60 @@ export function RadialHubTile() {
             {preview ? `${preview.trend} · this week` : `signals · ${DASHBOARD_META.sourceCount} sources`}
           </text>
         </svg>
+      </div>
+
+      {/* Connected sources — refresh + per-source on/off (off hides from feed + skips fetch) */}
+      <div className="border-t border-line/60 px-4 py-3">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-[11px] uppercase tracking-[0.06em] text-faint">Connected sources</span>
+          <button
+            onClick={onRefresh}
+            disabled={intakeRefreshing}
+            className="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-[11px] font-medium text-body transition-colors hover:border-line-dark disabled:opacity-60"
+          >
+            <RefreshCw className={cn("h-3 w-3", intakeRefreshing && "animate-spin")} />
+            {intakeRefreshing ? "Pulling…" : "Refresh"}
+          </button>
+        </div>
+        <div className="flex flex-col">
+          {RADIAL_CHANNELS.map((ch) => {
+            const on = !disabledSources.includes(ch.key);
+            const pullable = PULLABLE.includes(ch.key);
+            return (
+              <div key={ch.key} className="flex items-center gap-2 py-1">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center text-body">
+                  <SourceIcon source={ch.key} />
+                </span>
+                <span className="flex-1 text-[12px] text-ink">{ch.name}</span>
+                <span className="text-[10px] text-faint">
+                  {!on ? "off" : pullable ? "pulls" : "live"}
+                </span>
+                <button
+                  role="switch"
+                  aria-checked={on}
+                  aria-label={`Turn ${ch.name} ${on ? "off" : "on"}`}
+                  onClick={() => toggleSource(ch.key)}
+                  className={cn(
+                    "relative inline-flex h-4 w-7 shrink-0 items-center rounded-full px-0.5 transition-colors",
+                    on ? "bg-primary" : "bg-line",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "h-3 w-3 rounded-full bg-surface shadow-sm transition-transform",
+                      on ? "translate-x-3" : "translate-x-0",
+                    )}
+                  />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        {lastIntakeRefresh && (
+          <div className="mt-2 text-[10.5px] text-faint">
+            Updated {minutesAgo(Math.max(0, Math.round((Date.now() - new Date(lastIntakeRefresh).getTime()) / 60000)))}
+          </div>
+        )}
       </div>
     </CollapsiblePanel>
   );

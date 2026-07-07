@@ -24,7 +24,7 @@ export function AssistantLauncher({ collapsed }: { collapsed: boolean }) {
       aria-pressed={assistantOpen}
       aria-label={assistantOpen ? t("assistant.close") : t("sidebar.askSaarthi")}
       className={cn(
-        "flex h-10 items-center gap-3 rounded-lg px-3 transition-colors",
+        "flex h-10 w-full items-center gap-3 rounded-lg px-3 transition-colors",
         collapsed && "justify-center px-0",
         assistantOpen
           ? "bg-saffron/15 font-medium text-saffron"

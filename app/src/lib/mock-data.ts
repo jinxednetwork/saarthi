@@ -125,6 +125,8 @@ export interface ClusterUi {
   pathwayFlag?: string;
   /** Pre-seeded dispatch state (cluster #03 in the design ships in-progress). */
   dispatched?: { date: string; detail: string; progress: number };
+  /** Clickable links back to the origin posts/articles (promoted-issue evidence). */
+  sourceLinks?: { source: SubmissionSource; url: string; label: string }[];
 }
 
 export interface DemoCluster extends Cluster {
@@ -381,7 +383,96 @@ export const MOCK_CLUSTERS: DemoCluster[] = [
     urgency: "low", ward: "greater-kailash", wardLabel: "Greater Kailash",
     lat: 28.5645, lng: 77.241, count: 4, trendPct: 3, rank: 22,
   }),
+  mkCluster({
+    num: 13, title: "Open manhole hazard", category: "infrastructure", subcategory: "drainage",
+    urgency: "high", ward: "karol-bagh", wardLabel: "Karol Bagh", lat: 28.6465, lng: 77.1975,
+    count: 15, trendPct: 28, rank: 61,
+  }),
+  mkCluster({
+    num: 14, title: "Mosquito breeding — stagnant water", category: "health", subcategory: "vector_control",
+    urgency: "high", ward: "kalkaji-ext", wardLabel: "Kalkaji Ext.", lat: 28.5361, lng: 77.259,
+    count: 19, trendPct: 34, rank: 58,
+  }),
+  mkCluster({
+    num: 15, title: "Illegal garbage dumping", category: "infrastructure", subcategory: "waste",
+    urgency: "medium", ward: "patel-nagar", wardLabel: "Patel Nagar", lat: 28.6342, lng: 77.1668,
+    count: 10, trendPct: 14, rank: 45,
+  }),
+  mkCluster({
+    num: 16, title: "Low water pressure", category: "water", subcategory: "supply",
+    urgency: "medium", ward: "malviya-nagar", wardLabel: "Malviya Nagar", lat: 28.5352, lng: 77.2115,
+    count: 12, trendPct: 11, rank: 47,
+  }),
+  mkCluster({
+    num: 17, title: "Traffic signal outage", category: "infrastructure", subcategory: "roads",
+    urgency: "high", ward: "chanakyapuri", wardLabel: "Chanakyapuri", lat: 28.6013, lng: 77.1876,
+    count: 21, trendPct: 39, rank: 63,
+  }),
+  mkCluster({
+    num: 18, title: "Burning waste — air quality", category: "air_quality", subcategory: "open_burning",
+    urgency: "critical", ward: "sarai-kale-khan", wardLabel: "Sarai Kale Khan", lat: 28.6, lng: 77.255,
+    count: 33, trendPct: 120, rank: 79,
+  }),
+  mkCluster({
+    num: 19, title: "Blocked storm drain", category: "water", subcategory: "drainage",
+    urgency: "high", ward: "rk-puram", wardLabel: "R.K. Puram", lat: 28.5701, lng: 77.174,
+    count: 16, trendPct: 26, rank: 57,
+  }),
+  mkCluster({
+    num: 20, title: "Streetlight flicker complaints", category: "infrastructure", subcategory: "street_lighting",
+    urgency: "low", ward: "green-park", wardLabel: "Green Park", lat: 28.5586, lng: 77.206,
+    count: 6, trendPct: 7, rank: 33,
+  }),
+  mkCluster({
+    num: 21, title: "Clinic overcrowding", category: "health", subcategory: "public_health",
+    urgency: "medium", ward: "sarojini-nagar", wardLabel: "Sarojini Nagar", lat: 28.5772, lng: 77.1985,
+    count: 9, trendPct: 12, rank: 41,
+  }),
+  mkCluster({
+    num: 22, title: "Encroached footpath", category: "infrastructure", subcategory: "roads",
+    urgency: "low", ward: "kasturba-nagar", wardLabel: "Kasturba Nagar", lat: 28.5745, lng: 77.223,
+    count: 5, trendPct: 4, rank: 28,
+  }),
 ];
+
+/**
+ * A synthetic "just now" event for the radar / AI overwatch mode. Jittered near
+ * a random existing cluster (keeps it in-bounds and realistic), urgency weighted
+ * toward high/critical for drama. Session-only; not part of MOCK_CLUSTERS.
+ */
+const LIVE_TITLES = [
+  "New waterlogging report",
+  "Sudden AQI spike detected",
+  "Power outage cluster forming",
+  "Burst water main reported",
+  "Road accident — signal down",
+  "Sewage overflow flagged",
+  "Fresh dust-pollution surge",
+  "Garbage fire reported",
+];
+const LIVE_URGENCIES: Urgency[] = ["high", "high", "critical", "medium", "critical"];
+const LIVE_CATEGORIES: Category[] = ["water", "air_quality", "infrastructure", "health"];
+
+export function makeLiveEvent(index: number): DemoCluster {
+  const anchor = MOCK_CLUSTERS[Math.floor(Math.random() * MOCK_CLUSTERS.length)]!;
+  const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)]!;
+  const jitter = () => (Math.random() - 0.5) * 0.016;
+  const evt = mkCluster({
+    num: 900 + index,
+    title: pick(LIVE_TITLES),
+    category: pick(LIVE_CATEGORIES),
+    subcategory: "live_event",
+    urgency: pick(LIVE_URGENCIES),
+    ward: anchor.geo.ward,
+    wardLabel: anchor.ui.wardLabel,
+    lat: anchor.geo.centroid.lat + jitter(),
+    lng: anchor.geo.centroid.lng + jitter(),
+    count: 1 + Math.floor(Math.random() * 6),
+    isNew: true,
+    rank: 50,
+  });
+  return { ...evt, id: `live_${900 + index}` };
+}
 
 /** Top-N clusters by rank ("Priority action queue" / "This week's priorities"). */
 export function topClusters(n = 5): DemoCluster[] {
@@ -404,6 +495,8 @@ export interface FeedItem {
   link: string;
   /** Cluster this signal joined — click-through target. */
   clusterId?: string;
+  /** Citizen ticket this signal is, for tickets not yet joined to a cluster. */
+  ticketId?: string;
   /** Attached citizen media (photos/videos) — drives the /live collage. */
   media?: MediaAsset;
   linkNew?: boolean;

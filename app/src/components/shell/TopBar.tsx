@@ -12,7 +12,6 @@ import {
   LogOut,
   Menu,
   Radio,
-  Search,
   Send,
   Settings,
   Sparkles,
@@ -21,7 +20,7 @@ import {
 import { AccessibilityToolbar } from "@/components/a11y/AccessibilityToolbar";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
-import { BrandBars } from "@/components/icons";
+import { BrandMark } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { langMeta } from "@/lib/languages";
 import { Button } from "@/components/ui/button";
@@ -67,7 +66,7 @@ export function TopBar() {
           </SheetTrigger>
           <SheetContent side="left" className="w-64">
             <SheetTitle className="flex items-center gap-3">
-              <BrandBars />
+              <BrandMark />
               <span className="text-[17px] font-semibold tracking-tight text-ink">Saarthi</span>
             </SheetTitle>
             <nav className="mt-6 flex flex-col gap-1" aria-label="Primary">
@@ -98,15 +97,6 @@ export function TopBar() {
         <span className="font-medium">{t("topbar.constituency")}</span>
         <span className="hidden text-faint sm:inline">{MOCK_CONSTITUENCY.name}</span>
         <ChevronDown className="h-3 w-3 text-muted-foreground" />
-      </button>
-
-      {/* Search stub */}
-      <button
-        className="glass pointer-events-auto hidden h-9 cursor-pointer items-center gap-2 rounded-full px-3.5 text-[12.5px] text-faint md:inline-flex"
-        aria-label={t("topbar.search")}
-      >
-        <Search className="h-3.5 w-3.5" strokeWidth={1.75} />
-        <span>{t("topbar.search")}</span>
       </button>
 
       {/* Language notice — machine-assisted, or English fallback when untranslated */}

@@ -63,6 +63,8 @@
   "assistant.cited": "स्रोत",
   "assistant.dockPrompt": "अपने निर्वाचन क्षेत्र के बारे में सारथि से पूछें…",
   "assistant.welcome": "नमस्ते। मैं इस निर्वाचन क्षेत्र के लाइव संकेतों, बजट और कार्रवाइयों से उत्तर देता हूँ — हर दावा स्रोत सहित।",
+  "assistant.mic": "सारथि से बोलें",
+  "assistant.listening": "सुन रहा हूँ…",
   "pageHeader.intelligence.title": "इंटेलिजेंस",
   "pageHeader.proposals.title": "प्रस्ताव",
   "pageHeader.proposals.subtitle": "आपके कार्य, नागरिक माँग और सार्वजनिक डेटा पर आमने-सामने क्रमबद्ध",

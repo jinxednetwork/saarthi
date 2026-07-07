@@ -1,7 +1,8 @@
 "use client";
 
-import { MapPin, Send } from "lucide-react";
-import { CategoryIcon } from "@/components/icons";
+import { CheckCircle2, ExternalLink, MapPin, RotateCcw, Send } from "lucide-react";
+import { toast } from "sonner";
+import { CategoryIcon, SourceIcon } from "@/components/icons";
 import { CrossRefs } from "@/components/cluster/CrossRefs";
 import { DispatchProgress } from "@/components/cluster/DispatchProgress";
 import { EvidenceChips } from "@/components/cluster/EvidenceChips";
@@ -21,12 +22,16 @@ import { PATHWAY_UI, trendLabel } from "@/lib/ui";
  * evidence lives here: media, source chips, cross-references, and the action.
  */
 export function ClusterDrawer() {
-  const { selectedClusterId, closeDetail, dispatched, openComposer } = useDashboardStore();
-  const cluster = MOCK_CLUSTERS.find((c) => c.id === selectedClusterId);
+  const { selectedClusterId, closeDetail, dispatched, openComposer, closedClusterIds, closeCluster, reopenCluster, promotedClusters } =
+    useDashboardStore();
+  const cluster =
+    MOCK_CLUSTERS.find((c) => c.id === selectedClusterId) ??
+    promotedClusters.find((c) => c.id === selectedClusterId);
 
   const record = cluster ? dispatched.find((d) => d.id === cluster.id) : undefined;
   const preDispatched = cluster?.ui.dispatched != null;
   const isDispatched = preDispatched || record != null;
+  const isClosed = cluster ? closedClusterIds.includes(cluster.id) : false;
 
   return (
     <Sheet open={cluster != null} onOpenChange={(open) => !open && closeDetail()}>
@@ -101,6 +106,31 @@ export function ClusterDrawer() {
                   total={cluster.submission_count}
                 />
 
+                {cluster.ui.sourceLinks && cluster.ui.sourceLinks.length > 0 && (
+                  <div>
+                    <div className="mb-1.5 text-[11px] uppercase tracking-[0.06em] text-faint">
+                      Sources
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      {cluster.ui.sourceLinks.map((s, i) => (
+                        <a
+                          key={i}
+                          href={s.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 text-[12.5px] text-primary-link hover:underline"
+                        >
+                          <span className="flex h-4 w-4 shrink-0 items-center justify-center text-body">
+                            <SourceIcon source={s.source} />
+                          </span>
+                          <span className="truncate">{s.label}</span>
+                          <ExternalLink className="h-3 w-3 shrink-0 text-faint" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <CrossRefs prose={cluster.ui.crossRefProse} refs={cluster.cross_reference} />
 
                 {/* Action state */}
@@ -143,29 +173,60 @@ export function ClusterDrawer() {
 
             {/* Footer actions */}
             <div className="flex items-center gap-2.5 border-t border-line/60 px-5 py-4">
-              {!isDispatched && cluster.suggested_action.mplads_eligible ? (
-                <Button
-                  onClick={() => openComposer(cluster.id)}
-                  className="h-10 flex-1 rounded-full text-[13px] font-medium"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  Draft MPLADS letter
-                </Button>
-              ) : !isDispatched ? (
-                <Button
-                  onClick={() => openComposer(cluster.id)}
-                  className="h-10 flex-1 rounded-full text-[13px] font-medium"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  Draft {PATHWAY_UI[cluster.suggested_action.type].label} letter
-                </Button>
-              ) : (
+              {isClosed ? (
                 <Button
                   variant="outline"
-                  className="h-10 flex-1 rounded-full border-success text-[13px] font-medium text-success hover:bg-success/10 hover:text-success"
+                  onClick={() => {
+                    reopenCluster(cluster.id);
+                    toast("Issue reopened", { description: cluster.title });
+                  }}
+                  className="h-10 flex-1 rounded-full text-[13px] font-medium"
                 >
-                  View action log
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Reopen issue
                 </Button>
+              ) : (
+                <>
+                  {!isDispatched && cluster.suggested_action.mplads_eligible ? (
+                    <Button
+                      onClick={() => openComposer(cluster.id)}
+                      className="h-10 flex-1 rounded-full text-[13px] font-medium"
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                      Draft MPLADS letter
+                    </Button>
+                  ) : !isDispatched ? (
+                    <Button
+                      onClick={() => openComposer(cluster.id)}
+                      className="h-10 flex-1 rounded-full text-[13px] font-medium"
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                      Draft {PATHWAY_UI[cluster.suggested_action.type].label} letter
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="h-10 flex-1 rounded-full border-success text-[13px] font-medium text-success hover:bg-success/10 hover:text-success"
+                    >
+                      View action log
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    className="h-10 w-10 shrink-0 rounded-full p-0"
+                    onClick={() => {
+                      closeCluster(cluster.id);
+                      toast.success("Issue marked resolved", {
+                        description: cluster.title,
+                        action: { label: "Undo", onClick: () => reopenCluster(cluster.id) },
+                      });
+                    }}
+                    title="Mark this issue resolved"
+                    aria-label="Mark this issue resolved"
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  </Button>
+                </>
               )}
               <Button
                 variant="outline"

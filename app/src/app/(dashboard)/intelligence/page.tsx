@@ -42,7 +42,6 @@ export default function IntelligencePage() {
 
         <div className="flex flex-col gap-4">
           <HeroInsights />
-          <LiveIntake />
           <OutlookChart />
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -50,6 +49,8 @@ export default function IntelligencePage() {
             <WardHotspots />
             <ResponseBenchmark />
           </div>
+
+          <LiveIntake />
 
           <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-4">
             <div className="lg:col-span-2 [&>*]:h-full">

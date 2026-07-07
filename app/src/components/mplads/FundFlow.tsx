@@ -20,8 +20,10 @@ export function FundFlow() {
   const unspent = allocation - utilised;
   const [open, setOpen] = useState<string | null>(spend[0]?.sector ?? null);
 
+  // Ordered so adjacent segments never share a hue family (blue → orange →
+  // green, cycled) — otherwise saffron/urgency-high/pathway-state read as one brown.
   const palette = colors
-    ? [colors.link, colors.saffron, colors["primary-brand"], colors.success, colors["urgency-high"], colors["pathway-state"], colors["urgency-low"]]
+    ? [colors.link, colors.saffron, colors.success, colors["urgency-low"], colors["urgency-high"], colors["primary-brand"], colors["pathway-state"]]
     : [];
   const colorFor = (i: number) => palette[i % palette.length] ?? "hsl(var(--muted-fg))";
 

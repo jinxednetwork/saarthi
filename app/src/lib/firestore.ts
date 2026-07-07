@@ -35,6 +35,14 @@ async function connect(): Promise<Firestore | null> {
       });
     }
     const db = getFirestore();
+    // Optional fields (e.g. a signal's mediaUrl) arrive as `undefined`; Firestore
+    // rejects undefined values unless told to ignore them. Guarded because
+    // settings() throws if the instance was already used (HMR re-imports).
+    try {
+      db.settings({ ignoreUndefinedProperties: true });
+    } catch {
+      /* already configured this process */
+    }
     // Init never touches the network, so it "succeeds" even when the Firestore
     // API is disabled or no database exists — the failure only surfaces on the
     // first real call. Probe once here so a misconfigured project degrades to

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { AssistantLauncher } from "@/components/assistant/AssistantLauncher";
 import { useI18n } from "@/components/i18n/I18nProvider";
-import { BrandBars } from "@/components/icons";
+import { BrandMark } from "@/components/icons";
 import {
   Tooltip,
   TooltipContent,
@@ -70,15 +70,15 @@ export function Sidebar() {
         <Link
           href="/dashboard"
           className={cn(
-            "flex h-16 items-center gap-3 border-b border-line/60 px-5 no-underline",
+            "flex h-16 items-center gap-3 border-b border-line/60 px-[18px] no-underline",
             sidebarCollapsed && "justify-center px-0",
           )}
         >
-          <BrandBars />
+          <BrandMark size={30} />
           {!sidebarCollapsed && (
             <span className="flex items-baseline gap-2 leading-none">
-              <span className="text-[17px] font-semibold tracking-tight text-ink">Saarthi</span>
-              <span className="hi text-xs text-faint">सारथि</span>
+              <span className="text-[19px] font-semibold tracking-tight text-ink">Saarthi</span>
+              <span className="hi text-[13px] text-faint">सारथि</span>
             </span>
           )}
         </Link>

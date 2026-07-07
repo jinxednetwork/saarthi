@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUp, ExternalLink, FileText, Sparkles, X } from "lucide-react";
+import { ArrowUp, ExternalLink, FileText, Mic, Sparkles, X } from "lucide-react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { useStagedReveal } from "@/components/assistant/useStagedReveal";
+import { useVoiceInput } from "@/components/assistant/useVoiceInput";
 import type { AssistantCitation, AssistantMessage } from "@/lib/assistant-brain";
 import { useDashboardStore } from "@/lib/dashboard-store";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,16 @@ export function AssistantPanel({ className }: { className?: string }) {
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const voice = useVoiceInput((text) => {
+    askAssistant(text, { voice: true });
+    setDraft("");
+    voice.reset();
+  });
+
+  useEffect(() => {
+    if (voice.state === "listening") setDraft(voice.interim);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voice.interim]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -101,10 +112,27 @@ export function AssistantPanel({ className }: { className?: string }) {
           ref={inputRef}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder={t("assistant.placeholder")}
+          placeholder={voice.state === "listening" ? t("assistant.listening") : t("assistant.placeholder")}
           aria-label={t("sidebar.askSaarthi")}
           className="h-9 min-w-0 flex-1 rounded-full border border-input bg-surface/70 px-3.5 text-[12.5px] text-ink placeholder:text-faint focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
         />
+        {voice.supported && (
+          <button
+            type="button"
+            onClick={() => (voice.state === "listening" ? voice.stop() : voice.start())}
+            disabled={voice.state === "processing" || assistantThinking}
+            aria-label={t("assistant.mic")}
+            aria-pressed={voice.state === "listening"}
+            className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-input text-muted-foreground transition-colors disabled:opacity-40",
+              voice.state === "listening"
+                ? "animate-livePulseFast border-saffron/60 bg-saffron/10 text-saffron"
+                : "hover:bg-chip hover:text-ink",
+            )}
+          >
+            <Mic className="h-4 w-4" />
+          </button>
+        )}
         <button
           type="submit"
           disabled={!draft.trim() || assistantThinking}

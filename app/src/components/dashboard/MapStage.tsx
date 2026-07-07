@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { AssistantDock } from "@/components/assistant/AssistantDock";
 import { ConstituencyMap } from "@/components/map/ConstituencyMap";
 import { MapToolbar } from "@/components/map/MapToolbar";
+import { RadarOverwatch } from "@/components/dashboard/RadarOverwatch";
 import { LiveFeed } from "@/components/live-feed/LiveFeed";
 import { KpiStack } from "@/components/panels/KpiStack";
 import { RadialHubTile } from "@/components/panels/RadialHubTile";
@@ -31,6 +32,7 @@ export function MapStage() {
 
   return (
     <div className="isolate h-full overflow-y-auto pt-16 lg:relative lg:overflow-hidden lg:pt-0">
+      <RadarOverwatch />
       {/* Map — block on mobile, full-bleed behind panels on lg+ */}
       <div className="relative z-0 mx-4 h-[45vh] overflow-hidden rounded-xl lg:absolute lg:inset-0 lg:m-0 lg:h-auto lg:rounded-none">
         <ConstituencyMap filter={activeFilter} onSelect={selectCluster} />
@@ -49,10 +51,14 @@ export function MapStage() {
           <PriorityQueue />
         </div>
 
-        {/* Centre: map breathing room; assistant island + toolbar at the bottom */}
-        <div className="hidden min-h-0 flex-col items-center justify-end gap-2.5 lg:flex">
-          <AssistantDock />
-          <MapToolbar />
+        {/* Centre: map breathing room; assistant island + toolbar at the bottom.
+            The inner wrapper gives the dock and toolbar a shared width + left
+            edge (dock aligns with the "All categories" pill). */}
+        <div className="hidden min-h-0 flex-col items-center justify-end lg:flex">
+          <div className="flex w-full max-w-[720px] flex-col items-stretch gap-2.5">
+            <AssistantDock />
+            <MapToolbar />
+          </div>
         </div>
 
         {/* Right: signal sources + live feed */}

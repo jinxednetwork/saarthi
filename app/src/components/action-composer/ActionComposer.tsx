@@ -51,8 +51,10 @@ Member of Parliament, New Delhi Lok Sabha`;
  * stakes act in the product; it earns a two-step.
  */
 export function ActionComposer() {
-  const { composerClusterId, closeComposer, sendLetter, dispatched } = useDashboardStore();
-  const cluster = MOCK_CLUSTERS.find((c) => c.id === composerClusterId);
+  const { composerClusterId, closeComposer, sendLetter, dispatched, promotedClusters } = useDashboardStore();
+  const cluster =
+    MOCK_CLUSTERS.find((c) => c.id === composerClusterId) ??
+    promotedClusters.find((c) => c.id === composerClusterId);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [body, setBody] = useState("");

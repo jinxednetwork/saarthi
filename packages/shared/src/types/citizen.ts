@@ -25,6 +25,9 @@ export interface CitizenTicket {
   status: TicketStatus;
   /** ISO timestamp. */
   createdAt: string;
+  /** Best-effort device location at submit time (browser Geolocation API). */
+  lat?: number;
+  lng?: number;
 }
 
 export interface SubmitTicketInput {
@@ -40,6 +43,8 @@ export interface SubmitTicketInput {
   photoDataUrl?: string;
   /** Data-URL of the recorded voice note for Gemini transcription. */
   voiceDataUrl?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface CitizenCategoryOption {

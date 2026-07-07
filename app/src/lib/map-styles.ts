@@ -10,13 +10,14 @@
  */
 export const MAP_STYLE_DARK: google.maps.MapTypeStyle[] = [
   { elementType: "geometry", stylers: [{ color: "#0e1626" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#5b6b86" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#0b1220" }, { weight: 2 }] },
+  // Labels softened toward the canvas so the glass panels + markers stay dominant.
+  { elementType: "labels.text.fill", stylers: [{ color: "#414e66" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#0b1220" }, { weight: 1.5 }] },
   { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
   { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#2a3a55" }] },
   { featureType: "administrative.land_parcel", stylers: [{ visibility: "off" }] },
-  { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#8798b5" }] },
-  { featureType: "administrative.neighborhood", elementType: "labels.text.fill", stylers: [{ color: "#6d7d9c" }] },
+  { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#5c6b86" }] },
+  { featureType: "administrative.neighborhood", elementType: "labels.text.fill", stylers: [{ color: "#4b5972" }] },
   { featureType: "poi", stylers: [{ visibility: "off" }] },
   { featureType: "road", elementType: "geometry", stylers: [{ color: "#1a2740" }] },
   { featureType: "road", elementType: "labels", stylers: [{ visibility: "off" }] },
@@ -27,12 +28,14 @@ export const MAP_STYLE_DARK: google.maps.MapTypeStyle[] = [
 
 export const MAP_STYLE_LIGHT: google.maps.MapTypeStyle[] = [
   { elementType: "geometry", stylers: [{ color: "#f2eee4" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#8a8371" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#f6f2ea" }, { weight: 2 }] },
+  // Labels softened toward the canvas so the glass panels + markers stay dominant.
+  { elementType: "labels.text.fill", stylers: [{ color: "#b0a893" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#f6f2ea" }, { weight: 1.5 }] },
   { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
   { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#d9d1c0" }] },
   { featureType: "administrative.land_parcel", stylers: [{ visibility: "off" }] },
-  { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#6f6957" }] },
+  { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#9a927d" }] },
+  { featureType: "administrative.neighborhood", elementType: "labels.text.fill", stylers: [{ color: "#b8b09b" }] },
   { featureType: "poi", stylers: [{ visibility: "off" }] },
   { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
   { featureType: "road", elementType: "labels", stylers: [{ visibility: "off" }] },

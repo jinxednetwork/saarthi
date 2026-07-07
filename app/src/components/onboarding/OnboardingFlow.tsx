@@ -53,7 +53,7 @@ export function OnboardingFlow() {
       }}
     >
       <DialogContent
-        className="w-[calc(100%-2rem)] max-w-[460px] gap-0 overflow-hidden border-line/60 bg-surface p-0"
+        className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-[460px] flex-col gap-0 overflow-hidden border-line/60 bg-surface p-0"
         onInteractOutside={(e) => e.preventDefault()}
       >
         {/* Progress */}
@@ -69,7 +69,7 @@ export function OnboardingFlow() {
           ))}
         </div>
 
-        <div className="px-6 pb-6 pt-5">
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-5">
           {step === 0 && (
             <Step
               icon={<Sparkles className="h-5 w-5" />}

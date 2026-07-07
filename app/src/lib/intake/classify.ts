@@ -72,6 +72,7 @@ function keywordEnrich(p: RawPost): Omit<EnrichedSignal, "embedding" | "mode"> {
     sentiment,
     ward,
     summary: p.title || p.text.slice(0, 120),
+    mediaUrl: p.mediaUrl,
   };
 }
 
@@ -125,6 +126,7 @@ export async function enrich(posts: RawPost[]): Promise<EnrichedSignal[]> {
         text: p.text || p.title,
         ...base,
         embedding: embeddings[i] ?? [],
+        mediaUrl: p.mediaUrl,
         mode: "gemini" as const,
       };
     });

@@ -299,6 +299,64 @@
   border-top-color: hsl(var(--ink));
 }
 
+/* Ask-Saarthi search pill: a saffron light-trail orbits the border — faint at
+   rest, brighter/faster on hover. @property lets the angle interpolate; without
+   it the ring degrades to static (acceptable). */
+@property --trail-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes borderTrail {
+  to {
+    --trail-angle: 360deg;
+  }
+}
+.border-trail {
+  position: relative;
+}
+.border-trail::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px; /* ring thickness */
+  background: conic-gradient(
+    from var(--trail-angle),
+    transparent 55%,
+    hsl(var(--saffron) / 0.7) 78%,
+    hsl(var(--saffron)) 88%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude; /* show only the 1px ring, not the fill */
+  opacity: 0.45;
+  animation: borderTrail 7s linear infinite;
+  pointer-events: none;
+}
+/* Boost brightens the trail + adds a soft halo. Deliberately does NOT change
+   animation-duration — swapping it mid-run recomputes the angle and teleports
+   the light to a new spot on the ring. */
+.border-trail:hover::before,
+.border-trail:focus-visible::before {
+  opacity: 1;
+}
+.border-trail {
+  transition: box-shadow 0.3s ease;
+}
+.border-trail:hover,
+.border-trail:focus-visible {
+  box-shadow: 0 6px 26px hsl(var(--saffron) / 0.16);
+}
+@media (prefers-reduced-motion: reduce) {
+  .border-trail::before {
+    display: none; /* no frozen arc from the global kill-switch */
+  }
+}
+
 /* Marker halo pulse (critical clusters) */
 @keyframes halo {
   0% {

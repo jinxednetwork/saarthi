@@ -6,6 +6,7 @@
   "scripts": {
     "seed:demo": "tsx src/generate-demo-data.ts",
     "seed:firestore": "tsx src/seed-firestore.ts",
+    "sim:whatsapp": "tsx src/simulate-whatsapp.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit",
     "test": "echo \"(no tests yet)\" && exit 0",

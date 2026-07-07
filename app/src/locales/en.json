@@ -63,6 +63,8 @@
   "assistant.cited": "Cited",
   "assistant.dockPrompt": "Ask Saarthi about your constituency…",
   "assistant.welcome": "Namaste. I answer from this constituency's live signals, budget, and actions — every claim cited.",
+  "assistant.mic": "Speak to Saarthi",
+  "assistant.listening": "Listening…",
   "pageHeader.intelligence.title": "Intelligence",
   "pageHeader.proposals.title": "Proposals",
   "pageHeader.proposals.subtitle": "Your works, ranked head-to-head on citizen demand + public data",

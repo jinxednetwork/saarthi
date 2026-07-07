@@ -35,14 +35,18 @@ export function WorksLedger() {
   const selectCluster = useDashboardStore((s) => s.selectCluster);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<WorkStatus | "all">("all");
+  // Session-local status edits, keyed by work id; the ledger data is otherwise static.
+  const [overrides, setOverrides] = useState<Record<string, WorkStatus>>({});
 
   const works = useMemo(
     () => [...dispatchedToWorks(dispatched), ...SANCTIONED_WORKS],
     [dispatched],
   );
 
+  const statusOf = (w: (typeof works)[number]) => overrides[w.id] ?? w.status;
+
   const rows = works.filter((w) => {
-    if (status !== "all" && w.status !== status) return false;
+    if (status !== "all" && statusOf(w) !== status) return false;
     if (!query) return true;
     const q = query.toLowerCase();
     return (
@@ -113,13 +117,29 @@ export function WorksLedger() {
                 <td className="px-2 py-2.5 text-body">{SECTOR_LABELS[w.sector]}</td>
                 <td className="px-2 py-2.5 text-body">{w.wardLabel}</td>
                 <td className="num px-2 py-2.5 text-right text-ink">{rupeesL(w.costRupees)}</td>
-                <td className={`px-2 py-2.5 font-medium ${STATUS_STYLE[w.status]}`}>
-                  {STATUS_LABEL[w.status]}
-                  {(w.scComponent || w.stComponent) && (
-                    <span className="ml-1 rounded bg-chip px-1 py-px text-[9px] text-muted-foreground">
-                      {w.scComponent ? "SC" : "ST"}
-                    </span>
-                  )}
+                <td className="px-2 py-2.5">
+                  <div className="flex items-center gap-1">
+                    <select
+                      value={statusOf(w)}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) =>
+                        setOverrides((o) => ({ ...o, [w.id]: e.target.value as WorkStatus }))
+                      }
+                      aria-label={`Status for ${w.title}`}
+                      className={`cursor-pointer rounded border border-input bg-surface/70 py-1 pl-1.5 pr-1 text-[11.5px] font-medium focus:outline-none focus:ring-1 focus:ring-ring ${STATUS_STYLE[statusOf(w)]}`}
+                    >
+                      {(Object.keys(STATUS_LABEL) as WorkStatus[]).map((s) => (
+                        <option key={s} value={s} className="text-ink">
+                          {STATUS_LABEL[s]}
+                        </option>
+                      ))}
+                    </select>
+                    {(w.scComponent || w.stComponent) && (
+                      <span className="rounded bg-chip px-1 py-px text-[9px] text-muted-foreground">
+                        {w.scComponent ? "SC" : "ST"}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-2 py-2.5 text-faint">{w.sanctionedOn}</td>
               </tr>

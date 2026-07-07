@@ -16,6 +16,9 @@ export interface MediaAsset {
   alt: string;
   /** Duration chip for video assets, e.g. "0:14". */
   duration?: string;
+  /** Arbitrary remote host (tweet/news CDN) — render via plain <img>, not
+   * next/image, so it doesn't need a remotePatterns allowlist. */
+  external?: boolean;
 }
 
 const U = (id: string, w = 800) => `https://images.unsplash.com/${id}?w=${w}&q=70&auto=format`;

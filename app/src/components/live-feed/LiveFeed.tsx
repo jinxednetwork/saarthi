@@ -19,9 +19,17 @@ import { minutesAgo } from "@/lib/ui";
  */
 export function LiveFeed() {
   const { t } = useI18n();
-  const { dispatched, sourceFilter, setSourceFilter, selectCluster } = useDashboardStore();
+  const { dispatched, sourceFilter, setSourceFilter, selectCluster, selectTicket, setCitizenTickets, promotedClusters, liveSignals, disabledSources, loadLiveSignals, hydrateSources } =
+    useDashboardStore();
   const [tickets, setTickets] = useState<CitizenTicket[]>([]);
   const [tick, setTick] = useState(0);
+
+  // Load the MP's source on/off prefs + real intake signals once on mount.
+  useEffect(() => {
+    hydrateSources();
+    void loadLiveSignals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Poll the shared tickets API — the standalone Citizen Portal (a separate
   // deployment) POSTs grievances there; this closes the loop back to the MP.
@@ -31,7 +39,10 @@ export function LiveFeed() {
       try {
         const res = await fetch("/api/citizen/tickets");
         const data = await res.json();
-        if (alive && Array.isArray(data.tickets)) setTickets(data.tickets as CitizenTicket[]);
+        if (alive && Array.isArray(data.tickets)) {
+          setTickets(data.tickets as CitizenTicket[]);
+          setCitizenTickets(data.tickets as CitizenTicket[]);
+        }
       } catch {
         /* offline / API unreachable — feed just shows the mock signals */
       }
@@ -63,6 +74,7 @@ export function LiveFeed() {
             (tk.voiceTranscript ? ` · 🎙 “${tk.voiceTranscript}”` : ""),
           link: `citizen report · ${tk.id}`,
           clusterId: undefined as string | undefined,
+          ticketId: tk.id as string | undefined,
           hi: false,
         }))
       : [];
@@ -81,11 +93,34 @@ export function LiveFeed() {
           snippet: `Letter dispatched · Ref ${d.ref} to District Magistrate, New Delhi District.`,
           link: `action tracked · cluster #${d.id.replace("cl_", "")}`,
           clusterId: d.id,
+          ticketId: undefined as string | undefined,
           hi: false,
         }))
       : [];
 
-  const list = [...citizenItems, ...actionItems, ...rotated].slice(0, 8);
+  // Issues promoted from the Intelligence dashboard surface here as fresh events.
+  const promotedItems =
+    sourceFilter === "all"
+      ? promotedClusters.map((c) => ({
+          source: "action" as const,
+          sourceName: "Promoted issue",
+          timeMin: 0,
+          snippet: `New issue created from ${c.submission_count} signal${c.submission_count > 1 ? "s" : ""} · ${c.title}`,
+          link: `open issue · ${c.ui.wardLabel}`,
+          clusterId: c.id,
+          ticketId: undefined as string | undefined,
+          hi: false,
+        }))
+      : [];
+
+  // Real intake signals (X/Reddit/News) as feed cards, respecting the channel filter.
+  const liveSignalItems =
+    sourceFilter === "all" ? liveSignals : liveSignals.filter((s) => s.source === sourceFilter);
+
+  const list = [...promotedItems, ...liveSignalItems, ...citizenItems, ...actionItems, ...rotated]
+    // Disabled channels are hidden ("action" items have no channel, so they stay).
+    .filter((it) => !disabledSources.includes(it.source))
+    .slice(0, 8);
   const filterName = RADIAL_CHANNELS.find((c) => c.key === sourceFilter)?.name;
 
   return (
@@ -123,12 +158,16 @@ export function LiveFeed() {
           )}
           {list.map((item, i) => {
             const isAction = item.source === "action";
-            const clickable = item.clusterId != null;
+            const clickable = item.clusterId != null || item.ticketId != null;
             const Wrapper = clickable ? "button" : "div";
             return (
               <Wrapper
                 key={`${tick}-${i}-${item.snippet.slice(0, 16)}`}
-                onClick={clickable ? () => selectCluster(item.clusterId!) : undefined}
+                onClick={
+                  clickable
+                    ? () => (item.clusterId ? selectCluster(item.clusterId) : selectTicket(item.ticketId!))
+                    : undefined
+                }
                 className={`block w-full border-b border-line/50 px-4 py-3 text-left last:border-b-0 ${
                   i === 0 ? "animate-feedIn" : ""
                 } ${isAction ? "bg-success/[0.07]" : ""} ${clickable ? "cursor-pointer transition-colors hover:bg-chip/60" : ""}`}

@@ -83,6 +83,10 @@ function buildTicket(
   // Only set optional fields when present (Firestore rejects undefined).
   if (ai?.photoInsight) ticket.photoInsight = ai.photoInsight;
   if (ai?.voiceTranscript) ticket.voiceTranscript = ai.voiceTranscript;
+  if (input.lat != null && input.lng != null) {
+    ticket.lat = input.lat;
+    ticket.lng = input.lng;
+  }
   return ticket;
 }
 

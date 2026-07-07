@@ -54,6 +54,15 @@ export function MediaImage({
             media unavailable offline
           </span>
         </div>
+      ) : asset.external ? (
+        // Remote tweet/news CDN — plain <img> avoids next/image's host allowlist.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={asset.type === "video" ? (asset.poster ?? asset.src) : asset.src}
+          alt={asset.alt}
+          className="absolute inset-0 h-full w-full object-cover"
+          onError={() => setBroken(true)}
+        />
       ) : (
         <Image
           src={asset.type === "video" ? (asset.poster ?? asset.src) : asset.src}

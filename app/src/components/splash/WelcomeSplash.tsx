@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BrandMark } from "@/components/icons";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { DASHBOARD_META, MOCK_CONSTITUENCY } from "@/lib/mock-data";
 import { isOnboarded } from "@/lib/onboarding";
@@ -46,14 +47,6 @@ export function WelcomeSplash() {
 
   if (!show) return null;
 
-  const bars = [
-    { h: 28, c: "hsl(var(--primary-brand))", d: 0.05 },
-    { h: 52, c: "hsl(var(--primary-brand))", d: 0.12 },
-    { h: 40, c: "hsl(var(--primary-brand))", d: 0.19 },
-    { h: 68, c: "hsl(var(--saffron))", d: 0.26 },
-    { h: 34, c: "hsl(var(--primary-brand))", d: 0.33 },
-  ];
-
   return (
     <div
       role="status"
@@ -63,19 +56,11 @@ export function WelcomeSplash() {
       style={{ animation: "splashFadeOut 2.6s ease-out forwards" }}
     >
       <div className="max-w-[480px] p-10 text-center">
-        <div className="mb-7 inline-flex h-[68px] items-end gap-1">
-          {bars.map((b, i) => (
-            <div
-              key={i}
-              className="w-2 rounded-[2px]"
-              style={{
-                height: b.h,
-                background: b.c,
-                transformOrigin: "bottom",
-                animation: `splashBar 0.45s ease-out ${b.d}s both`,
-              }}
-            />
-          ))}
+        <div
+          className="mb-7 inline-flex items-center justify-center"
+          style={{ transformOrigin: "center", animation: "splashBar 0.5s ease-out 0.05s both" }}
+        >
+          <BrandMark size={72} />
         </div>
         <div
           className="mb-9 flex items-baseline justify-center gap-3.5"

@@ -2,13 +2,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ExternalLink, RefreshCw, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import { SourceIcon } from "@/components/icons";
+import { navigateTo } from "@/components/shell/navRegistry";
+import { useDashboardStore } from "@/lib/dashboard-store";
 import { URGENCY_UI } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 interface Signal {
   id: string;
-  source: "reddit" | "twitter";
+  source: "reddit" | "twitter" | "news";
   handle: string;
   url: string;
   createdAt: string;
@@ -22,7 +25,7 @@ interface Signal {
 interface IntakeResponse {
   signals: Signal[];
   lastRefresh: string | null;
-  sources: { gemini: boolean; apify: boolean; reddit: boolean };
+  sources: Record<string, boolean>;
 }
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -43,6 +46,52 @@ export function LiveIntake() {
   const [data, setData] = useState<IntakeResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [live, setLive] = useState<boolean | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [promoting, setPromoting] = useState(false);
+  const { promotedSignalIds, addPromotedCluster, selectCluster } = useDashboardStore();
+
+  function toggle(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  async function promote() {
+    const ids = [...selected];
+    if (ids.length === 0) return;
+    setPromoting(true);
+    try {
+      const res = await fetch("/api/intake/promote", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ signalIds: ids }),
+      });
+      if (!res.ok) {
+        const e = (await res.json().catch(() => ({}))) as { error?: string };
+        toast.error(e.error ?? "Promote failed.");
+        return;
+      }
+      const { cluster, promotedIds } = (await res.json()) as { cluster: Parameters<typeof addPromotedCluster>[0]; promotedIds: string[] };
+      addPromotedCluster(cluster, promotedIds);
+      setSelected(new Set());
+      toast.success("Issue created", {
+        description: cluster.title,
+        action: {
+          label: "View",
+          onClick: () => {
+            selectCluster(cluster.id);
+            navigateTo("/dashboard");
+          },
+        },
+      });
+    } catch {
+      toast.error("Promote failed.");
+    } finally {
+      setPromoting(false);
+    }
+  }
 
   const load = useCallback(async () => {
     try {
@@ -111,6 +160,22 @@ export function LiveIntake() {
         </div>
       </div>
 
+      {selected.size > 0 && (
+        <div className="mt-3 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5">
+          <span className="text-[12.5px] text-ink">
+            {selected.size} signal{selected.size > 1 ? "s" : ""} selected
+          </span>
+          <button
+            onClick={promote}
+            disabled={promoting}
+            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-[12.5px] font-medium text-white hover:bg-primary-hover disabled:opacity-60"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            {promoting ? "Creating issue…" : `Promote ${selected.size} to issue`}
+          </button>
+        </div>
+      )}
+
       {signals.length === 0 ? (
         <p className="mt-4 rounded-xl border border-dashed border-line px-4 py-8 text-center text-[13px] text-muted-foreground">
           No signals yet. Hit Refresh to pull civic posts and classify them.
@@ -119,8 +184,17 @@ export function LiveIntake() {
         <div className="mt-3 flex flex-col divide-y divide-line/50">
           {signals.map((s) => {
             const u = URGENCY_UI[s.urgency] ?? URGENCY_UI.low;
+            const isPromoted = promotedSignalIds.includes(s.id);
             return (
-              <div key={s.id} className="flex gap-3 py-3">
+              <div key={s.id} className={cn("flex gap-3 py-3", isPromoted && "opacity-50")}>
+                <input
+                  type="checkbox"
+                  checked={selected.has(s.id)}
+                  disabled={isPromoted}
+                  onChange={() => toggle(s.id)}
+                  aria-label={`Select signal: ${s.summary}`}
+                  className="mt-1.5 h-4 w-4 shrink-0 cursor-pointer accent-[hsl(var(--primary))] disabled:cursor-not-allowed"
+                />
                 <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-chip text-body">
                   <SourceIcon source={s.source} />
                 </span>
@@ -136,6 +210,11 @@ export function LiveIntake() {
                     >
                       {s.mode === "gemini" ? "Gemini" : "keyword"}
                     </span>
+                    {isPromoted && (
+                      <span className="rounded-full bg-success/15 px-1.5 py-px text-[9.5px] font-medium text-success">
+                        promoted ✓
+                      </span>
+                    )}
                   </div>
                   <p className="mt-1 text-[13px] leading-snug text-ink">{s.summary}</p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px]">

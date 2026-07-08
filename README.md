@@ -28,6 +28,26 @@ Intake (WhatsApp · X · Reddit · Widget · News RSS · Documents)
 Full spec: [`ENGINEERING_HANDOFF.md`](./docs/ENGINEERING_HANDOFF.md). Session context for
 Claude Code: [`CLAUDE.md`](./CLAUDE.md).
 
+## Built on Google Cloud
+
+Saarthi runs end-to-end on Google Cloud — the platform *is* the architecture, not an add-on.
+
+| Google Cloud service | Role in Saarthi |
+| --- | --- |
+| **Vertex AI — Gemini 2.5 Pro / Flash** | Reasoning, briefings, and RAG answers (Pro); high-volume signal classification (Flash). |
+| **Vertex AI — `text-embedding-004`** | Semantic embeddings for clustering + retrieval. |
+| **Cloud Speech-to-Text (Chirp)** | Transcribes citizen voice grievances across scheduled languages. |
+| **Firestore** | Realtime store + vector search for signals, clusters, and tickets. |
+| **BigQuery** | Joins against public government datasets (Census · UDISE+ · CPCB · DJB). |
+| **Cloud Run** | Hosts the MP dashboard and the standalone Citizen Portal (containerised Next.js). |
+| **Cloud Functions** | Intake webhook receivers (WhatsApp / social). |
+| **Cloud Storage** | Media uploads and generated PDFs/decks (signed URLs). |
+| **Firebase Auth** | Six-role RBAC across the dashboard. |
+| **Google Maps Platform** | The live constituency command-deck map (Leaflet fallback when no key is set). |
+| **Cloud Build** | Container builds and Cloud Run deploys. |
+
+Built for **Build with AI: Code for Communities** (Google Cloud) — Track 1.
+
 ## Monorepo layout
 
 | Package | Name | Role |
